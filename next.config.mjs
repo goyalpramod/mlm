@@ -2,54 +2,66 @@ import createMDX from '@next/mdx'
 import remarkGfm from 'remark-gfm'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable static export capability for hosting flexibility
   output: 'export',
-  
-  // Configure pageExtensions to include MDX files
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-  
-  // Disable image optimization for static export
   images: {
     unoptimized: true
   },
-  
-  // Enable strict mode for better development experience
   reactStrictMode: true,
-  
-  // Optimize for modern browsers
   swcMinify: true,
-  
-  // Configure trailing slash behavior
   trailingSlash: false,
-  
-  // Disable x-powered-by header
   poweredByHeader: false
 }
 
 const withMDX = createMDX({
-  // Add markdown plugins here
   options: {
     remarkPlugins: [
       remarkGfm,
       remarkFrontmatter,
-      [remarkMdxFrontmatter, { name: 'frontmatter' }]
+      [remarkMdxFrontmatter, { name: 'frontmatter' }],
+      // Add remark-math to process LaTeX syntax
+      remarkMath,
     ],
     rehypePlugins: [
+      // Add rehype-katex to render LaTeX with KaTeX
+      [rehypeKatex, {
+        // KaTeX options
+        strict: false, // Allow unknown commands
+        trust: false, // Don't trust HTML in math
+        macros: {
+          // Common mathematical macros
+          '\\R': '\\mathbb{R}',
+          '\\N': '\\mathbb{N}',
+          '\\Z': '\\mathbb{Z}',
+          '\\Q': '\\mathbb{Q}',
+          '\\C': '\\mathbb{C}',
+          '\\vec': '\\mathbf{#1}',
+          '\\norm': '\\left\\|#1\\right\\|',
+          '\\abs': '\\left|#1\\right|',
+          '\\argmax': '\\operatorname{argmax}',
+          '\\argmin': '\\operatorname{argmin}',
+          '\\trace': '\\operatorname{tr}',
+          '\\rank': '\\operatorname{rank}',
+          '\\diag': '\\operatorname{diag}',
+          '\\det': '\\operatorname{det}',
+        }
+      }],
       rehypeSlug,
       [rehypeAutolinkHeadings, {
         behavior: 'wrap',
         properties: {
           className: ['anchor-link']
         }
-      }]
+      }],
     ],
   },
 })
 
-// Merge MDX config with Next.js config
 export default withMDX(nextConfig)
