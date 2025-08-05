@@ -14,7 +14,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className="fixed top-4 right-4 z-50 p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 transition-colors"
+        className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 transition-colors"
         disabled
         aria-label="Loading theme toggle"
         type="button"
@@ -33,7 +33,7 @@ function MountedThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed top-4 right-4 z-50 p-2 rounded-lg border border-border bg-background hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background"
+      className="p-2 rounded-lg border border-border bg-background hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background"
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
       type="button"
     >

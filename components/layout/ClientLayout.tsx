@@ -1,7 +1,7 @@
 'use client'
 
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Layout } from '@/components/layout/Layout'
 
 interface ClientLayoutProps {
   children: React.ReactNode
@@ -10,12 +10,9 @@ interface ClientLayoutProps {
 export function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <ThemeProvider>
-      <div id="root" className="relative flex min-h-screen flex-col">
-        <ThemeToggle />
-        <main className="flex-1">
-          {children}
-        </main>
-      </div>
+      <Layout>
+        {children}
+      </Layout>
     </ThemeProvider>
   )
 }

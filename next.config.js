@@ -14,10 +14,10 @@ const nextConfig = {
   // Optimize for modern browsers
   swcMinify: true,
   
-  // Experimental features for performance
-  experimental: {
-    optimizeCss: true
-  },
+  // Remove experimental optimizeCss to avoid critters dependency issue
+  // experimental: {
+  //   optimizeCss: true
+  // },
   
   // Configure trailing slash behavior
   trailingSlash: false,
