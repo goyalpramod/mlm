@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { H2, P } from '@/lib/utils/typography'
 import { getChapterBySlug } from '@/lib/data/chapters'
 import { getChapterNavigation } from '@/lib/utils/navigation'
 import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import MatricesContent from '@/content/matrices/index.mdx'
 
 export const metadata: Metadata = {
   title: 'Advanced Matrix Theory | Interactive ML Mathematics',
@@ -26,14 +27,9 @@ export default function MatricesPage() {
       previousChapter={navigation?.previous}
       nextChapter={navigation?.next}
     >
-      <div className="prose prose-lg max-w-none">
-        <H2>Advanced Matrix Theory</H2>
-        
-        <P>
-          This chapter covers advanced matrix concepts and their applications in machine learning.
-          Content will be added here.
-        </P>
-      </div>
+      <SafeMDXContent>
+        <MatricesContent />
+      </SafeMDXContent>
     </ChapterLayout>
   )
 }

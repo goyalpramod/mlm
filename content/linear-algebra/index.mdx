@@ -1,0 +1,83 @@
+---
+title: "Linear Algebra Fundamentals"
+description: "Learn vectors, matrices, and linear transformations - the mathematical foundation of machine learning algorithms."
+order: 1
+estimatedTime: "45 minutes"
+difficulty: "Beginner"
+prerequisites: ["Basic algebra", "High school mathematics"]
+learningObjectives:
+  - "Understand vector spaces and operations"
+  - "Master matrix multiplication and properties"
+  - "Learn eigenvalues and eigenvectors"
+  - "Apply linear transformations to data"
+keywords: ["linear algebra", "vectors", "matrices", "eigenvalues", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Linear Algebra Fundamentals
+
+Linear algebra forms the mathematical foundation of machine learning. At its core are vectors - mathematical objects that represent both magnitude and direction.
+
+## Vectors and Vector Spaces
+
+A vector is an ordered collection of numbers. In machine learning, we typically work with column vectors. For example, a 3-dimensional vector can be written as:
+
+```
+v = [v₁, v₂, v₃]ᵀ
+```
+
+Where `v₁`, `v₂`, and `v₃` are the components of the vector.
+
+### Vector Operations
+
+Several fundamental operations can be performed on vectors:
+
+**Vector Addition:** When we add two vectors of the same dimension, we add their corresponding components:
+
+```
+a + b = [a₁ + b₁, a₂ + b₂, a₃ + b₃]ᵀ
+```
+
+**Scalar Multiplication:** Multiplying a vector by a scalar scales all components:
+
+```
+c · v = [c·v₁, c·v₂, c·v₃]ᵀ
+```
+
+**Dot Product:** The dot product of two vectors produces a scalar:
+
+```
+a · b = a₁b₁ + a₂b₂ + a₃b₃
+```
+
+## Matrix Operations
+
+Matrices are rectangular arrays of numbers that can be thought of as collections of vectors. In machine learning, matrices represent datasets, transformations, and model parameters.
+
+### Matrix Fundamentals
+
+A matrix A with m rows and n columns is denoted as `A ∈ ℝᵐˣⁿ`. Each element is accessed using row and column indices: `A[i,j]` or `aᵢⱼ`.
+
+### Matrix Multiplication
+
+Matrix multiplication is fundamental to many machine learning algorithms. For matrices `A ∈ ℝᵐˣⁿ` and `B ∈ ℝⁿˣᵖ`, their product `C = AB` has dimensions `m × p`.
+
+## Eigenvalues and Eigenvectors
+
+Eigenvalues and eigenvectors reveal important properties of linear transformations and are essential for understanding dimensionality reduction techniques.
+
+For a square matrix A, an eigenvector v and its corresponding eigenvalue λ satisfy:
+
+```
+Av = λv
+```
+
+This concept is crucial for Principal Component Analysis (PCA) and understanding data structure.
+
+> **Note:** This is placeholder content. The actual mathematical content will be written separately with proper LaTeX rendering and interactive visualizations.

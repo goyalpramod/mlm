@@ -5,6 +5,8 @@ const config: Config = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './content/**/*.{js,ts,jsx,tsx,mdx}',
+    './mdx-components.tsx',
   ],
   darkMode: 'class',
   theme: {
@@ -31,16 +33,20 @@ const config: Config = {
         ]
       },
       
-      // Custom colors for strict black/white theme
+      // Custom colors using CSS custom properties with opacity support
       colors: {
         // Base colors using CSS custom properties
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
-        muted: 'var(--muted)',
-        'muted-foreground': 'var(--muted-foreground)',
-        border: 'var(--border)',
-        accent: 'var(--accent)',
-        'accent-foreground': 'var(--accent-foreground)',
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        muted: {
+          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
+        },
+        border: 'rgb(var(--border) / <alpha-value>)',
+        accent: {
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          foreground: 'rgb(var(--accent-foreground) / <alpha-value>)',
+        },
         
         // Override default colors to black/white only
         white: '#ffffff',

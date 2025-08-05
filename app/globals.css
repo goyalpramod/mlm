@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  /* Light theme variables */
-  --background: #ffffff;
-  --foreground: #000000;
-  --muted: #f8f8f8;
-  --muted-foreground: #666666;
-  --border: #e1e1e1;
-  --accent: #f0f0f0;
-  --accent-foreground: #000000;
+  /* Light theme variables - using RGB values for opacity support */
+  --background: 255 255 255;
+  --foreground: 0 0 0;
+  --muted: 248 248 248;
+  --muted-foreground: 102 102 102;
+  --border: 225 225 225;
+  --accent: 240 240 240;
+  --accent-foreground: 0 0 0;
 }
 
 .dark {
-  /* Dark theme variables */
-  --background: #000000;
-  --foreground: #ffffff;
-  --muted: #0a0a0a;
-  --muted-foreground: #a1a1a1;
-  --border: #262626;
-  --accent: #1a1a1a;
-  --accent-foreground: #ffffff;
+  /* Dark theme variables - using RGB values for opacity support */
+  --background: 0 0 0;
+  --foreground: 255 255 255;
+  --muted: 10 10 10;
+  --muted-foreground: 161 161 161;
+  --border: 38 38 38;
+  --accent: 26 26 26;
+  --accent-foreground: 255 255 255;
 }
 
 /* Base styles for mathematical content */
@@ -171,6 +171,106 @@
   }
 }
 
+/* MDX-specific styles */
+@layer components {
+  .mdx-content {
+    @apply text-foreground leading-relaxed;
+  }
+  
+  .mdx-content h1,
+  .mdx-content h2,
+  .mdx-content h3,
+  .mdx-content h4,
+  .mdx-content h5,
+  .mdx-content h6 {
+    @apply scroll-mt-16; /* Account for fixed header when jumping to anchors */
+  }
+  
+  /* Anchor links for headings */
+  .anchor-link {
+    @apply no-underline;
+  }
+  
+  .anchor-link:hover {
+    @apply underline;
+  }
+  
+  /* Enhanced code blocks for mathematical content */
+  .mdx-content pre {
+    @apply relative;
+    font-variant-ligatures: none; /* Disable ligatures in code blocks */
+  }
+  
+  .mdx-content pre:hover {
+    @apply bg-accent transition-colors duration-200;
+  }
+  
+  /* Mathematical notation improvements */
+  .mdx-content .math-block {
+    @apply font-mono text-center bg-muted border border-border rounded-lg p-4 my-6 overflow-x-auto;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .mdx-content .math-inline {
+    @apply font-mono bg-muted px-1 py-0.5 rounded text-sm;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Improved list styling */
+  .mdx-content ul {
+    @apply list-disc pl-6 mb-4 space-y-1;
+  }
+  
+  .mdx-content ol {
+    @apply list-decimal pl-6 mb-4 space-y-1;
+  }
+  
+  .mdx-content li {
+    @apply leading-relaxed;
+  }
+  
+  /* Enhanced blockquotes */
+  .mdx-content blockquote {
+    @apply border-l-4 border-border pl-6 py-2 my-6 italic text-muted-foreground rounded-r-lg;
+    background-color: rgb(var(--muted) / 0.3);
+  }
+  
+  .mdx-content blockquote p {
+    @apply mb-0;
+  }
+  
+  /* Table improvements */
+  .mdx-content table {
+    @apply w-full border-collapse my-6 text-sm;
+  }
+  
+  .mdx-content th {
+    @apply bg-muted font-semibold text-left p-3 border border-border;
+  }
+  
+  .mdx-content td {
+    @apply p-3 border border-border;
+  }
+  
+  .mdx-content tbody tr:nth-child(even) {
+    background-color: rgb(var(--muted) / 0.3);
+  }
+  
+  /* Image styling */
+  .mdx-content img {
+    @apply rounded-lg border border-border my-6 mx-auto;
+  }
+  
+  /* Link styling */
+  .mdx-content a {
+    @apply text-foreground underline underline-offset-4 decoration-muted-foreground hover:decoration-foreground transition-colors;
+  }
+  
+  .mdx-content a[href^="http"] {
+    @apply after:content-['↗'] after:text-xs after:ml-1 after:text-muted-foreground;
+  }
+}
+
 /* Utility classes */
 @layer utilities {
   .text-balance {
@@ -183,6 +283,20 @@
   
   .slide-in {
     animation: slideIn 0.3s ease-out;
+  }
+  
+  /* Mathematical content utilities */
+  .math-notation {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+  
+  .code-block-container {
+    @apply relative group;
+  }
+  
+  .copy-button {
+    @apply absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity;
   }
 }
 
@@ -204,5 +318,26 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* Print styles for mathematical content */
+@media print {
+  .mdx-content {
+    @apply text-black bg-white;
+  }
+  
+  .mdx-content .math-block,
+  .mdx-content .math-inline {
+    @apply bg-transparent border border-gray-300;
+  }
+  
+  .mdx-content a {
+    @apply text-black no-underline;
+  }
+  
+  .mdx-content a[href]:after {
+    content: " (" attr(href) ")";
+    @apply text-xs text-gray-600;
   }
 }

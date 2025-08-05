@@ -1,0 +1,80 @@
+---
+title: "Advanced Matrix Theory"
+description: "Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms."
+order: 2
+estimatedTime: "40 minutes"
+difficulty: "Intermediate"
+prerequisites: ["Linear Algebra basics", "Vector operations"]
+learningObjectives:
+  - "Master advanced matrix operations"
+  - "Understand matrix decompositions (SVD, LU, QR)"
+  - "Apply matrix techniques to dimensionality reduction"
+  - "Solve systems of linear equations"
+keywords: ["matrix theory", "SVD", "matrix decomposition", "PCA", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Advanced Matrix Theory
+
+Building on basic linear algebra, this chapter explores advanced matrix operations and decompositions that are fundamental to machine learning algorithms.
+
+## Matrix Decomposition
+
+Matrix decomposition is the process of breaking down a matrix into simpler, more manageable components. These decompositions are fundamental to many machine learning algorithms.
+
+### Singular Value Decomposition (SVD)
+
+The Singular Value Decomposition is one of the most important matrix factorizations in machine learning. For any matrix `A ∈ ℝᵐˣⁿ`, SVD decomposes it as:
+
+```
+A = UΣVᵀ
+```
+
+Where:
+- `U ∈ ℝᵐˣᵐ` is an orthogonal matrix (left singular vectors)
+- `Σ ∈ ℝᵐˣⁿ` is a diagonal matrix of singular values
+- `V ∈ ℝⁿˣⁿ` is an orthogonal matrix (right singular vectors)
+
+SVD reveals the intrinsic dimensionality of data and is the mathematical foundation of Principal Component Analysis (PCA).
+
+### LU Decomposition
+
+LU decomposition factors a matrix into the product of a lower triangular matrix L and an upper triangular matrix U:
+
+```
+A = LU
+```
+
+This decomposition is particularly useful for solving systems of linear equations efficiently.
+
+## Applications in Machine Learning
+
+Matrix decompositions have direct applications in many machine learning techniques.
+
+### Principal Component Analysis
+
+PCA uses eigendecomposition or SVD to find the principal components of data - the directions of maximum variance.
+
+For a data matrix X, PCA works with the covariance matrix:
+
+```
+C = (1/(n-1))XᵀX
+```
+
+### Linear Regression
+
+Linear regression seeks to find the best-fitting line through data points. The normal equation solution uses matrix operations:
+
+```
+θ = (XᵀX)⁻¹Xᵀy
+```
+
+Where X is the feature matrix, y is the target vector, and θ are the model parameters.
+
+> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.

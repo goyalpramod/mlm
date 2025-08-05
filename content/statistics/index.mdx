@@ -1,0 +1,89 @@
+---
+title: "Statistics for Machine Learning"
+description: "Statistical methods, hypothesis testing, and inference techniques used in machine learning."
+order: 4
+estimatedTime: "35 minutes"
+difficulty: "Intermediate"
+prerequisites: ["Probability theory", "Basic calculus"]
+learningObjectives:
+  - "Perform statistical inference"
+  - "Understand hypothesis testing"
+  - "Apply statistical methods to data"
+  - "Evaluate model performance statistically"
+keywords: ["statistics", "hypothesis testing", "confidence intervals", "regression analysis", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Statistics for Machine Learning
+
+Statistical methods provide the tools for making inferences about populations from samples, hypothesis testing, and evaluating the performance of machine learning models.
+
+## Descriptive Statistics
+
+Descriptive statistics summarize and describe the main features of a dataset.
+
+**Measures of Central Tendency:**
+- **Mean:** `μ = (1/n) Σᵢ xᵢ` - the average value
+- **Median:** The middle value when data is ordered
+- **Mode:** The most frequently occurring value
+
+**Measures of Spread:**
+- **Variance:** `σ² = (1/n) Σᵢ (xᵢ - μ)²`
+- **Standard Deviation:** `σ = √(σ²)`
+- **Range:** Maximum - Minimum
+
+## Statistical Inference
+
+Statistical inference allows us to make conclusions about a population based on a sample.
+
+### Confidence Intervals
+
+A confidence interval provides a range of plausible values for a population parameter. For a sample mean with known population standard deviation:
+
+```
+CI = x̄ ± z(α/2) × (σ/√n)
+```
+
+### Hypothesis Testing
+
+Hypothesis testing is a statistical method for making decisions about population parameters based on sample data.
+
+**The Process:**
+1. State null hypothesis H₀ and alternative hypothesis H₁
+2. Choose significance level α (typically 0.05)
+3. Calculate test statistic
+4. Determine p-value or compare with critical value
+5. Make decision: reject or fail to reject H₀
+
+**One-sample t-test:** Tests whether a sample mean differs from a hypothesized value:
+
+```
+t = (x̄ - μ₀) / (s/√n)
+```
+
+## Regression Analysis
+
+Regression analysis is used to model the relationship between a dependent variable and one or more independent variables.
+
+### Linear Regression
+
+Linear regression models the relationship between variables using a linear equation:
+
+```
+y = β₀ + β₁x + ε
+```
+
+Where:
+- `y` is the dependent variable
+- `x` is the independent variable
+- `β₀` is the y-intercept
+- `β₁` is the slope
+- `ε` is the error term
+
+> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.

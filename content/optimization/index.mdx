@@ -1,0 +1,116 @@
+---
+title: "Optimization Theory"
+description: "Mathematical optimization techniques including gradient descent and algorithms used to train machine learning models."
+order: 5
+estimatedTime: "55 minutes"
+difficulty: "Advanced"
+prerequisites: ["Calculus", "Linear algebra", "Vector operations"]
+learningObjectives:
+  - "Understand optimization fundamentals"
+  - "Master gradient descent algorithms"
+  - "Apply constrained optimization"
+  - "Optimize machine learning models"
+keywords: ["optimization", "gradient descent", "convex optimization", "machine learning", "algorithms"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Optimization Theory
+
+Optimization is the mathematical discipline of finding the best solution from a set of available alternatives. In machine learning, optimization algorithms find model parameters that minimize a loss function.
+
+## Optimization Fundamentals
+
+An optimization problem seeks to minimize (or maximize) an **objective function** `f(x)` subject to constraints. In machine learning contexts:
+
+- **Loss function:** Measures how well model predictions match actual data
+- **Cost function:** Often includes regularization terms to prevent overfitting
+- **Parameters:** `x` represents model weights and biases
+
+### Common Loss Functions
+
+**Mean Squared Error (Regression):**
+```
+L(θ) = (1/2m) Σᵢ (hθ(xⁱ) - yⁱ)²
+```
+
+**Cross-entropy Loss (Classification):**
+```
+L(θ) = -(1/m) Σᵢ [yⁱ log(hθ(xⁱ)) + (1-yⁱ) log(1-hθ(xⁱ))]
+```
+
+## Gradient Descent
+
+Gradient descent is the most fundamental optimization algorithm in machine learning. It iteratively moves in the direction of steepest descent to find a function's minimum.
+
+### Basic Gradient Descent
+
+The gradient `∇f(x)` points in the direction of steepest increase. To minimize `f(x)`, we move in the opposite direction:
+
+```
+x_{t+1} = x_t - α∇f(x_t)
+```
+
+Where `α` is the **learning rate** that controls the step size.
+
+### Stochastic Gradient Descent
+
+**Batch Gradient Descent:** Uses entire dataset
+```
+θ_{t+1} = θ_t - α ∇_θ (1/m) Σᵢ L(hθ(xⁱ), yⁱ)
+```
+
+**Stochastic Gradient Descent:** Uses single example
+```
+θ_{t+1} = θ_t - α ∇_θ L(hθ(xⁱ), yⁱ)
+```
+
+**Mini-batch Gradient Descent:** Uses small batch of examples
+```
+θ_{t+1} = θ_t - α ∇_θ (1/|B|) Σᵢ∈B L(hθ(xⁱ), yⁱ)
+```
+
+## Advanced Optimizers
+
+Modern optimization algorithms improve upon basic gradient descent:
+
+**Momentum:** Accelerates gradients in consistent directions
+```
+v_t = βv_{t-1} + (1-β)∇f(x_t)
+x_{t+1} = x_t - αv_t
+```
+
+**Adam:** Combines momentum and adaptive learning rates
+```
+m_t = β₁m_{t-1} + (1-β₁)∇f(x_t)
+v_t = β₂v_{t-1} + (1-β₂)(∇f(x_t))²
+x_{t+1} = x_t - α(m̂_t/√(v̂_t + ε))
+```
+
+## Constrained Optimization
+
+Many optimization problems include constraints that limit the feasible solutions.
+
+### Lagrange Multipliers
+
+For problems with equality constraints, Lagrange multipliers convert constrained optimization into unconstrained optimization:
+
+**Problem:** Minimize `f(x)` subject to `g(x) = 0`
+
+**Lagrangian:**
+```
+L(x,λ) = f(x) + λg(x)
+```
+
+**Optimality Conditions:**
+```
+∇_x L(x,λ) = ∇f(x) + λ∇g(x) = 0
+∇_λ L(x,λ) = g(x) = 0
+```
+
+> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.

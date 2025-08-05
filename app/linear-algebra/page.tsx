@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { H2, P } from '@/lib/utils/typography'
 import { getChapterBySlug } from '@/lib/data/chapters'
 import { getChapterNavigation } from '@/lib/utils/navigation'
 import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import LinearAlgebraContent from '@/content/linear-algebra/index.mdx'
 
 export const metadata: Metadata = {
   title: 'Linear Algebra | Interactive ML Mathematics',
@@ -26,14 +27,9 @@ export default function LinearAlgebraPage() {
       previousChapter={navigation?.previous}
       nextChapter={navigation?.next}
     >
-      <div className="prose prose-lg max-w-none">
-        <H2>Linear Algebra</H2>
-        
-        <P>
-          This chapter covers the foundations of linear algebra for machine learning.
-          Content will be added here.
-        </P>
-      </div>
+      <SafeMDXContent>
+        <LinearAlgebraContent />
+      </SafeMDXContent>
     </ChapterLayout>
   )
 }

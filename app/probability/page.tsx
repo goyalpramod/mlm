@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { H2, P } from '@/lib/utils/typography'
 import { getChapterBySlug } from '@/lib/data/chapters'
 import { getChapterNavigation } from '@/lib/utils/navigation'
 import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import ProbabilityContent from '@/content/probability/index.mdx'
 
 export const metadata: Metadata = {
   title: 'Probability Theory | Interactive ML Mathematics',
@@ -26,14 +27,9 @@ export default function ProbabilityPage() {
       previousChapter={navigation?.previous}
       nextChapter={navigation?.next}
     >
-      <div className="prose prose-lg max-w-none">
-        <H2>Probability Theory</H2>
-        
-        <P>
-          This chapter covers probability fundamentals essential for machine learning.
-          Content will be added here.
-        </P>
-      </div>
+      <SafeMDXContent>
+        <ProbabilityContent />
+      </SafeMDXContent>
     </ChapterLayout>
   )
 }
