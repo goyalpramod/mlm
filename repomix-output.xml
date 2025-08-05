@@ -52,6 +52,7 @@ app/optimization/page.tsx
 app/page.tsx
 app/probability/page.tsx
 app/statistics/page.tsx
+components/content/HomePageContent.tsx
 components/content/MDXComponents.tsx
 components/content/MDXContent.tsx
 components/layout/ChapterLayout.tsx
@@ -91,6 +92,267 @@ types/theme.ts
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path=".eslintrc.json">
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "prefer-const": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  }
+}
+</file>
+
+<file path="app/not-found.tsx">
+import Link from 'next/link'
+
+export default function NotFound() {
+  return (
+    <div className="container mx-auto px-4 py-16">
+      <div className="max-w-2xl mx-auto text-center">
+        <h1 className="text-6xl font-bold mb-4">404</h1>
+        <h2 className="text-2xl font-semibold mb-6">Page Not Found</h2>
+        <p className="text-muted-foreground mb-8">
+          The mathematical concept you're looking for doesn't exist in our current dimension.
+        </p>
+        <Link 
+          href="/" 
+          className="inline-flex items-center px-6 py-3 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Return Home
+        </Link>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="components/content/HomePageContent.tsx">
+import Link from 'next/link'
+import { Container } from '@/components/ui/Container'
+import { H1, H2, H3, P, Lead } from '@/lib/utils/typography'
+import { Chapter } from '@/types/content'
+import { getDifficultyColor, formatReadingTime } from '@/lib/utils/navigation'
+import { cn } from '@/lib/utils/cn'
+
+interface HomePageContentProps {
+  chapters: Chapter[]
+}
+
+export function HomePageContent({ chapters }: HomePageContentProps) {
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="py-16 lg:py-24">
+        <Container size="normal">
+          <div className="text-center">
+            <H1 className="text-balance">
+              Interactive ML Mathematics
+            </H1>
+            <Lead className="text-balance max-w-3xl mx-auto">
+              Master the mathematical foundations of machine learning through 
+              interactive visualizations, hands-on exercises, and clear explanations.
+            </Lead>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+              <Link 
+                href={`/${chapters[0]?.slug || 'linear-algebra'}`}
+                className="inline-flex items-center justify-center px-6 py-3 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity font-medium"
+              >
+                Start Learning
+              </Link>
+              <Link 
+                href="#chapters"
+                className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg hover:bg-accent transition-colors font-medium"
+              >
+                Explore Chapters
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-muted/30">
+        <Container size="wide">
+          <div className="text-center mb-12">
+            <H2>Why Interactive Learning?</H2>
+            <P className="text-center text-muted-foreground max-w-2xl mx-auto">
+              Mathematics comes alive when you can see it, interact with it, and 
+              experiment with the concepts in real-time.
+            </P>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-foreground text-background rounded-lg flex items-center justify-center mx-auto mb-4">
+                <span className="text-xl font-bold">∇</span>
+              </div>
+              <H3 className="mb-3">Visual Learning</H3>
+              <P className="text-muted-foreground">
+                Complex mathematical concepts become intuitive through 
+                interactive 3D visualizations and dynamic graphics.
+              </P>
+            </div>
+            
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-foreground text-background rounded-lg flex items-center justify-center mx-auto mb-4">
+                <span className="text-xl font-bold">∫</span>
+              </div>
+              <H3 className="mb-3">Hands-on Practice</H3>
+              <P className="text-muted-foreground">
+                Reinforce your understanding with interactive exercises 
+                and real-world machine learning examples.
+              </P>
+            </div>
+            
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-foreground text-background rounded-lg flex items-center justify-center mx-auto mb-4">
+                <span className="text-xl font-bold">Σ</span>
+              </div>
+              <H3 className="mb-3">Progressive Learning</H3>
+              <P className="text-muted-foreground">
+                Start with fundamentals and build up to advanced topics 
+                with a carefully structured curriculum.
+              </P>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Chapters Section */}
+      <section id="chapters" className="py-16">
+        <Container size="normal">
+          <div className="text-center mb-12">
+            <H2>Course Contents</H2>
+            <P className="text-center text-muted-foreground">
+              Explore the mathematical foundations essential for machine learning
+            </P>
+          </div>
+          
+          <div className="space-y-6">
+            {chapters.map((chapter) => (
+              <ChapterCard key={chapter.id} chapter={chapter} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Getting Started Section */}
+      <section className="py-16 bg-muted/30">
+        <Container size="narrow">
+          <div className="text-center">
+            <H2>Ready to Begin?</H2>
+            <P className="text-muted-foreground mb-8">
+              Start your journey into the mathematical foundations of machine learning. 
+              Each chapter builds upon the previous one, creating a comprehensive understanding.
+            </P>
+            
+            <div className="space-y-4">
+              <Link
+                href={`/${chapters[0]?.slug || 'linear-algebra'}`}
+                className="inline-flex items-center justify-center px-8 py-4 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity font-medium text-lg"
+              >
+                Begin with {chapters[0]?.title || 'Linear Algebra'}
+              </Link>
+              
+              <P className="text-sm text-muted-foreground">
+                No prerequisites required • Self-paced learning • Interactive content
+              </P>
+            </div>
+          </div>
+        </Container>
+      </section>
+    </>
+  )
+}
+
+interface ChapterCardProps {
+  chapter: Chapter
+}
+
+function ChapterCard({ chapter }: ChapterCardProps) {
+  return (
+    <Link 
+      href={`/${chapter.slug}`}
+      className="block p-6 border border-border rounded-lg hover:bg-accent transition-colors group"
+    >
+      <div className="flex items-start space-x-4">
+        <div className="text-2xl flex-shrink-0">{chapter.icon}</div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between mb-2">
+            <div className="flex-1">
+              <H3 className="mb-2 group-hover:text-foreground transition-colors">
+                {chapter.title}
+              </H3>
+              <div className="flex flex-wrap items-center gap-3 mb-3">
+                <span className={cn(
+                  'px-2 py-1 rounded-full border text-xs font-medium',
+                  getDifficultyColor(chapter.difficulty)
+                )}>
+                  {chapter.difficulty}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {formatReadingTime(chapter.readingTime)}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Chapter {chapter.order}
+                </span>
+              </div>
+            </div>
+            <div className="text-muted-foreground group-hover:text-foreground transition-colors ml-4">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+          
+          <P className="text-muted-foreground mb-4">
+            {chapter.description}
+          </P>
+          
+          {/* Prerequisites */}
+          {chapter.prerequisites.length > 0 && (
+            <div className="mb-4">
+              <span className="text-xs text-muted-foreground">Prerequisites: </span>
+              <span className="text-xs text-muted-foreground">
+                {chapter.prerequisites.join(', ')}
+              </span>
+            </div>
+          )}
+          
+          {/* Section count */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              {chapter.sections.length} sections
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {chapter.sections.slice(0, 3).map((section) => (
+                <span 
+                  key={section.id}
+                  className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded-full"
+                >
+                  {section.title}
+                </span>
+              ))}
+              {chapter.sections.length > 3 && (
+                <span className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded-full">
+                  +{chapter.sections.length - 3} more
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+</file>
 
 <file path="components/content/MDXComponents.tsx">
 import React from 'react'
@@ -363,1144 +625,6 @@ export function SafeMDXContent({ children, className }: MDXContentProps) {
         {children}
       </MDXContent>
     </MDXErrorBoundary>
-  )
-}
-</file>
-
-<file path="content/linear-algebra/index.mdx">
----
-title: "Linear Algebra Fundamentals"
-description: "Learn vectors, matrices, and linear transformations - the mathematical foundation of machine learning algorithms."
-order: 1
-estimatedTime: "45 minutes"
-difficulty: "Beginner"
-prerequisites: ["Basic algebra", "High school mathematics"]
-learningObjectives:
-  - "Understand vector spaces and operations"
-  - "Master matrix multiplication and properties"
-  - "Learn eigenvalues and eigenvectors"
-  - "Apply linear transformations to data"
-keywords: ["linear algebra", "vectors", "matrices", "eigenvalues", "machine learning"]
-lastUpdated: "2025-01-07"
----
-
-export const metadata = {
-  title: frontmatter.title,
-  description: frontmatter.description,
-  keywords: frontmatter.keywords,
-}
-
-# Linear Algebra Fundamentals
-
-Linear algebra forms the mathematical foundation of machine learning. At its core are vectors - mathematical objects that represent both magnitude and direction.
-
-## Vectors and Vector Spaces
-
-A vector is an ordered collection of numbers. In machine learning, we typically work with column vectors. For example, a 3-dimensional vector can be written as:
-
-```
-v = [v₁, v₂, v₃]ᵀ
-```
-
-Where `v₁`, `v₂`, and `v₃` are the components of the vector.
-
-### Vector Operations
-
-Several fundamental operations can be performed on vectors:
-
-**Vector Addition:** When we add two vectors of the same dimension, we add their corresponding components:
-
-```
-a + b = [a₁ + b₁, a₂ + b₂, a₃ + b₃]ᵀ
-```
-
-**Scalar Multiplication:** Multiplying a vector by a scalar scales all components:
-
-```
-c · v = [c·v₁, c·v₂, c·v₃]ᵀ
-```
-
-**Dot Product:** The dot product of two vectors produces a scalar:
-
-```
-a · b = a₁b₁ + a₂b₂ + a₃b₃
-```
-
-## Matrix Operations
-
-Matrices are rectangular arrays of numbers that can be thought of as collections of vectors. In machine learning, matrices represent datasets, transformations, and model parameters.
-
-### Matrix Fundamentals
-
-A matrix A with m rows and n columns is denoted as `A ∈ ℝᵐˣⁿ`. Each element is accessed using row and column indices: `A[i,j]` or `aᵢⱼ`.
-
-### Matrix Multiplication
-
-Matrix multiplication is fundamental to many machine learning algorithms. For matrices `A ∈ ℝᵐˣⁿ` and `B ∈ ℝⁿˣᵖ`, their product `C = AB` has dimensions `m × p`.
-
-## Eigenvalues and Eigenvectors
-
-Eigenvalues and eigenvectors reveal important properties of linear transformations and are essential for understanding dimensionality reduction techniques.
-
-For a square matrix A, an eigenvector v and its corresponding eigenvalue λ satisfy:
-
-```
-Av = λv
-```
-
-This concept is crucial for Principal Component Analysis (PCA) and understanding data structure.
-
-> **Note:** This is placeholder content. The actual mathematical content will be written separately with proper LaTeX rendering and interactive visualizations.
-</file>
-
-<file path="content/matrices/index.mdx">
----
-title: "Advanced Matrix Theory"
-description: "Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms."
-order: 2
-estimatedTime: "40 minutes"
-difficulty: "Intermediate"
-prerequisites: ["Linear Algebra basics", "Vector operations"]
-learningObjectives:
-  - "Master advanced matrix operations"
-  - "Understand matrix decompositions (SVD, LU, QR)"
-  - "Apply matrix techniques to dimensionality reduction"
-  - "Solve systems of linear equations"
-keywords: ["matrix theory", "SVD", "matrix decomposition", "PCA", "machine learning"]
-lastUpdated: "2025-01-07"
----
-
-export const metadata = {
-  title: frontmatter.title,
-  description: frontmatter.description,
-  keywords: frontmatter.keywords,
-}
-
-# Advanced Matrix Theory
-
-Building on basic linear algebra, this chapter explores advanced matrix operations and decompositions that are fundamental to machine learning algorithms.
-
-## Matrix Decomposition
-
-Matrix decomposition is the process of breaking down a matrix into simpler, more manageable components. These decompositions are fundamental to many machine learning algorithms.
-
-### Singular Value Decomposition (SVD)
-
-The Singular Value Decomposition is one of the most important matrix factorizations in machine learning. For any matrix `A ∈ ℝᵐˣⁿ`, SVD decomposes it as:
-
-```
-A = UΣVᵀ
-```
-
-Where:
-- `U ∈ ℝᵐˣᵐ` is an orthogonal matrix (left singular vectors)
-- `Σ ∈ ℝᵐˣⁿ` is a diagonal matrix of singular values
-- `V ∈ ℝⁿˣⁿ` is an orthogonal matrix (right singular vectors)
-
-SVD reveals the intrinsic dimensionality of data and is the mathematical foundation of Principal Component Analysis (PCA).
-
-### LU Decomposition
-
-LU decomposition factors a matrix into the product of a lower triangular matrix L and an upper triangular matrix U:
-
-```
-A = LU
-```
-
-This decomposition is particularly useful for solving systems of linear equations efficiently.
-
-## Applications in Machine Learning
-
-Matrix decompositions have direct applications in many machine learning techniques.
-
-### Principal Component Analysis
-
-PCA uses eigendecomposition or SVD to find the principal components of data - the directions of maximum variance.
-
-For a data matrix X, PCA works with the covariance matrix:
-
-```
-C = (1/(n-1))XᵀX
-```
-
-### Linear Regression
-
-Linear regression seeks to find the best-fitting line through data points. The normal equation solution uses matrix operations:
-
-```
-θ = (XᵀX)⁻¹Xᵀy
-```
-
-Where X is the feature matrix, y is the target vector, and θ are the model parameters.
-
-> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
-</file>
-
-<file path="content/optimization/index.mdx">
----
-title: "Optimization Theory"
-description: "Mathematical optimization techniques including gradient descent and algorithms used to train machine learning models."
-order: 5
-estimatedTime: "55 minutes"
-difficulty: "Advanced"
-prerequisites: ["Calculus", "Linear algebra", "Vector operations"]
-learningObjectives:
-  - "Understand optimization fundamentals"
-  - "Master gradient descent algorithms"
-  - "Apply constrained optimization"
-  - "Optimize machine learning models"
-keywords: ["optimization", "gradient descent", "convex optimization", "machine learning", "algorithms"]
-lastUpdated: "2025-01-07"
----
-
-export const metadata = {
-  title: frontmatter.title,
-  description: frontmatter.description,
-  keywords: frontmatter.keywords,
-}
-
-# Optimization Theory
-
-Optimization is the mathematical discipline of finding the best solution from a set of available alternatives. In machine learning, optimization algorithms find model parameters that minimize a loss function.
-
-## Optimization Fundamentals
-
-An optimization problem seeks to minimize (or maximize) an **objective function** `f(x)` subject to constraints. In machine learning contexts:
-
-- **Loss function:** Measures how well model predictions match actual data
-- **Cost function:** Often includes regularization terms to prevent overfitting
-- **Parameters:** `x` represents model weights and biases
-
-### Common Loss Functions
-
-**Mean Squared Error (Regression):**
-```
-L(θ) = (1/2m) Σᵢ (hθ(xⁱ) - yⁱ)²
-```
-
-**Cross-entropy Loss (Classification):**
-```
-L(θ) = -(1/m) Σᵢ [yⁱ log(hθ(xⁱ)) + (1-yⁱ) log(1-hθ(xⁱ))]
-```
-
-## Gradient Descent
-
-Gradient descent is the most fundamental optimization algorithm in machine learning. It iteratively moves in the direction of steepest descent to find a function's minimum.
-
-### Basic Gradient Descent
-
-The gradient `∇f(x)` points in the direction of steepest increase. To minimize `f(x)`, we move in the opposite direction:
-
-```
-x_{t+1} = x_t - α∇f(x_t)
-```
-
-Where `α` is the **learning rate** that controls the step size.
-
-### Stochastic Gradient Descent
-
-**Batch Gradient Descent:** Uses entire dataset
-```
-θ_{t+1} = θ_t - α ∇_θ (1/m) Σᵢ L(hθ(xⁱ), yⁱ)
-```
-
-**Stochastic Gradient Descent:** Uses single example
-```
-θ_{t+1} = θ_t - α ∇_θ L(hθ(xⁱ), yⁱ)
-```
-
-**Mini-batch Gradient Descent:** Uses small batch of examples
-```
-θ_{t+1} = θ_t - α ∇_θ (1/|B|) Σᵢ∈B L(hθ(xⁱ), yⁱ)
-```
-
-## Advanced Optimizers
-
-Modern optimization algorithms improve upon basic gradient descent:
-
-**Momentum:** Accelerates gradients in consistent directions
-```
-v_t = βv_{t-1} + (1-β)∇f(x_t)
-x_{t+1} = x_t - αv_t
-```
-
-**Adam:** Combines momentum and adaptive learning rates
-```
-m_t = β₁m_{t-1} + (1-β₁)∇f(x_t)
-v_t = β₂v_{t-1} + (1-β₂)(∇f(x_t))²
-x_{t+1} = x_t - α(m̂_t/√(v̂_t + ε))
-```
-
-## Constrained Optimization
-
-Many optimization problems include constraints that limit the feasible solutions.
-
-### Lagrange Multipliers
-
-For problems with equality constraints, Lagrange multipliers convert constrained optimization into unconstrained optimization:
-
-**Problem:** Minimize `f(x)` subject to `g(x) = 0`
-
-**Lagrangian:**
-```
-L(x,λ) = f(x) + λg(x)
-```
-
-**Optimality Conditions:**
-```
-∇_x L(x,λ) = ∇f(x) + λ∇g(x) = 0
-∇_λ L(x,λ) = g(x) = 0
-```
-
-> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
-</file>
-
-<file path="content/probability/index.mdx">
----
-title: "Probability Theory"
-description: "Learn probability fundamentals, random variables, and distributions essential for machine learning."
-order: 3
-estimatedTime: "50 minutes"
-difficulty: "Beginner"
-prerequisites: ["Basic calculus", "Set theory"]
-learningObjectives:
-  - "Understand probability fundamentals"
-  - "Work with random variables and distributions"
-  - "Apply Bayes' theorem"
-  - "Model uncertainty in machine learning"
-keywords: ["probability theory", "random variables", "distributions", "bayes theorem", "machine learning"]
-lastUpdated: "2025-01-07"
----
-
-export const metadata = {
-  title: frontmatter.title,
-  description: frontmatter.description,
-  keywords: frontmatter.keywords,
-}
-
-# Probability Theory
-
-Probability theory provides the mathematical framework for reasoning under uncertainty. In machine learning, we use probability to model uncertainty in data, make predictions, and quantify confidence in our results.
-
-## Probability Fundamentals
-
-A **sample space** Ω is the set of all possible outcomes of an experiment. An **event** is a subset of the sample space.
-
-For example, when flipping a coin twice:
-- Sample space: `Ω = {HH, HT, TH, TT}`
-- Event "at least one head": `A = {HH, HT, TH}`
-
-### Probability Rules
-
-Probability assigns a number between 0 and 1 to each event. Key axioms include:
-
-```
-0 ≤ P(A) ≤ 1 for any event A
-P(Ω) = 1 (certainty)
-P(A ∪ B) = P(A) + P(B) - P(A ∩ B)
-```
-
-**Conditional Probability:** The probability of event A given that event B has occurred:
-
-```
-P(A|B) = P(A ∩ B) / P(B), provided P(B) > 0
-```
-
-## Probability Distributions
-
-Probability distributions describe how probability is distributed over the possible values of a random variable.
-
-### Discrete Distributions
-
-**Bernoulli Distribution:** Models a single trial with success probability p:
-
-```
-P(X = k) = p^k × (1-p)^(1-k), k ∈ {0,1}
-```
-
-**Binomial Distribution:** Models the number of successes in n independent Bernoulli trials:
-
-```
-P(X = k) = C(n,k) × p^k × (1-p)^(n-k)
-```
-
-### Normal Distribution
-
-The normal (Gaussian) distribution is the most important distribution in statistics and machine learning:
-
-```
-f(x) = (1/(σ√(2π))) × e^(-(x-μ)²/(2σ²))
-```
-
-## Bayes' Theorem
-
-Bayes' theorem is fundamental to machine learning, providing a way to update our beliefs about hypotheses as we observe new evidence:
-
-```
-P(H|E) = P(E|H) × P(H) / P(E)
-```
-
-Where:
-- `P(H|E)` is the posterior probability (updated belief)
-- `P(E|H)` is the likelihood (how well hypothesis explains evidence)
-- `P(H)` is the prior probability (initial belief)
-- `P(E)` is the evidence (normalizing constant)
-
-> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
-</file>
-
-<file path="content/statistics/index.mdx">
----
-title: "Statistics for Machine Learning"
-description: "Statistical methods, hypothesis testing, and inference techniques used in machine learning."
-order: 4
-estimatedTime: "35 minutes"
-difficulty: "Intermediate"
-prerequisites: ["Probability theory", "Basic calculus"]
-learningObjectives:
-  - "Perform statistical inference"
-  - "Understand hypothesis testing"
-  - "Apply statistical methods to data"
-  - "Evaluate model performance statistically"
-keywords: ["statistics", "hypothesis testing", "confidence intervals", "regression analysis", "machine learning"]
-lastUpdated: "2025-01-07"
----
-
-export const metadata = {
-  title: frontmatter.title,
-  description: frontmatter.description,
-  keywords: frontmatter.keywords,
-}
-
-# Statistics for Machine Learning
-
-Statistical methods provide the tools for making inferences about populations from samples, hypothesis testing, and evaluating the performance of machine learning models.
-
-## Descriptive Statistics
-
-Descriptive statistics summarize and describe the main features of a dataset.
-
-**Measures of Central Tendency:**
-- **Mean:** `μ = (1/n) Σᵢ xᵢ` - the average value
-- **Median:** The middle value when data is ordered
-- **Mode:** The most frequently occurring value
-
-**Measures of Spread:**
-- **Variance:** `σ² = (1/n) Σᵢ (xᵢ - μ)²`
-- **Standard Deviation:** `σ = √(σ²)`
-- **Range:** Maximum - Minimum
-
-## Statistical Inference
-
-Statistical inference allows us to make conclusions about a population based on a sample.
-
-### Confidence Intervals
-
-A confidence interval provides a range of plausible values for a population parameter. For a sample mean with known population standard deviation:
-
-```
-CI = x̄ ± z(α/2) × (σ/√n)
-```
-
-### Hypothesis Testing
-
-Hypothesis testing is a statistical method for making decisions about population parameters based on sample data.
-
-**The Process:**
-1. State null hypothesis H₀ and alternative hypothesis H₁
-2. Choose significance level α (typically 0.05)
-3. Calculate test statistic
-4. Determine p-value or compare with critical value
-5. Make decision: reject or fail to reject H₀
-
-**One-sample t-test:** Tests whether a sample mean differs from a hypothesized value:
-
-```
-t = (x̄ - μ₀) / (s/√n)
-```
-
-## Regression Analysis
-
-Regression analysis is used to model the relationship between a dependent variable and one or more independent variables.
-
-### Linear Regression
-
-Linear regression models the relationship between variables using a linear equation:
-
-```
-y = β₀ + β₁x + ε
-```
-
-Where:
-- `y` is the dependent variable
-- `x` is the independent variable
-- `β₀` is the y-intercept
-- `β₁` is the slope
-- `ε` is the error term
-
-> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
-</file>
-
-<file path="lib/utils/contentLoader.ts">
-import { ChapterFrontmatter, ContentMetadata } from '@/types/frontmatter'
-
-/**
- * Parse reading time from estimated time string
- */
-export function parseReadingTime(estimatedTime: string): number {
-  const match = estimatedTime.match(/(\d+)/)
-  return match ? parseInt(match[1], 10) : 0
-}
-
-/**
- * Convert frontmatter to content metadata
- */
-export function frontmatterToMetadata(frontmatter: ChapterFrontmatter): ContentMetadata {
-  return {
-    title: frontmatter.title,
-    description: frontmatter.description,
-    slug: frontmatter.slug || '',
-    order: frontmatter.order,
-    estimatedTime: frontmatter.estimatedTime,
-    difficulty: frontmatter.difficulty,
-    prerequisites: frontmatter.prerequisites,
-    learningObjectives: frontmatter.learningObjectives,
-    lastUpdated: frontmatter.lastUpdated
-  }
-}
-
-/**
- * Validate required frontmatter fields
- */
-export function validateFrontmatter(frontmatter: Partial<ChapterFrontmatter>): ChapterFrontmatter {
-  const required = ['title', 'description', 'order', 'estimatedTime', 'difficulty', 'prerequisites', 'learningObjectives']
-  
-  for (const field of required) {
-    if (!(field in frontmatter) || frontmatter[field as keyof ChapterFrontmatter] === undefined) {
-      throw new Error(`Missing required frontmatter field: ${field}`)
-    }
-  }
-  
-  return frontmatter as ChapterFrontmatter
-}
-
-/**
- * Calculate word count from content string
- */
-export function calculateWordCount(content: string): number {
-  return content
-    .replace(/[^\w\s]/g, '')
-    .split(/\s+/)
-    .filter(word => word.length > 0)
-    .length
-}
-
-/**
- * Estimate reading time based on word count
- */
-export function estimateReadingTime(wordCount: number, wordsPerMinute: number = 200): number {
-  return Math.ceil(wordCount / wordsPerMinute)
-}
-
-/**
- * Generate excerpt from content
- */
-export function generateExcerpt(content: string, maxLength: number = 160): string {
-  const plainText = content
-    .replace(/[#*`]/g, '') // Remove markdown formatting
-    .replace(/\n/g, ' ')   // Replace newlines with spaces
-    .trim()
-  
-  if (plainText.length <= maxLength) {
-    return plainText
-  }
-  
-  return plainText.slice(0, maxLength).replace(/\s+\S*$/, '') + '...'
-}
-
-/**
- * Slugify text for URLs
- */
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/--+/g, '-')
-    .trim()
-}
-
-/**
- * Format date for display
- */
-export function formatDate(dateString: string): string {
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  } catch {
-    return dateString
-  }
-}
-
-/**
- * Error handling for content loading
- */
-export class ContentLoadError extends Error {
-  constructor(
-    message: string,
-    public readonly contentPath: string,
-    public readonly originalError?: Error
-  ) {
-    super(message)
-    this.name = 'ContentLoadError'
-  }
-}
-
-/**
- * Safe content loader with error handling
- */
-export async function safeLoadContent<T>(
-  loader: () => Promise<T>,
-  contentPath: string
-): Promise<T> {
-  try {
-    return await loader()
-  } catch (error) {
-    throw new ContentLoadError(
-      `Failed to load content from ${contentPath}`,
-      contentPath,
-      error instanceof Error ? error : new Error(String(error))
-    )
-  }
-}
-</file>
-
-<file path="lib/utils/loadMDX.ts">
-import { ChapterFrontmatter, MDXMetadata } from '@/types/frontmatter'
-import { ContentLoadError, safeLoadContent } from './contentLoader'
-
-/**
- * Dynamically import MDX content
- */
-export async function loadMDXContent(chapterSlug: string): Promise<MDXMetadata> {
-  return safeLoadContent(async () => {
-    let content: any
-    let frontmatter: ChapterFrontmatter
-    
-    try {
-      // Dynamic import based on chapter slug
-      switch (chapterSlug) {
-        case 'linear-algebra':
-          content = await import('@/content/linear-algebra/index.mdx')
-          break
-        case 'matrices':
-          content = await import('@/content/matrices/index.mdx')
-          break
-        case 'probability':
-          content = await import('@/content/probability/index.mdx')
-          break
-        case 'statistics':
-          content = await import('@/content/statistics/index.mdx')
-          break
-        case 'optimization':
-          content = await import('@/content/optimization/index.mdx')
-          break
-        default:
-          throw new Error(`Unknown chapter: ${chapterSlug}`)
-      }
-
-      // Extract frontmatter from the MDX module
-      frontmatter = content.frontmatter || {}
-      
-      // Validate required frontmatter fields
-      if (!frontmatter.title || !frontmatter.description) {
-        throw new Error('Missing required frontmatter fields: title and description')
-      }
-
-      return {
-        frontmatter,
-        content: content.default,
-      }
-    } catch (error) {
-      throw new Error(`Failed to load MDX content for ${chapterSlug}: ${error}`)
-    }
-  }, `content/${chapterSlug}/index.mdx`)
-}
-
-/**
- * Get all available chapter slugs
- */
-export function getAvailableChapters(): string[] {
-  return [
-    'linear-algebra',
-    'matrices', 
-    'probability',
-    'statistics',
-    'optimization'
-  ]
-}
-
-/**
- * Check if chapter exists
- */
-export function isValidChapter(slug: string): boolean {
-  return getAvailableChapters().includes(slug)
-}
-
-/**
- * Get chapter order for navigation
- */
-export function getChapterOrder(slug: string): number {
-  const order = {
-    'linear-algebra': 1,
-    'matrices': 2,
-    'probability': 3,
-    'statistics': 4,
-    'optimization': 5
-  }
-  return order[slug as keyof typeof order] || 0
-}
-
-/**
- * Get next chapter slug
- */
-export function getNextChapter(currentSlug: string): string | null {
-  const chapters = getAvailableChapters()
-  const currentIndex = chapters.indexOf(currentSlug)
-  
-  if (currentIndex === -1 || currentIndex === chapters.length - 1) {
-    return null
-  }
-  
-  return chapters[currentIndex + 1]
-}
-
-/**
- * Get previous chapter slug
- */
-export function getPreviousChapter(currentSlug: string): string | null {
-  const chapters = getAvailableChapters()
-  const currentIndex = chapters.indexOf(currentSlug)
-  
-  if (currentIndex <= 0) {
-    return null
-  }
-  
-  return chapters[currentIndex - 1]
-}
-</file>
-
-<file path="mdx-components.tsx">
-import type { MDXComponents } from 'mdx/types'
-import { H1, H2, H3, H4, H5, H6, P, MathBlock, InlineMath } from '@/lib/utils/typography'
-import Link from 'next/link'
-import Image from 'next/image'
-
-export function useMDXComponents(components: MDXComponents): MDXComponents {
-  return {
-    // Headings with proper hierarchy and styling
-    h1: ({ children, ...props }) => <H1 {...props}>{children}</H1>,
-    h2: ({ children, ...props }) => <H2 {...props}>{children}</H2>,
-    h3: ({ children, ...props }) => <H3 {...props}>{children}</H3>,
-    h4: ({ children, ...props }) => <H4 {...props}>{children}</H4>,
-    h5: ({ children, ...props }) => <H5 {...props}>{children}</H5>,
-    h6: ({ children, ...props }) => <H6 {...props}>{children}</H6>,
-    
-    // Paragraphs with proper typography
-    p: ({ children, ...props }) => <P {...props}>{children}</P>,
-    
-    // Links with Next.js optimization
-    a: ({ href, children, ...props }) => {
-      if (href?.startsWith('/')) {
-        return (
-          <Link href={href} {...props}>
-            {children}
-          </Link>
-        )
-      }
-      return (
-        <a 
-          href={href} 
-          target={href?.startsWith('http') ? '_blank' : undefined}
-          rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-          {...props}
-        >
-          {children}
-        </a>
-      )
-    },
-    
-    // Images with Next.js optimization
-    img: ({ src, alt, ...props }) => (
-      <Image
-        src={src || ''}
-        alt={alt || ''}
-        width={800}
-        height={400}
-        className="rounded-lg border border-border my-6"
-        {...props}
-      />
-    ),
-    
-    // Lists with proper styling
-    ul: ({ children, ...props }) => (
-      <ul className="list-disc pl-6 mb-4 space-y-1" {...props}>
-        {children}
-      </ul>
-    ),
-    ol: ({ children, ...props }) => (
-      <ol className="list-decimal pl-6 mb-4 space-y-1" {...props}>
-        {children}
-      </ol>
-    ),
-    li: ({ children, ...props }) => (
-      <li className="text-foreground leading-relaxed" {...props}>
-        {children}
-      </li>
-    ),
-    
-    // Code blocks and inline code
-    code: ({ children, className, ...props }) => {
-      const isInline = !className
-      if (isInline) {
-        return <InlineMath {...props}>{children}</InlineMath>
-      }
-      return (
-        <code 
-          className="block p-4 bg-muted rounded-lg border border-border overflow-x-auto font-mono text-sm"
-          {...props}
-        >
-          {children}
-        </code>
-      )
-    },
-    
-    pre: ({ children, ...props }) => (
-      <MathBlock {...props}>
-        {children}
-      </MathBlock>
-    ),
-    
-    // Blockquotes
-    blockquote: ({ children, ...props }) => (
-      <blockquote 
-        className="border-l-4 border-border pl-4 italic text-muted-foreground my-6"
-        {...props}
-      >
-        {children}
-      </blockquote>
-    ),
-    
-    // Tables
-    table: ({ children, ...props }) => (
-      <div className="overflow-x-auto my-6">
-        <table 
-          className="w-full border-collapse border border-border"
-          {...props}
-        >
-          {children}
-        </table>
-      </div>
-    ),
-    th: ({ children, ...props }) => (
-      <th 
-        className="border border-border px-4 py-2 bg-muted font-semibold text-left"
-        {...props}
-      >
-        {children}
-      </th>
-    ),
-    td: ({ children, ...props }) => (
-      <td 
-        className="border border-border px-4 py-2"
-        {...props}
-      >
-        {children}
-      </td>
-    ),
-    
-    // Horizontal rule
-    hr: (props) => (
-      <hr className="border-0 border-t border-border my-8" {...props} />
-    ),
-    
-    // Allow component overrides
-    ...components,
-  }
-}
-</file>
-
-<file path="types/frontmatter.ts">
-export interface ChapterFrontmatter {
-  title: string
-  description: string
-  order: number
-  estimatedTime: string
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
-  prerequisites: string[]
-  learningObjectives: string[]
-  keywords?: string[]
-  lastUpdated?: string
-  author?: string
-  slug?: string
-}
-
-export interface SectionFrontmatter {
-  title: string
-  order: number
-  estimatedTime?: string
-  description?: string
-}
-
-export interface MDXMetadata {
-  frontmatter: ChapterFrontmatter
-  content: React.ComponentType
-  readingTime?: number
-  wordCount?: number
-}
-
-export interface ContentMetadata {
-  title: string
-  description: string
-  slug: string
-  order: number
-  estimatedTime: string
-  difficulty: string
-  prerequisites: string[]
-  learningObjectives: string[]
-  lastUpdated?: string
-}
-</file>
-
-<file path=".eslintrc.json">
-{
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript"
-  ],
-  "rules": {
-    "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "prefer-const": "error",
-    "react-hooks/exhaustive-deps": "warn"
-  }
-}
-</file>
-
-<file path="app/linear-algebra/page.tsx">
-import type { Metadata } from 'next'
-import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { getChapterBySlug } from '@/lib/data/chapters'
-import { getChapterNavigation } from '@/lib/utils/navigation'
-import { notFound } from 'next/navigation'
-import { SafeMDXContent } from '@/components/content/MDXContent'
-import LinearAlgebraContent from '@/content/linear-algebra/index.mdx'
-
-export const metadata: Metadata = {
-  title: 'Linear Algebra | Interactive ML Mathematics',
-  description: 'Learn vectors, matrices, and linear transformations - the mathematical foundation of machine learning algorithms.',
-  keywords: ['linear algebra', 'vectors', 'matrices', 'eigenvalues', 'machine learning', 'mathematics'],
-}
-
-export default function LinearAlgebraPage() {
-  const chapter = getChapterBySlug('linear-algebra')
-  
-  if (!chapter) {
-    notFound()
-  }
-  
-  const navigation = getChapterNavigation('linear-algebra')
-  
-  return (
-    <ChapterLayout
-      chapter={chapter}
-      previousChapter={navigation?.previous}
-      nextChapter={navigation?.next}
-    >
-      <SafeMDXContent>
-        <LinearAlgebraContent />
-      </SafeMDXContent>
-    </ChapterLayout>
-  )
-}
-</file>
-
-<file path="app/matrices/page.tsx">
-import type { Metadata } from 'next'
-import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { getChapterBySlug } from '@/lib/data/chapters'
-import { getChapterNavigation } from '@/lib/utils/navigation'
-import { notFound } from 'next/navigation'
-import { SafeMDXContent } from '@/components/content/MDXContent'
-import MatricesContent from '@/content/matrices/index.mdx'
-
-export const metadata: Metadata = {
-  title: 'Advanced Matrix Theory | Interactive ML Mathematics',
-  description: 'Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms.',
-  keywords: ['matrix theory', 'SVD', 'matrix decomposition', 'PCA', 'machine learning', 'linear algebra'],
-}
-
-export default function MatricesPage() {
-  const chapter = getChapterBySlug('matrices')
-  
-  if (!chapter) {
-    notFound()
-  }
-  
-  const navigation = getChapterNavigation('matrices')
-  
-  return (
-    <ChapterLayout
-      chapter={chapter}
-      previousChapter={navigation?.previous}
-      nextChapter={navigation?.next}
-    >
-      <SafeMDXContent>
-        <MatricesContent />
-      </SafeMDXContent>
-    </ChapterLayout>
-  )
-}
-</file>
-
-<file path="app/not-found.tsx">
-import Link from 'next/link'
-
-export default function NotFound() {
-  return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-2xl mx-auto text-center">
-        <h1 className="text-6xl font-bold mb-4">404</h1>
-        <h2 className="text-2xl font-semibold mb-6">Page Not Found</h2>
-        <p className="text-muted-foreground mb-8">
-          The mathematical concept you're looking for doesn't exist in our current dimension.
-        </p>
-        <Link 
-          href="/" 
-          className="inline-flex items-center px-6 py-3 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity"
-        >
-          Return Home
-        </Link>
-      </div>
-    </div>
-  )
-}
-</file>
-
-<file path="app/optimization/page.tsx">
-import type { Metadata } from 'next'
-import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { getChapterBySlug } from '@/lib/data/chapters'
-import { getChapterNavigation } from '@/lib/utils/navigation'
-import { notFound } from 'next/navigation'
-import { SafeMDXContent } from '@/components/content/MDXContent'
-import OptimizationContent from '@/content/optimization/index.mdx'
-
-export const metadata = {
-  title: 'Optimization Theory | Interactive ML Mathematics',
-  description: 'Mathematical optimization techniques including gradient descent and algorithms used to train machine learning models.',
-  keywords: ['optimization', 'gradient descent', 'convex optimization', 'machine learning', 'algorithms'],
-}
-
-export default function OptimizationPage() {
-  const chapter = getChapterBySlug('optimization')
-  
-  if (!chapter) {
-    notFound()
-  }
-  
-  const navigation = getChapterNavigation('optimization')
-  
-  return (
-    <ChapterLayout
-      chapter={chapter}
-      previousChapter={navigation?.previous}
-      nextChapter={navigation?.next}
-    >
-      <SafeMDXContent>
-        <OptimizationContent />
-      </SafeMDXContent>
-    </ChapterLayout>
-  )
-}
-</file>
-
-<file path="app/probability/page.tsx">
-import type { Metadata } from 'next'
-import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { getChapterBySlug } from '@/lib/data/chapters'
-import { getChapterNavigation } from '@/lib/utils/navigation'
-import { notFound } from 'next/navigation'
-import { SafeMDXContent } from '@/components/content/MDXContent'
-import ProbabilityContent from '@/content/probability/index.mdx'
-
-export const metadata: Metadata = {
-  title: 'Probability Theory | Interactive ML Mathematics',
-  description: 'Learn probability fundamentals, random variables, and distributions essential for machine learning.',
-  keywords: ['probability theory', 'random variables', 'distributions', 'bayes theorem', 'machine learning'],
-}
-
-export default function ProbabilityPage() {
-  const chapter = getChapterBySlug('probability')
-  
-  if (!chapter) {
-    notFound()
-  }
-  
-  const navigation = getChapterNavigation('probability')
-  
-  return (
-    <ChapterLayout
-      chapter={chapter}
-      previousChapter={navigation?.previous}
-      nextChapter={navigation?.next}
-    >
-      <SafeMDXContent>
-        <ProbabilityContent />
-      </SafeMDXContent>
-    </ChapterLayout>
-  )
-}
-</file>
-
-<file path="app/statistics/page.tsx">
-import type { Metadata } from 'next'
-import { ChapterLayout } from '@/components/layout/ChapterLayout'
-import { getChapterBySlug } from '@/lib/data/chapters'
-import { getChapterNavigation } from '@/lib/utils/navigation'
-import { notFound } from 'next/navigation'
-import { SafeMDXContent } from '@/components/content/MDXContent'
-import StatisticsContent from '@/content/statistics/index.mdx'
-
-export const metadata: Metadata = {
-  title: 'Statistics for ML | Interactive ML Mathematics',
-  description: 'Statistical methods, hypothesis testing, and inference techniques used in machine learning.',
-  keywords: ['statistics', 'hypothesis testing', 'confidence intervals', 'regression analysis', 'machine learning'],
-}
-
-export default function StatisticsPage() {
-  const chapter = getChapterBySlug('statistics')
-  
-  if (!chapter) {
-    notFound()
-  }
-  
-  const navigation = getChapterNavigation('statistics')
-  
-  return (
-    <ChapterLayout
-      chapter={chapter}
-      previousChapter={navigation?.previous}
-      nextChapter={navigation?.next}
-    >
-      <SafeMDXContent>
-        <StatisticsContent />
-      </SafeMDXContent>
-    </ChapterLayout>
   )
 }
 </file>
@@ -2084,6 +1208,480 @@ export function Container({
 }
 </file>
 
+<file path="content/linear-algebra/index.mdx">
+---
+title: "Linear Algebra Fundamentals"
+description: "Learn vectors, matrices, and linear transformations - the mathematical foundation of machine learning algorithms."
+order: 1
+estimatedTime: "45 minutes"
+difficulty: "Beginner"
+prerequisites: ["Basic algebra", "High school mathematics"]
+learningObjectives:
+  - "Understand vector spaces and operations"
+  - "Master matrix multiplication and properties"
+  - "Learn eigenvalues and eigenvectors"
+  - "Apply linear transformations to data"
+keywords: ["linear algebra", "vectors", "matrices", "eigenvalues", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Linear Algebra Fundamentals
+
+Linear algebra forms the mathematical foundation of machine learning. At its core are vectors - mathematical objects that represent both magnitude and direction.
+
+## Vectors and Vector Spaces
+
+A vector is an ordered collection of numbers. In machine learning, we typically work with column vectors. For example, a 3-dimensional vector can be written as:
+
+```
+v = [v₁, v₂, v₃]ᵀ
+```
+
+Where `v₁`, `v₂`, and `v₃` are the components of the vector.
+
+### Vector Operations
+
+Several fundamental operations can be performed on vectors:
+
+**Vector Addition:** When we add two vectors of the same dimension, we add their corresponding components:
+
+```
+a + b = [a₁ + b₁, a₂ + b₂, a₃ + b₃]ᵀ
+```
+
+**Scalar Multiplication:** Multiplying a vector by a scalar scales all components:
+
+```
+c · v = [c·v₁, c·v₂, c·v₃]ᵀ
+```
+
+**Dot Product:** The dot product of two vectors produces a scalar:
+
+```
+a · b = a₁b₁ + a₂b₂ + a₃b₃
+```
+
+## Matrix Operations
+
+Matrices are rectangular arrays of numbers that can be thought of as collections of vectors. In machine learning, matrices represent datasets, transformations, and model parameters.
+
+### Matrix Fundamentals
+
+A matrix A with m rows and n columns is denoted as `A ∈ ℝᵐˣⁿ`. Each element is accessed using row and column indices: `A[i,j]` or `aᵢⱼ`.
+
+### Matrix Multiplication
+
+Matrix multiplication is fundamental to many machine learning algorithms. For matrices `A ∈ ℝᵐˣⁿ` and `B ∈ ℝⁿˣᵖ`, their product `C = AB` has dimensions `m × p`.
+
+## Eigenvalues and Eigenvectors
+
+Eigenvalues and eigenvectors reveal important properties of linear transformations and are essential for understanding dimensionality reduction techniques.
+
+For a square matrix A, an eigenvector v and its corresponding eigenvalue λ satisfy:
+
+```
+Av = λv
+```
+
+This concept is crucial for Principal Component Analysis (PCA) and understanding data structure.
+
+> **Note:** This is placeholder content. The actual mathematical content will be written separately with proper LaTeX rendering and interactive visualizations.
+</file>
+
+<file path="content/matrices/index.mdx">
+---
+title: "Advanced Matrix Theory"
+description: "Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms."
+order: 2
+estimatedTime: "40 minutes"
+difficulty: "Intermediate"
+prerequisites: ["Linear Algebra basics", "Vector operations"]
+learningObjectives:
+  - "Master advanced matrix operations"
+  - "Understand matrix decompositions (SVD, LU, QR)"
+  - "Apply matrix techniques to dimensionality reduction"
+  - "Solve systems of linear equations"
+keywords: ["matrix theory", "SVD", "matrix decomposition", "PCA", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Advanced Matrix Theory
+
+Building on basic linear algebra, this chapter explores advanced matrix operations and decompositions that are fundamental to machine learning algorithms.
+
+## Matrix Decomposition
+
+Matrix decomposition is the process of breaking down a matrix into simpler, more manageable components. These decompositions are fundamental to many machine learning algorithms.
+
+### Singular Value Decomposition (SVD)
+
+The Singular Value Decomposition is one of the most important matrix factorizations in machine learning. For any matrix `A ∈ ℝᵐˣⁿ`, SVD decomposes it as:
+
+```
+A = UΣVᵀ
+```
+
+Where:
+- `U ∈ ℝᵐˣᵐ` is an orthogonal matrix (left singular vectors)
+- `Σ ∈ ℝᵐˣⁿ` is a diagonal matrix of singular values
+- `V ∈ ℝⁿˣⁿ` is an orthogonal matrix (right singular vectors)
+
+SVD reveals the intrinsic dimensionality of data and is the mathematical foundation of Principal Component Analysis (PCA).
+
+### LU Decomposition
+
+LU decomposition factors a matrix into the product of a lower triangular matrix L and an upper triangular matrix U:
+
+```
+A = LU
+```
+
+This decomposition is particularly useful for solving systems of linear equations efficiently.
+
+## Applications in Machine Learning
+
+Matrix decompositions have direct applications in many machine learning techniques.
+
+### Principal Component Analysis
+
+PCA uses eigendecomposition or SVD to find the principal components of data - the directions of maximum variance.
+
+For a data matrix X, PCA works with the covariance matrix:
+
+```
+C = (1/(n-1))XᵀX
+```
+
+### Linear Regression
+
+Linear regression seeks to find the best-fitting line through data points. The normal equation solution uses matrix operations:
+
+```
+θ = (XᵀX)⁻¹Xᵀy
+```
+
+Where X is the feature matrix, y is the target vector, and θ are the model parameters.
+
+> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
+</file>
+
+<file path="content/optimization/index.mdx">
+---
+title: "Optimization Theory"
+description: "Mathematical optimization techniques including gradient descent and algorithms used to train machine learning models."
+order: 5
+estimatedTime: "55 minutes"
+difficulty: "Advanced"
+prerequisites: ["Calculus", "Linear algebra", "Vector operations"]
+learningObjectives:
+  - "Understand optimization fundamentals"
+  - "Master gradient descent algorithms"
+  - "Apply constrained optimization"
+  - "Optimize machine learning models"
+keywords: ["optimization", "gradient descent", "convex optimization", "machine learning", "algorithms"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Optimization Theory
+
+Optimization is the mathematical discipline of finding the best solution from a set of available alternatives. In machine learning, optimization algorithms find model parameters that minimize a loss function.
+
+## Optimization Fundamentals
+
+An optimization problem seeks to minimize (or maximize) an **objective function** `f(x)` subject to constraints. In machine learning contexts:
+
+- **Loss function:** Measures how well model predictions match actual data
+- **Cost function:** Often includes regularization terms to prevent overfitting
+- **Parameters:** `x` represents model weights and biases
+
+### Common Loss Functions
+
+**Mean Squared Error (Regression):**
+```
+L(θ) = (1/2m) Σᵢ (hθ(xⁱ) - yⁱ)²
+```
+
+**Cross-entropy Loss (Classification):**
+```
+L(θ) = -(1/m) Σᵢ [yⁱ log(hθ(xⁱ)) + (1-yⁱ) log(1-hθ(xⁱ))]
+```
+
+## Gradient Descent
+
+Gradient descent is the most fundamental optimization algorithm in machine learning. It iteratively moves in the direction of steepest descent to find a function's minimum.
+
+### Basic Gradient Descent
+
+The gradient `∇f(x)` points in the direction of steepest increase. To minimize `f(x)`, we move in the opposite direction:
+
+```
+x_{t+1} = x_t - α∇f(x_t)
+```
+
+Where `α` is the **learning rate** that controls the step size.
+
+### Stochastic Gradient Descent
+
+**Batch Gradient Descent:** Uses entire dataset
+```
+θ_{t+1} = θ_t - α ∇_θ (1/m) Σᵢ L(hθ(xⁱ), yⁱ)
+```
+
+**Stochastic Gradient Descent:** Uses single example
+```
+θ_{t+1} = θ_t - α ∇_θ L(hθ(xⁱ), yⁱ)
+```
+
+**Mini-batch Gradient Descent:** Uses small batch of examples
+```
+θ_{t+1} = θ_t - α ∇_θ (1/|B|) Σᵢ∈B L(hθ(xⁱ), yⁱ)
+```
+
+## Advanced Optimizers
+
+Modern optimization algorithms improve upon basic gradient descent:
+
+**Momentum:** Accelerates gradients in consistent directions
+```
+v_t = βv_{t-1} + (1-β)∇f(x_t)
+x_{t+1} = x_t - αv_t
+```
+
+**Adam:** Combines momentum and adaptive learning rates
+```
+m_t = β₁m_{t-1} + (1-β₁)∇f(x_t)
+v_t = β₂v_{t-1} + (1-β₂)(∇f(x_t))²
+x_{t+1} = x_t - α(m̂_t/√(v̂_t + ε))
+```
+
+## Constrained Optimization
+
+Many optimization problems include constraints that limit the feasible solutions.
+
+### Lagrange Multipliers
+
+For problems with equality constraints, Lagrange multipliers convert constrained optimization into unconstrained optimization:
+
+**Problem:** Minimize `f(x)` subject to `g(x) = 0`
+
+**Lagrangian:**
+```
+L(x,λ) = f(x) + λg(x)
+```
+
+**Optimality Conditions:**
+```
+∇_x L(x,λ) = ∇f(x) + λ∇g(x) = 0
+∇_λ L(x,λ) = g(x) = 0
+```
+
+> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
+</file>
+
+<file path="content/probability/index.mdx">
+---
+title: "Probability Theory"
+description: "Learn probability fundamentals, random variables, and distributions essential for machine learning."
+order: 3
+estimatedTime: "50 minutes"
+difficulty: "Beginner"
+prerequisites: ["Basic calculus", "Set theory"]
+learningObjectives:
+  - "Understand probability fundamentals"
+  - "Work with random variables and distributions"
+  - "Apply Bayes' theorem"
+  - "Model uncertainty in machine learning"
+keywords: ["probability theory", "random variables", "distributions", "bayes theorem", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Probability Theory
+
+Probability theory provides the mathematical framework for reasoning under uncertainty. In machine learning, we use probability to model uncertainty in data, make predictions, and quantify confidence in our results.
+
+## Probability Fundamentals
+
+A **sample space** Ω is the set of all possible outcomes of an experiment. An **event** is a subset of the sample space.
+
+For example, when flipping a coin twice:
+- Sample space: `Ω = {HH, HT, TH, TT}`
+- Event "at least one head": `A = {HH, HT, TH}`
+
+### Probability Rules
+
+Probability assigns a number between 0 and 1 to each event. Key axioms include:
+
+```
+0 ≤ P(A) ≤ 1 for any event A
+P(Ω) = 1 (certainty)
+P(A ∪ B) = P(A) + P(B) - P(A ∩ B)
+```
+
+**Conditional Probability:** The probability of event A given that event B has occurred:
+
+```
+P(A|B) = P(A ∩ B) / P(B), provided P(B) > 0
+```
+
+## Probability Distributions
+
+Probability distributions describe how probability is distributed over the possible values of a random variable.
+
+### Discrete Distributions
+
+**Bernoulli Distribution:** Models a single trial with success probability p:
+
+```
+P(X = k) = p^k × (1-p)^(1-k), k ∈ {0,1}
+```
+
+**Binomial Distribution:** Models the number of successes in n independent Bernoulli trials:
+
+```
+P(X = k) = C(n,k) × p^k × (1-p)^(n-k)
+```
+
+### Normal Distribution
+
+The normal (Gaussian) distribution is the most important distribution in statistics and machine learning:
+
+```
+f(x) = (1/(σ√(2π))) × e^(-(x-μ)²/(2σ²))
+```
+
+## Bayes' Theorem
+
+Bayes' theorem is fundamental to machine learning, providing a way to update our beliefs about hypotheses as we observe new evidence:
+
+```
+P(H|E) = P(E|H) × P(H) / P(E)
+```
+
+Where:
+- `P(H|E)` is the posterior probability (updated belief)
+- `P(E|H)` is the likelihood (how well hypothesis explains evidence)
+- `P(H)` is the prior probability (initial belief)
+- `P(E)` is the evidence (normalizing constant)
+
+> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
+</file>
+
+<file path="content/statistics/index.mdx">
+---
+title: "Statistics for Machine Learning"
+description: "Statistical methods, hypothesis testing, and inference techniques used in machine learning."
+order: 4
+estimatedTime: "35 minutes"
+difficulty: "Intermediate"
+prerequisites: ["Probability theory", "Basic calculus"]
+learningObjectives:
+  - "Perform statistical inference"
+  - "Understand hypothesis testing"
+  - "Apply statistical methods to data"
+  - "Evaluate model performance statistically"
+keywords: ["statistics", "hypothesis testing", "confidence intervals", "regression analysis", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Statistics for Machine Learning
+
+Statistical methods provide the tools for making inferences about populations from samples, hypothesis testing, and evaluating the performance of machine learning models.
+
+## Descriptive Statistics
+
+Descriptive statistics summarize and describe the main features of a dataset.
+
+**Measures of Central Tendency:**
+- **Mean:** `μ = (1/n) Σᵢ xᵢ` - the average value
+- **Median:** The middle value when data is ordered
+- **Mode:** The most frequently occurring value
+
+**Measures of Spread:**
+- **Variance:** `σ² = (1/n) Σᵢ (xᵢ - μ)²`
+- **Standard Deviation:** `σ = √(σ²)`
+- **Range:** Maximum - Minimum
+
+## Statistical Inference
+
+Statistical inference allows us to make conclusions about a population based on a sample.
+
+### Confidence Intervals
+
+A confidence interval provides a range of plausible values for a population parameter. For a sample mean with known population standard deviation:
+
+```
+CI = x̄ ± z(α/2) × (σ/√n)
+```
+
+### Hypothesis Testing
+
+Hypothesis testing is a statistical method for making decisions about population parameters based on sample data.
+
+**The Process:**
+1. State null hypothesis H₀ and alternative hypothesis H₁
+2. Choose significance level α (typically 0.05)
+3. Calculate test statistic
+4. Determine p-value or compare with critical value
+5. Make decision: reject or fail to reject H₀
+
+**One-sample t-test:** Tests whether a sample mean differs from a hypothesized value:
+
+```
+t = (x̄ - μ₀) / (s/√n)
+```
+
+## Regression Analysis
+
+Regression analysis is used to model the relationship between a dependent variable and one or more independent variables.
+
+### Linear Regression
+
+Linear regression models the relationship between variables using a linear equation:
+
+```
+y = β₀ + β₁x + ε
+```
+
+Where:
+- `y` is the dependent variable
+- `x` is the independent variable
+- `β₀` is the y-intercept
+- `β₁` is the slope
+- `ε` is the error term
+
+> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
+</file>
+
 <file path="lib/data/chapters.ts">
 import { Chapter } from '@/types/content'
 
@@ -2368,6 +1966,259 @@ import { type ClassValue, clsx } from 'clsx'
 
 export function cn(...inputs: ClassValue[]) {
   return clsx(inputs)
+}
+</file>
+
+<file path="lib/utils/contentLoader.ts">
+import { ChapterFrontmatter, ContentMetadata } from '@/types/frontmatter'
+
+/**
+ * Parse reading time from estimated time string
+ */
+export function parseReadingTime(estimatedTime: string): number {
+  const match = estimatedTime.match(/(\d+)/)
+  return match ? parseInt(match[1], 10) : 0
+}
+
+/**
+ * Convert frontmatter to content metadata
+ */
+export function frontmatterToMetadata(frontmatter: ChapterFrontmatter): ContentMetadata {
+  return {
+    title: frontmatter.title,
+    description: frontmatter.description,
+    slug: frontmatter.slug || '',
+    order: frontmatter.order,
+    estimatedTime: frontmatter.estimatedTime,
+    difficulty: frontmatter.difficulty,
+    prerequisites: frontmatter.prerequisites,
+    learningObjectives: frontmatter.learningObjectives,
+    lastUpdated: frontmatter.lastUpdated
+  }
+}
+
+/**
+ * Validate required frontmatter fields
+ */
+export function validateFrontmatter(frontmatter: Partial<ChapterFrontmatter>): ChapterFrontmatter {
+  const required = ['title', 'description', 'order', 'estimatedTime', 'difficulty', 'prerequisites', 'learningObjectives']
+  
+  for (const field of required) {
+    if (!(field in frontmatter) || frontmatter[field as keyof ChapterFrontmatter] === undefined) {
+      throw new Error(`Missing required frontmatter field: ${field}`)
+    }
+  }
+  
+  return frontmatter as ChapterFrontmatter
+}
+
+/**
+ * Calculate word count from content string
+ */
+export function calculateWordCount(content: string): number {
+  return content
+    .replace(/[^\w\s]/g, '')
+    .split(/\s+/)
+    .filter(word => word.length > 0)
+    .length
+}
+
+/**
+ * Estimate reading time based on word count
+ */
+export function estimateReadingTime(wordCount: number, wordsPerMinute: number = 200): number {
+  return Math.ceil(wordCount / wordsPerMinute)
+}
+
+/**
+ * Generate excerpt from content
+ */
+export function generateExcerpt(content: string, maxLength: number = 160): string {
+  const plainText = content
+    .replace(/[#*`]/g, '') // Remove markdown formatting
+    .replace(/\n/g, ' ')   // Replace newlines with spaces
+    .trim()
+  
+  if (plainText.length <= maxLength) {
+    return plainText
+  }
+  
+  return plainText.slice(0, maxLength).replace(/\s+\S*$/, '') + '...'
+}
+
+/**
+ * Slugify text for URLs
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/--+/g, '-')
+    .trim()
+}
+
+/**
+ * Format date for display
+ */
+export function formatDate(dateString: string): string {
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  } catch {
+    return dateString
+  }
+}
+
+/**
+ * Error handling for content loading
+ */
+export class ContentLoadError extends Error {
+  constructor(
+    message: string,
+    public readonly contentPath: string,
+    public readonly originalError?: Error
+  ) {
+    super(message)
+    this.name = 'ContentLoadError'
+  }
+}
+
+/**
+ * Safe content loader with error handling
+ */
+export async function safeLoadContent<T>(
+  loader: () => Promise<T>,
+  contentPath: string
+): Promise<T> {
+  try {
+    return await loader()
+  } catch (error) {
+    throw new ContentLoadError(
+      `Failed to load content from ${contentPath}`,
+      contentPath,
+      error instanceof Error ? error : new Error(String(error))
+    )
+  }
+}
+</file>
+
+<file path="lib/utils/loadMDX.ts">
+import { ChapterFrontmatter, MDXMetadata } from '@/types/frontmatter'
+import { ContentLoadError, safeLoadContent } from './contentLoader'
+
+/**
+ * Dynamically import MDX content
+ */
+export async function loadMDXContent(chapterSlug: string): Promise<MDXMetadata> {
+  return safeLoadContent(async () => {
+    let content: any
+    let frontmatter: ChapterFrontmatter
+    
+    try {
+      // Dynamic import based on chapter slug
+      switch (chapterSlug) {
+        case 'linear-algebra':
+          content = await import('@/content/linear-algebra/index.mdx')
+          break
+        case 'matrices':
+          content = await import('@/content/matrices/index.mdx')
+          break
+        case 'probability':
+          content = await import('@/content/probability/index.mdx')
+          break
+        case 'statistics':
+          content = await import('@/content/statistics/index.mdx')
+          break
+        case 'optimization':
+          content = await import('@/content/optimization/index.mdx')
+          break
+        default:
+          throw new Error(`Unknown chapter: ${chapterSlug}`)
+      }
+
+      // Extract frontmatter from the MDX module
+      frontmatter = content.frontmatter || {}
+      
+      // Validate required frontmatter fields
+      if (!frontmatter.title || !frontmatter.description) {
+        throw new Error('Missing required frontmatter fields: title and description')
+      }
+
+      return {
+        frontmatter,
+        content: content.default,
+      }
+    } catch (error) {
+      throw new Error(`Failed to load MDX content for ${chapterSlug}: ${error}`)
+    }
+  }, `content/${chapterSlug}/index.mdx`)
+}
+
+/**
+ * Get all available chapter slugs
+ */
+export function getAvailableChapters(): string[] {
+  return [
+    'linear-algebra',
+    'matrices', 
+    'probability',
+    'statistics',
+    'optimization'
+  ]
+}
+
+/**
+ * Check if chapter exists
+ */
+export function isValidChapter(slug: string): boolean {
+  return getAvailableChapters().includes(slug)
+}
+
+/**
+ * Get chapter order for navigation
+ */
+export function getChapterOrder(slug: string): number {
+  const order = {
+    'linear-algebra': 1,
+    'matrices': 2,
+    'probability': 3,
+    'statistics': 4,
+    'optimization': 5
+  }
+  return order[slug as keyof typeof order] || 0
+}
+
+/**
+ * Get next chapter slug
+ */
+export function getNextChapter(currentSlug: string): string | null {
+  const chapters = getAvailableChapters()
+  const currentIndex = chapters.indexOf(currentSlug)
+  
+  if (currentIndex === -1 || currentIndex === chapters.length - 1) {
+    return null
+  }
+  
+  return chapters[currentIndex + 1]
+}
+
+/**
+ * Get previous chapter slug
+ */
+export function getPreviousChapter(currentSlug: string): string | null {
+  const chapters = getAvailableChapters()
+  const currentIndex = chapters.indexOf(currentSlug)
+  
+  if (currentIndex <= 0) {
+    return null
+  }
+  
+  return chapters[currentIndex - 1]
 }
 </file>
 
@@ -2723,6 +2574,146 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 </file>
 
+<file path="mdx-components.tsx">
+import type { MDXComponents } from 'mdx/types'
+import { H1, H2, H3, H4, H5, H6, P, MathBlock, InlineMath } from '@/lib/utils/typography'
+import Link from 'next/link'
+import Image from 'next/image'
+
+export function useMDXComponents(components: MDXComponents): MDXComponents {
+  return {
+    // Headings with proper hierarchy and styling
+    h1: ({ children, ...props }) => <H1 {...props}>{children}</H1>,
+    h2: ({ children, ...props }) => <H2 {...props}>{children}</H2>,
+    h3: ({ children, ...props }) => <H3 {...props}>{children}</H3>,
+    h4: ({ children, ...props }) => <H4 {...props}>{children}</H4>,
+    h5: ({ children, ...props }) => <H5 {...props}>{children}</H5>,
+    h6: ({ children, ...props }) => <H6 {...props}>{children}</H6>,
+    
+    // Paragraphs with proper typography
+    p: ({ children, ...props }) => <P {...props}>{children}</P>,
+    
+    // Links with Next.js optimization
+    a: ({ href, children, ...props }) => {
+      if (href?.startsWith('/')) {
+        return (
+          <Link href={href} {...props}>
+            {children}
+          </Link>
+        )
+      }
+      return (
+        <a 
+          href={href} 
+          target={href?.startsWith('http') ? '_blank' : undefined}
+          rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+          {...props}
+        >
+          {children}
+        </a>
+      )
+    },
+    
+    // Images with Next.js optimization
+    img: ({ src, alt, ...props }) => (
+      <Image
+        src={src || ''}
+        alt={alt || ''}
+        width={800}
+        height={400}
+        className="rounded-lg border border-border my-6"
+        {...props}
+      />
+    ),
+    
+    // Lists with proper styling
+    ul: ({ children, ...props }) => (
+      <ul className="list-disc pl-6 mb-4 space-y-1" {...props}>
+        {children}
+      </ul>
+    ),
+    ol: ({ children, ...props }) => (
+      <ol className="list-decimal pl-6 mb-4 space-y-1" {...props}>
+        {children}
+      </ol>
+    ),
+    li: ({ children, ...props }) => (
+      <li className="text-foreground leading-relaxed" {...props}>
+        {children}
+      </li>
+    ),
+    
+    // Code blocks and inline code
+    code: ({ children, className, ...props }) => {
+      const isInline = !className
+      if (isInline) {
+        return <InlineMath {...props}>{children}</InlineMath>
+      }
+      return (
+        <code 
+          className="block p-4 bg-muted rounded-lg border border-border overflow-x-auto font-mono text-sm"
+          {...props}
+        >
+          {children}
+        </code>
+      )
+    },
+    
+    pre: ({ children, ...props }) => (
+      <MathBlock {...props}>
+        {children}
+      </MathBlock>
+    ),
+    
+    // Blockquotes
+    blockquote: ({ children, ...props }) => (
+      <blockquote 
+        className="border-l-4 border-border pl-4 italic text-muted-foreground my-6"
+        {...props}
+      >
+        {children}
+      </blockquote>
+    ),
+    
+    // Tables
+    table: ({ children, ...props }) => (
+      <div className="overflow-x-auto my-6">
+        <table 
+          className="w-full border-collapse border border-border"
+          {...props}
+        >
+          {children}
+        </table>
+      </div>
+    ),
+    th: ({ children, ...props }) => (
+      <th 
+        className="border border-border px-4 py-2 bg-muted font-semibold text-left"
+        {...props}
+      >
+        {children}
+      </th>
+    ),
+    td: ({ children, ...props }) => (
+      <td 
+        className="border border-border px-4 py-2"
+        {...props}
+      >
+        {children}
+      </td>
+    ),
+    
+    // Horizontal rule
+    hr: (props) => (
+      <hr className="border-0 border-t border-border my-8" {...props} />
+    ),
+    
+    // Allow component overrides
+    ...components,
+  }
+}
+</file>
+
 <file path="next-env.d.ts">
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
@@ -2842,6 +2833,48 @@ export interface BookProgress {
   currentChapter?: string
   totalProgress: number // percentage
   lastAccessed: string
+}
+</file>
+
+<file path="types/frontmatter.ts">
+export interface ChapterFrontmatter {
+  title: string
+  description: string
+  order: number
+  estimatedTime: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  prerequisites: string[]
+  learningObjectives: string[]
+  keywords?: string[]
+  lastUpdated?: string
+  author?: string
+  slug?: string
+}
+
+export interface SectionFrontmatter {
+  title: string
+  order: number
+  estimatedTime?: string
+  description?: string
+}
+
+export interface MDXMetadata {
+  frontmatter: ChapterFrontmatter
+  content: React.ComponentType
+  readingTime?: number
+  wordCount?: number
+}
+
+export interface ContentMetadata {
+  title: string
+  description: string
+  slug: string
+  order: number
+  estimatedTime: string
+  difficulty: string
+  prerequisites: string[]
+  learningObjectives: string[]
+  lastUpdated?: string
 }
 </file>
 
@@ -3053,6 +3086,196 @@ export default function RootLayout({ children }: RootLayoutProps) {
 }
 </file>
 
+<file path="app/linear-algebra/page.tsx">
+import type { Metadata } from 'next'
+import { ChapterLayout } from '@/components/layout/ChapterLayout'
+import { getChapterBySlug } from '@/lib/data/chapters'
+import { getChapterNavigation } from '@/lib/utils/navigation'
+import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import LinearAlgebraContent from '@/content/linear-algebra/index.mdx'
+
+export const metadata: Metadata = {
+  title: 'Linear Algebra | Interactive ML Mathematics',
+  description: 'Learn vectors, matrices, and linear transformations - the mathematical foundation of machine learning algorithms.',
+  keywords: ['linear algebra', 'vectors', 'matrices', 'eigenvalues', 'machine learning', 'mathematics'],
+}
+
+export default function LinearAlgebraPage() {
+  const chapter = getChapterBySlug('linear-algebra')
+  
+  if (!chapter) {
+    notFound()
+  }
+  
+  const navigation = getChapterNavigation('linear-algebra')
+  
+  return (
+    <ChapterLayout
+      chapter={chapter}
+      previousChapter={navigation?.previous}
+      nextChapter={navigation?.next}
+    >
+      <SafeMDXContent>
+        <LinearAlgebraContent />
+      </SafeMDXContent>
+    </ChapterLayout>
+  )
+}
+</file>
+
+<file path="app/matrices/page.tsx">
+import type { Metadata } from 'next'
+import { ChapterLayout } from '@/components/layout/ChapterLayout'
+import { getChapterBySlug } from '@/lib/data/chapters'
+import { getChapterNavigation } from '@/lib/utils/navigation'
+import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import MatricesContent from '@/content/matrices/index.mdx'
+
+export const metadata: Metadata = {
+  title: 'Advanced Matrix Theory | Interactive ML Mathematics',
+  description: 'Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms.',
+  keywords: ['matrix theory', 'SVD', 'matrix decomposition', 'PCA', 'machine learning', 'linear algebra'],
+}
+
+export default function MatricesPage() {
+  const chapter = getChapterBySlug('matrices')
+  
+  if (!chapter) {
+    notFound()
+  }
+  
+  const navigation = getChapterNavigation('matrices')
+  
+  return (
+    <ChapterLayout
+      chapter={chapter}
+      previousChapter={navigation?.previous}
+      nextChapter={navigation?.next}
+    >
+      <SafeMDXContent>
+        <MatricesContent />
+      </SafeMDXContent>
+    </ChapterLayout>
+  )
+}
+</file>
+
+<file path="app/optimization/page.tsx">
+import type { Metadata } from 'next'
+import { ChapterLayout } from '@/components/layout/ChapterLayout'
+import { getChapterBySlug } from '@/lib/data/chapters'
+import { getChapterNavigation } from '@/lib/utils/navigation'
+import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import OptimizationContent from '@/content/optimization/index.mdx'
+
+export const metadata = {
+  title: 'Optimization Theory | Interactive ML Mathematics',
+  description: 'Mathematical optimization techniques including gradient descent and algorithms used to train machine learning models.',
+  keywords: ['optimization', 'gradient descent', 'convex optimization', 'machine learning', 'algorithms'],
+}
+
+export default function OptimizationPage() {
+  const chapter = getChapterBySlug('optimization')
+  
+  if (!chapter) {
+    notFound()
+  }
+  
+  const navigation = getChapterNavigation('optimization')
+  
+  return (
+    <ChapterLayout
+      chapter={chapter}
+      previousChapter={navigation?.previous}
+      nextChapter={navigation?.next}
+    >
+      <SafeMDXContent>
+        <OptimizationContent />
+      </SafeMDXContent>
+    </ChapterLayout>
+  )
+}
+</file>
+
+<file path="app/probability/page.tsx">
+import type { Metadata } from 'next'
+import { ChapterLayout } from '@/components/layout/ChapterLayout'
+import { getChapterBySlug } from '@/lib/data/chapters'
+import { getChapterNavigation } from '@/lib/utils/navigation'
+import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import ProbabilityContent from '@/content/probability/index.mdx'
+
+export const metadata: Metadata = {
+  title: 'Probability Theory | Interactive ML Mathematics',
+  description: 'Learn probability fundamentals, random variables, and distributions essential for machine learning.',
+  keywords: ['probability theory', 'random variables', 'distributions', 'bayes theorem', 'machine learning'],
+}
+
+export default function ProbabilityPage() {
+  const chapter = getChapterBySlug('probability')
+  
+  if (!chapter) {
+    notFound()
+  }
+  
+  const navigation = getChapterNavigation('probability')
+  
+  return (
+    <ChapterLayout
+      chapter={chapter}
+      previousChapter={navigation?.previous}
+      nextChapter={navigation?.next}
+    >
+      <SafeMDXContent>
+        <ProbabilityContent />
+      </SafeMDXContent>
+    </ChapterLayout>
+  )
+}
+</file>
+
+<file path="app/statistics/page.tsx">
+import type { Metadata } from 'next'
+import { ChapterLayout } from '@/components/layout/ChapterLayout'
+import { getChapterBySlug } from '@/lib/data/chapters'
+import { getChapterNavigation } from '@/lib/utils/navigation'
+import { notFound } from 'next/navigation'
+import { SafeMDXContent } from '@/components/content/MDXContent'
+import StatisticsContent from '@/content/statistics/index.mdx'
+
+export const metadata: Metadata = {
+  title: 'Statistics for ML | Interactive ML Mathematics',
+  description: 'Statistical methods, hypothesis testing, and inference techniques used in machine learning.',
+  keywords: ['statistics', 'hypothesis testing', 'confidence intervals', 'regression analysis', 'machine learning'],
+}
+
+export default function StatisticsPage() {
+  const chapter = getChapterBySlug('statistics')
+  
+  if (!chapter) {
+    notFound()
+  }
+  
+  const navigation = getChapterNavigation('statistics')
+  
+  return (
+    <ChapterLayout
+      chapter={chapter}
+      previousChapter={navigation?.previous}
+      nextChapter={navigation?.next}
+    >
+      <SafeMDXContent>
+        <StatisticsContent />
+      </SafeMDXContent>
+    </ChapterLayout>
+  )
+}
+</file>
+
 <file path="components/layout/ClientLayout.tsx">
 'use client'
 
@@ -3150,105 +3373,6 @@ function MoonIcon({ className }: { className?: string }) {
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   )
-}
-</file>
-
-<file path="next.config.js">
-import createMDX from '@next/mdx'
-import remarkGfm from 'remark-gfm'
-import remarkFrontmatter from 'remark-frontmatter'
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
-import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Enable static export capability for hosting flexibility
-  output: 'export',
-  
-  // Configure pageExtensions to include MDX files
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-  
-  // Disable image optimization for static export
-  images: {
-    unoptimized: true
-  },
-  
-  // Enable strict mode for better development experience
-  reactStrictMode: true,
-  
-  // Optimize for modern browsers
-  swcMinify: true,
-  
-  // Configure trailing slash behavior
-  trailingSlash: false,
-  
-  // Disable x-powered-by header
-  poweredByHeader: false
-}
-
-const withMDX = createMDX({
-  // Add markdown plugins here
-  options: {
-    remarkPlugins: [
-      remarkGfm,
-      remarkFrontmatter,
-      [remarkMdxFrontmatter, { name: 'frontmatter' }]
-    ],
-    rehypePlugins: [
-      rehypeSlug,
-      [rehypeAutolinkHeadings, {
-        behavior: 'wrap',
-        properties: {
-          className: ['anchor-link']
-        }
-      }]
-    ],
-  },
-})
-
-// Merge MDX config with Next.js config
-export default withMDX(nextConfig)
-</file>
-
-<file path="package.json">
-{
-  "name": "ml-math-book",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@mdx-js/loader": "^3.1.0",
-    "@mdx-js/react": "^3.1.0",
-    "@next/mdx": "^14.2.31",
-    "@types/mdx": "^2.0.13",
-    "clsx": "^2.1.1",
-    "next": "^14.2.0",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "rehype-autolink-headings": "^7.1.0",
-    "rehype-slug": "^6.0.0",
-    "remark-frontmatter": "^5.0.0",
-    "remark-gfm": "^4.0.1",
-    "remark-mdx-frontmatter": "^5.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.0",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.0",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.4",
-    "typescript": "^5.4.0"
-  }
 }
 </file>
 
@@ -3360,6 +3484,129 @@ This project serves as both an educational resource and a learning project for m
 ## 📄 License
 
 This project is for educational purposes.
+</file>
+
+<file path="app/page.tsx">
+'use client'
+
+import { HomePageContent } from '@/components/content/HomePageContent'
+import { getPublishedChapters } from '@/lib/data/chapters'
+import { useState, useEffect } from 'react'
+
+export default function HomePage() {
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  if (!mounted) {
+    return <div className="min-h-screen bg-background" />
+  }
+  
+  const chapters = getPublishedChapters()
+  
+  return <HomePageContent chapters={chapters} />
+}
+</file>
+
+<file path="next.config.js">
+import createMDX from '@next/mdx'
+import remarkGfm from 'remark-gfm'
+import remarkFrontmatter from 'remark-frontmatter'
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Enable static export capability for hosting flexibility
+  output: 'export',
+  
+  // Configure pageExtensions to include MDX files
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  
+  // Disable image optimization for static export
+  images: {
+    unoptimized: true
+  },
+  
+  // Enable strict mode for better development experience
+  reactStrictMode: true,
+  
+  // Optimize for modern browsers
+  swcMinify: true,
+  
+  // Configure trailing slash behavior
+  trailingSlash: false,
+  
+  // Disable x-powered-by header
+  poweredByHeader: false
+}
+
+const withMDX = createMDX({
+  // Add markdown plugins here
+  options: {
+    remarkPlugins: [
+      remarkGfm,
+      remarkFrontmatter,
+      [remarkMdxFrontmatter, { name: 'frontmatter' }]
+    ],
+    rehypePlugins: [
+      rehypeSlug,
+      [rehypeAutolinkHeadings, {
+        behavior: 'wrap',
+        properties: {
+          className: ['anchor-link']
+        }
+      }]
+    ],
+  },
+})
+
+// Merge MDX config with Next.js config
+export default withMDX(nextConfig)
+</file>
+
+<file path="package.json">
+{
+  "name": "ml-math-book",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@next/mdx": "^14.2.31",
+    "@types/mdx": "^2.0.13",
+    "clsx": "^2.1.1",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-mdx-frontmatter": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.0"
+  }
+}
 </file>
 
 <file path="tailwind.config.ts">
@@ -3804,30 +4051,6 @@ export default config
     content: " (" attr(href) ")";
     @apply text-xs text-gray-600;
   }
-}
-</file>
-
-<file path="app/page.tsx">
-'use client'
-
-import { HomePageContent } from '@/components/content/HomePageContent'
-import { getPublishedChapters } from '@/lib/data/chapters'
-import { useState, useEffect } from 'react'
-
-export default function HomePage() {
-  const [mounted, setMounted] = useState(false)
-  
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-  
-  if (!mounted) {
-    return <div className="min-h-screen bg-background" />
-  }
-  
-  const chapters = getPublishedChapters()
-  
-  return <HomePageContent chapters={chapters} />
 }
 </file>
 
