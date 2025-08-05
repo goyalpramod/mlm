@@ -31,15 +31,22 @@ const config: Config = {
         ]
       },
       
-      // Custom colors for black/white theme
+      // Custom colors for strict black/white theme
       colors: {
+        // Base colors using CSS custom properties
         background: 'var(--background)',
         foreground: 'var(--foreground)',
         muted: 'var(--muted)',
         'muted-foreground': 'var(--muted-foreground)',
         border: 'var(--border)',
         accent: 'var(--accent)',
-        'accent-foreground': 'var(--accent-foreground)'
+        'accent-foreground': 'var(--accent-foreground)',
+        
+        // Override default colors to black/white only
+        white: '#ffffff',
+        black: '#000000',
+        transparent: 'transparent',
+        current: 'currentColor',
       },
       
       // Improved spacing for mathematical content
