@@ -4,7 +4,6 @@ import { Chapter } from '@/types/content'
 import { Container } from '@/components/ui/Container'
 import { ChapterNavigation } from './ChapterNavigation'
 import { TableOfContents } from '@/components/navigation/TableOfContents'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { H1 } from '@/lib/utils/typography'
 
 interface ChapterLayoutProps {
@@ -22,11 +21,6 @@ export function ChapterLayout({
 }: ChapterLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-      {/* Floating Theme Toggle - Top Right */}
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
       {/* Notion-style ToC Sidebar - Right Middle */}
       <TableOfContents className="fixed top-1/2 right-4 transform -translate-y-1/2 z-40" />
 

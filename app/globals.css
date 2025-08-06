@@ -13,17 +13,6 @@
   --accent-foreground: 0 0 0;
 }
 
-.dark {
-  /* Dark theme variables - using RGB values for opacity support */
-  --background: 0 0 0;
-  --foreground: 255 255 255;
-  --muted: 10 10 10;
-  --muted-foreground: 161 161 161;
-  --border: 38 38 38;
-  --accent: 26 26 26;
-  --accent-foreground: 255 255 255;
-}
-
 /* Base styles for mathematical content */
 @layer base {
   * {
@@ -366,15 +355,6 @@
     display: inline-block !important;
     white-space: nowrap !important;
     max-width: 100% !important;
-  }
-  
-  /* Dark theme adjustments */
-  .dark .katex {
-    color: rgb(var(--foreground)) !important;
-  }
-  
-  .dark .katex .base {
-    color: rgb(var(--foreground)) !important;
   }
   
   /* Responsive math */
