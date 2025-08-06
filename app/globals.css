@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import KaTeX CSS for math rendering */
+@import 'katex/dist/katex.min.css';
+
 :root {
   /* Light theme variables - using RGB values for opacity support */
   --background: 255 255 255;
@@ -13,7 +16,6 @@
   --accent-foreground: 0 0 0;
 }
 
-/* Base styles for mathematical content */
 @layer base {
   * {
     @apply border-border;
@@ -21,7 +23,7 @@
   
   html {
     scroll-behavior: smooth;
-    font-size: 16px; /* Base font size for rem calculations */
+    font-size: 16px;
   }
   
   body {
@@ -29,20 +31,20 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: none; /* Disable theme transition animations */
-    line-height: 1.6; /* Improved default line height */
+    line-height: 1.6;
   }
   
-  /* Typography improvements for readability */
+  /* Typography for readability */
   h1, h2, h3, h4, h5, h6 {
     @apply font-medium text-foreground;
     line-height: 1.2;
     letter-spacing: -0.025em;
-    text-wrap: balance; /* Better text wrapping for headings */
+    text-wrap: balance;
   }
   
   h1 {
     @apply text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-6;
+    font-family: 'Tinos', serif !important;
     line-height: 1.1;
   }
   
@@ -58,37 +60,20 @@
   
   h4 {
     @apply text-lg sm:text-xl font-semibold mb-2 mt-6 first:mt-0;
-    line-height: 1.4;
   }
   
   h5 {
     @apply text-base sm:text-lg font-medium mb-2 mt-4 first:mt-0;
-    line-height: 1.5;
   }
   
   h6 {
     @apply text-sm sm:text-base font-medium mb-1 mt-4 first:mt-0;
-    line-height: 1.5;
   }
   
   p {
     @apply text-foreground mb-4;
     line-height: 1.7;
     font-size: 1rem;
-    max-width: none;
-  }
-  
-  /* Mathematical content styling */
-  .math-content {
-    @apply leading-relaxed text-foreground;
-  }
-  
-  .math-display {
-    @apply my-6 text-center overflow-x-auto;
-  }
-  
-  .math-inline {
-    @apply font-mono bg-muted px-1 py-0.5 rounded text-sm;
   }
   
   /* Lists */
@@ -126,17 +111,14 @@
     @apply border-l-4 border-border pl-4 italic text-muted-foreground my-4;
   }
   
-  /* Tables */
-  table {
-    @apply w-full border-collapse border border-border my-4;
+  /* Images */
+  img {
+    @apply max-w-full h-auto;
   }
   
-  th, td {
-    @apply border border-border px-4 py-2 text-left;
-  }
-  
-  th {
-    @apply bg-muted font-semibold;
+  /* Horizontal rule */
+  hr {
+    @apply border-0 border-t border-border my-8;
   }
   
   /* Selection styling */
@@ -148,19 +130,57 @@
   :focus-visible {
     @apply outline-none ring-2 ring-foreground ring-offset-2 ring-offset-background;
   }
-  
-  /* Responsive images */
-  img {
-    @apply max-w-full h-auto;
+}
+
+/* KaTeX Math Rendering */
+@layer components {
+  .katex {
+    font-size: 1.1em !important;
+    color: rgb(var(--foreground)) !important;
   }
   
-  /* Horizontal rule */
-  hr {
-    @apply border-0 border-t border-border my-8;
+  .katex-display {
+    margin: 1.5em 0 !important;
+    text-align: center !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+  
+  .katex-display > .katex {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+  }
+  
+  /* Math in MDX content */
+  .mdx-content .katex-display {
+    background: rgb(var(--muted) / 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgb(var(--border));
+  }
+  
+  .mdx-content .katex {
+    background: rgb(var(--muted) / 0.5);
+    padding: 0.125rem 0.25rem;
+    border-radius: 4px;
+    margin: 0 0.125rem;
+  }
+  
+  /* Responsive math */
+  @media (max-width: 640px) {
+    .katex {
+      font-size: 1em !important;
+    }
+    
+    .katex-display {
+      margin: 1em 0 !important;
+      padding: 0 1em !important;
+    }
   }
 }
 
-/* MDX-specific styles */
+/* MDX Content Styling */
 @layer components {
   .mdx-content {
     @apply text-foreground leading-relaxed;
@@ -175,37 +195,7 @@
     @apply scroll-mt-16; /* Account for fixed header when jumping to anchors */
   }
   
-  /* Anchor links for headings */
-  .anchor-link {
-    @apply no-underline;
-  }
-  
-  .anchor-link:hover {
-    @apply underline;
-  }
-  
-  /* Enhanced code blocks for mathematical content */
-  .mdx-content pre {
-    @apply relative;
-    font-variant-ligatures: none; /* Disable ligatures in code blocks */
-  }
-  
-  .mdx-content pre:hover {
-    @apply bg-accent transition-colors duration-200;
-  }
-  
-  /* Mathematical notation improvements */
-  .mdx-content .math-block {
-    @apply font-mono text-center bg-muted border border-border rounded-lg p-4 my-6 overflow-x-auto;
-    font-variant-numeric: tabular-nums;
-  }
-  
-  .mdx-content .math-inline {
-    @apply font-mono bg-muted px-1 py-0.5 rounded text-sm;
-    font-variant-numeric: tabular-nums;
-  }
-  
-  /* Improved list styling */
+  /* Enhanced lists */
   .mdx-content ul {
     @apply list-disc pl-6 mb-4 space-y-1;
   }
@@ -228,23 +218,6 @@
     @apply mb-0;
   }
   
-  /* Table improvements */
-  .mdx-content table {
-    @apply w-full border-collapse my-6 text-sm;
-  }
-  
-  .mdx-content th {
-    @apply bg-muted font-semibold text-left p-3 border border-border;
-  }
-  
-  .mdx-content td {
-    @apply p-3 border border-border;
-  }
-  
-  .mdx-content tbody tr:nth-child(even) {
-    background-color: rgb(var(--muted) / 0.3);
-  }
-  
   /* Image styling */
   .mdx-content img {
     @apply rounded-lg border border-border my-6 mx-auto;
@@ -254,397 +227,31 @@
   .mdx-content a {
     @apply text-foreground underline underline-offset-4 decoration-muted-foreground hover:decoration-foreground transition-colors;
   }
-  
-  .mdx-content a[href^="http"] {
-    @apply after:content-['↗'] after:text-xs after:ml-1 after:text-muted-foreground;
-  }
 }
 
-/* Utility classes */
+/* Essential Utilities */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  .fade-in {
+  /* Simple animations */
+  .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
   }
   
-  .slide-in {
-    animation: slideIn 0.3s ease-out;
+  .duration-2000 {
+    transition-duration: 2000ms;
   }
   
-  /* Mathematical content utilities */
-  .math-notation {
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum" 1;
-  }
-  
-  .code-block-container {
-    @apply relative group;
-  }
-  
-  .copy-button {
-    @apply absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity;
-  }
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Print styles for mathematical content */
-@media print {
-  .mdx-content {
-    @apply text-black bg-white;
-  }
-  
-  .mdx-content .math-block,
-  .mdx-content .math-inline {
-    @apply bg-transparent border border-gray-300;
-  }
-  
-  .mdx-content a {
-    @apply text-black no-underline;
-  }
-  
-  .mdx-content a[href]:after {
-    content: " (" attr(href) ")";
-    @apply text-xs text-gray-600;
-  }
-}
-
-/* Add to app/globals.css - KaTeX styling */
-
-/* Import KaTeX CSS */
-@import 'katex/dist/katex.min.css';
-
-/* KaTeX custom styling */
-@layer components {
-  /* Light theme KaTeX */
-  .katex {
-    font-size: 1.1em !important;
-    color: rgb(var(--foreground)) !important;
-  }
-  
-  .katex-display {
-    margin: 1.5em 0 !important;
-    text-align: center !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-  }
-  
-  .katex-display > .katex {
-    display: inline-block !important;
-    white-space: nowrap !important;
-    max-width: 100% !important;
-  }
-  
-  /* Responsive math */
-  @media (max-width: 640px) {
-    .katex {
-      font-size: 1em !important;
-    }
-    
-    .katex-display {
-      margin: 1em 0 !important;
-      padding: 0 1em !important;
-    }
-  }
-  
-  /* Math in content flow */
-  .mdx-content .katex-display {
-    background: rgb(var(--muted) / 0.3);
-    border-radius: 8px;
-    padding: 1rem;
-    border: 1px solid rgb(var(--border));
-  }
-  
-  /* Inline math adjustments */
-  .mdx-content .katex {
-    background: rgb(var(--muted) / 0.5);
-    padding: 0.125rem 0.25rem;
-    border-radius: 4px;
-    margin: 0 0.125rem;
-  }
-}
-
-/* Interactive visualization integration */
-@layer utilities {
+  /* Math visualization containers */
   .math-viz-container {
     @apply my-8 p-6 bg-background border border-border rounded-lg;
-    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
   }
   
-  .math-equations {
-    @apply space-y-4;
-  }
-  
-  .interactive-plot {
-    @apply min-h-96 bg-muted rounded-lg;
-  }
-  
-  .math-controls {
-    @apply flex flex-wrap gap-4 p-4 bg-muted rounded-lg;
-  }
-  
-  .math-slider {
-    @apply flex flex-col space-y-2;
-  }
-  
-  .math-slider label {
-    @apply text-sm font-medium text-muted-foreground;
-  }
-  
-  .math-slider input[type="range"] {
-    @apply w-full h-2 bg-border rounded-lg appearance-none cursor-pointer;
-  }
-  
-  .math-slider input[type="range"]::-webkit-slider-thumb {
-    @apply appearance-none w-4 h-4 bg-foreground rounded-full cursor-pointer;
-  }
-
-  /* Enhanced scroll navigation utilities */
-  .scroll-navigation {
-    @apply pointer-events-none;
-  }
-
-  .scroll-navigation > * {
-    @apply pointer-events-auto;
-  }
-
-  /* Smooth scroll behavior for reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .smooth-scroll {
-      scroll-behavior: auto !important;
-    }
-    
-    .smooth-scroll * {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
-  /* Reading progress indicators */
-  .reading-progress-bar {
-    @apply transition-all duration-300 ease-out;
-  }
-
-  .reading-progress-circle {
-    @apply transition-all duration-500 ease-out;
-  }
-
-  /* Section visibility states */
-  .section-entering {
-    @apply opacity-0 transform translate-y-4;
-    animation: sectionEnter 0.6s ease-out forwards;
-  }
-
-  .section-visible {
-    @apply opacity-100 transform translate-y-0;
-  }
-
-  .section-exiting {
-    @apply opacity-100;
-    animation: sectionExit 0.3s ease-in forwards;
-  }
-
-  /* Navigation button states */
-  .nav-button-disabled {
-    @apply opacity-50 cursor-not-allowed;
-    pointer-events: none;
-  }
-
-  .nav-button-active {
-    @apply bg-accent text-accent-foreground;
-  }
-
-  /* Keyboard navigation hints */
-  .keyboard-hint {
-    @apply opacity-0 transition-opacity duration-200;
-  }
-
-  .keyboard-hint.show {
-    @apply opacity-100;
-  }
-
-  /* Floating navigation elements */
-  .floating-nav {
-    @apply backdrop-blur-sm bg-background/80 border border-border/50;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-
-  /* Focus states for accessibility */
-  .nav-focus:focus-visible {
-    @apply outline-none ring-2 ring-foreground ring-offset-2 ring-offset-background;
-  }
-
-  /* Scroll position indicator */
-  .scroll-indicator {
-    @apply fixed left-0 top-0 w-full h-1 bg-border z-50;
-  }
-
-  .scroll-indicator-fill {
-    @apply h-full bg-foreground transition-all duration-150 ease-out;
-  }
-
-  /* Mini navigator positioning */
-  .mini-nav-bottom-right {
-    @apply fixed bottom-4 right-4 z-40;
-  }
-
-  .mini-nav-bottom-left {
-    @apply fixed bottom-4 left-4 z-40;
-  }
-
-  .mini-nav-top-right {
-    @apply fixed top-20 right-4 z-40;
-  }
-
-  .mini-nav-top-left {
-    @apply fixed top-20 left-4 z-40;
-  }
-
-  /* Breadcrumb styling */
-  .breadcrumb-separator {
-    @apply text-muted-foreground mx-2;
-  }
-
-  .breadcrumb-item {
-    @apply text-muted-foreground hover:text-foreground transition-colors;
-  }
-
-  .breadcrumb-item-active {
-    @apply text-foreground font-medium;
-  }
-
-  /* Table of contents enhancements */
-  .toc-enhanced {
-    @apply backdrop-blur-md bg-background/95;
-  }
-
-  .toc-item-active {
-    @apply bg-foreground text-background;
-  }
-
-  .toc-item-visible {
-    @apply bg-accent/50;
-  }
-
-  /* Progress section indicators */
-  .section-progress-item {
-    @apply flex items-center space-x-3 p-2 rounded-lg transition-all duration-200;
-  }
-
-  .section-progress-item.current {
-    @apply bg-accent ring-2 ring-foreground/20;
-  }
-
-  .section-progress-item.completed {
-    @apply opacity-75;
-  }
-
-  /* Smooth scrolling containers */
-  .smooth-scroll-container {
-    scroll-behavior: smooth;
-  }
-
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
-    .nav-button {
-      @apply border-2 border-foreground;
-    }
-    
-    .progress-bar {
-      @apply border border-foreground;
-    }
+  /* Tinos font class */
+  .font-tinos {
+    font-family: 'Tinos', serif !important;
   }
 }
 
-/* Scroll-triggered animations */
-@keyframes sectionEnter {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes sectionExit {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-  }
-}
-
-@keyframes progressFill {
-  from {
-    width: 0%;
-  }
-  to {
-    width: var(--progress-width);
-  }
-}
-
-@keyframes pulseActive {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-/* Custom scrollbar for navigation panels */
-.nav-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(var(--muted-foreground)) rgb(var(--muted));
-}
-
-.nav-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.nav-scrollbar::-webkit-scrollbar-track {
-  background: rgb(var(--muted));
-  border-radius: 3px;
-}
-
-.nav-scrollbar::-webkit-scrollbar-thumb {
-  background: rgb(var(--muted-foreground));
-  border-radius: 3px;
-}
-
-.nav-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--foreground));
-}
-
-/* Fade in animation */
+/* Simple Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -654,21 +261,15 @@
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-/* 2 second transition duration */
-.duration-2000 {
-  transition-duration: 2000ms;
-}
-
-/* Tinos font for main headings */
-.font-tinos {
-  font-family: 'Tinos', serif !important;
-}
-
-/* Apply Tinos to all h1 headings by default */
-h1 {
-  font-family: 'Tinos', serif !important;
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
