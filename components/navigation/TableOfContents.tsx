@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { ToCToggle } from './ToCToggle'
 import { ToCPanel } from './ToCPanel'
-import { useSectionObserver } from '@/lib/hooks/useSectionObserver'
+import { useAdvancedSectionObserver } from '@/lib/hooks/useAdvancedSectionObserver'
 import { generatePageToC, updateToCActiveStates } from '@/lib/navigation/tocGenerator'
 import { ToCItem } from '@/types/navigation'
 
@@ -15,7 +15,7 @@ interface TableOfContentsProps {
 export function TableOfContents({ className }: TableOfContentsProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [tocItems, setTocItems] = useState<ToCItem[]>([])
-  const { activeSection } = useSectionObserver()
+  const { activeSection } = useAdvancedSectionObserver()
   
   // Generate ToC on mount and when content changes
   useEffect(() => {

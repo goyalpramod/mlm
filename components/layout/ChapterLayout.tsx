@@ -1,11 +1,17 @@
 // components/layout/ChapterLayout.tsx
+'use client'
+
 import { Chapter } from '@/types/content'
 import { Container } from '@/components/ui/Container'
 import { ChapterNavigation } from './ChapterNavigation'
 import { TableOfContents } from '@/components/navigation/TableOfContents'
+import { ScrollNavigation } from '@/components/navigation/ScrollNavigation'
+import { MiniNavigator } from '@/components/navigation/MiniNavigator'
+import { ChapterBreadcrumb } from '@/components/navigation/Breadcrumb'
 import { H1, P, Small } from '@/lib/utils/typography'
 import { getDifficultyColor, formatReadingTime } from '@/lib/utils/navigation'
 import { cn } from '@/lib/utils/cn'
+import { useState } from 'react'
 
 interface ChapterLayoutProps {
   chapter: Chapter
@@ -20,8 +26,20 @@ export function ChapterLayout({
   previousChapter,
   nextChapter
 }: ChapterLayoutProps) {
+  const [tocExpanded, setTocExpanded] = useState(false)
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Breadcrumb Navigation */}
+      <section className="py-4 border-b border-border bg-muted/10">
+        <Container size="normal">
+          <ChapterBreadcrumb 
+            chapterTitle={chapter.title}
+            chapterHref={`/${chapter.slug}`}
+          />
+        </Container>
+      </section>
+
       {/* Chapter Header */}
       <section className="py-12 border-b border-border bg-muted/30">
         <Container size="normal">
@@ -39,7 +57,7 @@ export function ChapterLayout({
                 <span className="text-muted-foreground">
                   {formatReadingTime(chapter.readingTime)}
                 </span>
-                <span className="text-muted-foreground">
+                <span className="text-muted-foregreen">
                   Chapter {chapter.order}
                 </span>
               </div>
@@ -86,7 +104,7 @@ export function ChapterLayout({
         </Container>
       </section>
 
-      {/* Chapter Content with ToC */}
+      {/* Chapter Content with Enhanced Navigation */}
       <main className="py-16 relative">
         <Container size="normal">
           <div className="max-w-3xl">
@@ -94,8 +112,23 @@ export function ChapterLayout({
           </div>
         </Container>
         
-        {/* Table of Contents - Fixed positioned */}
-        <TableOfContents className="fixed top-16 right-4 z-30" />
+        {/* Enhanced Navigation Components */}
+        <TableOfContents 
+          className="fixed top-16 right-4 z-30" 
+        />
+        
+        <ScrollNavigation
+          showProgress={true}
+          showKeyboardShortcuts={true}
+          estimatedReadingTime={chapter.readingTime}
+          onTocToggle={() => setTocExpanded(!tocExpanded)}
+        />
+        
+        <MiniNavigator
+          autoHide={true}
+          position="bottom-right"
+          showSectionInfo={true}
+        />
       </main>
 
       {/* Chapter Navigation */}
