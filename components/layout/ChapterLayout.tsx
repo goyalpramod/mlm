@@ -21,8 +21,9 @@ export function ChapterLayout({
 }: ChapterLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-      {/* Notion-style ToC Sidebar - Right Middle */}
-      <TableOfContents className="fixed top-1/2 right-4 transform -translate-y-1/2 z-40" />
+
+      {/* Notion-style ToC Sidebar - Left Middle */}
+      <TableOfContents className="fixed top-1/2 left-4 transform -translate-y-1/2 z-40" />
 
       {/* Main Content */}
       <main className="py-16">

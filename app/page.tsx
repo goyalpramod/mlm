@@ -61,8 +61,8 @@ export default function HomePage() {
 
   return (
     <div className="h-screen bg-white relative overflow-hidden">
-      {/* Hero Image - Always visible */}
-      <div className="fixed inset-0 flex items-center justify-center">
+      {/* Hero Image - Always visible, moved down 20-30px */}
+      <div className="fixed inset-0 flex items-center justify-center" style={{ paddingTop: '50px' }}>
         <div className={`transition-opacity duration-2000 ease-in-out ${imageVisible ? 'opacity-100' : 'opacity-0'}`}>
           <Image
             src="/images/HomePage/hero-image.png"
@@ -75,9 +75,9 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Let's Begin Text - Center Bottom Right of Image */}
+      {/* Let's Begin Text - Center Bottom Right of Image, moved down 10px */}
       {showBeginText && currentStep === 'hero' && (
-        <div className="fixed bottom-32 right-1/3 animate-fade-in">
+        <div className="fixed animate-fade-in" style={{ bottom: '118px', right: '33.333%' }}>
           <span
             onClick={handleBeginClick}
             className="text-black text-lg underline cursor-pointer hover:no-underline"
@@ -99,7 +99,7 @@ export default function HomePage() {
               visualizations and hands-on exploration.
             </p>
             
-            <div className="fixed bottom-32 right-1/3">
+            <div className="fixed" style={{ bottom: '118px', right: '33.333%' }}>
               <span
                 onClick={handleNextClick}
                 className="text-black text-lg underline cursor-pointer hover:no-underline"
@@ -121,7 +121,7 @@ export default function HomePage() {
                 <button
                   key={chapter.id}
                   onClick={() => router.push(`/${chapter.slug}`)}
-                  className="w-full text-left p-4 border border-gray-200 hover:bg-gray-50 transition-colors rounded-lg group"
+                  className="w-full text-left p-4 hover:bg-gray-50 transition-colors rounded-lg group"
                 >
                   <div className="flex items-center justify-between">
                     <div>

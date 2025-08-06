@@ -43,9 +43,9 @@ export function TableOfContents({ className }: TableOfContentsProps) {
       {/* Notion-style ToC Panel with smooth transition */}
       <div 
         className={cn(
-          "absolute top-1/2 right-1/2 transform -translate-y-1/2 translate-x-1/2",
+          "absolute top-1/2 left-0 transform -translate-y-1/2",
           "w-80 bg-background border border-border rounded-lg shadow-xl p-4 max-h-96 overflow-y-auto",
-          "transition-all duration-300 ease-out origin-center",
+          "transition-all duration-300 ease-out origin-left",
           isVisible 
             ? "opacity-100 scale-100 visible" 
             : "opacity-0 scale-95 invisible"
