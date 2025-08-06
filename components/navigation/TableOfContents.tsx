@@ -1,8 +1,10 @@
+// components/navigation/TableOfContents.tsx
 'use client'
 
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { chapters } from '@/lib/data/chapters'
+import { usePageHeadings } from '@/lib/hooks/usePageHeadings'
 import { cn } from '@/lib/utils/cn'
 
 interface TableOfContentsProps {
@@ -11,6 +13,20 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ className }: TableOfContentsProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const pageHeadings = usePageHeadings()
+  
+  // Simple click handler for scrolling to headings
+  const scrollToHeading = (id: string) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start' 
+      })
+      // Update URL hash
+      window.history.pushState(null, '', `#${id}`)
+    }
+  }
   
   return (
     <div className={className}>
@@ -61,13 +77,27 @@ export function TableOfContents({ className }: TableOfContentsProps) {
           ))}
         </div>
         
-        {/* ON THIS PAGE - We'll add this back later with a simpler approach */}
-        <div className="border-t border-border pt-4">
-          <div className="text-xs font-medium text-muted-foreground mb-2 px-2">ON THIS PAGE</div>
-          <div className="text-xs text-muted-foreground px-2">
-            Headings will appear here
+        {/* ON THIS PAGE - Now with actual headings */}
+        {pageHeadings.length > 0 && (
+          <div className="border-t border-border pt-4">
+            <div className="text-xs font-medium text-muted-foreground mb-2 px-2">ON THIS PAGE</div>
+            <div className="space-y-1">
+              {pageHeadings.map((heading) => (
+                <button
+                  key={heading.id}
+                  onClick={() => scrollToHeading(heading.id)}
+                  className={cn(
+                    "block w-full text-left px-2 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors",
+                    // Indent based on heading level
+                    heading.level > 1 && `ml-${(heading.level - 1) * 2}`
+                  )}
+                >
+                  {heading.title}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
