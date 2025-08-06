@@ -40,67 +40,72 @@ export function TableOfContents({ className }: TableOfContentsProps) {
         </svg>
       </button>
       
-      {/* Notion-style ToC Panel */}
-      {isVisible && (
-        <div 
-          className="absolute right-0 top-0 w-80 bg-background border border-border rounded-lg shadow-xl p-4 max-h-96 overflow-y-auto"
-          onMouseEnter={() => setIsVisible(true)}
-          onMouseLeave={() => setIsVisible(false)}
-        >
-          {/* Navigation Links */}
-          <div className="space-y-1 mb-4">
-            <Link 
-              href="/" 
-              className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
-            >
-              Home
-            </Link>
-            <Link 
-              href="/#why" 
-              className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
-            >
-              Why I built this
-            </Link>
-          </div>
-          
-          <div className="border-t border-border pt-4 mb-4">
-            <div className="text-xs font-medium text-muted-foreground mb-2 px-2">CHAPTERS</div>
-            {chapters.map((chapter) => (
-              <Link
-                key={chapter.id}
-                href={`/${chapter.slug}`}
-                className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
-              >
-                {chapter.title}
-              </Link>
-            ))}
-          </div>
-          
-          {/* Current Chapter Sections */}
-          {itemsWithActiveStates.length > 0 && (
-            <div className="border-t border-border pt-4">
-              <div className="text-xs font-medium text-muted-foreground mb-2 px-2">ON THIS PAGE</div>
-              <div className="space-y-1">
-                {itemsWithActiveStates.map((item) => (
-                  <a
-                    key={item.id}
-                    href={`#${item.id}`}
-                    className={cn(
-                      'block px-2 py-1 text-sm rounded transition-colors',
-                      item.isActive
-                        ? 'text-foreground bg-accent font-medium'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                    )}
-                    style={{ paddingLeft: `${8 + (item.level - 1) * 12}px` }}
-                  >
-                    {item.title}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
+      {/* Notion-style ToC Panel with smooth transition */}
+      <div 
+        className={cn(
+          "absolute top-1/2 right-1/2 transform -translate-y-1/2 translate-x-1/2",
+          "w-80 bg-background border border-border rounded-lg shadow-xl p-4 max-h-96 overflow-y-auto",
+          "transition-all duration-300 ease-out origin-center",
+          isVisible 
+            ? "opacity-100 scale-100 visible" 
+            : "opacity-0 scale-95 invisible"
+        )}
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+      >
+        {/* Navigation Links */}
+        <div className="space-y-1 mb-4">
+          <Link 
+            href="/" 
+            className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
+          >
+            Home
+          </Link>
+          <Link 
+            href="/#why" 
+            className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
+          >
+            Why I built this
+          </Link>
         </div>
-      )}
+        
+        <div className="border-t border-border pt-4 mb-4">
+          <div className="text-xs font-medium text-muted-foreground mb-2 px-2">CHAPTERS</div>
+          {chapters.map((chapter) => (
+            <Link
+              key={chapter.id}
+              href={`/${chapter.slug}`}
+              className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
+            >
+              {chapter.title}
+            </Link>
+          ))}
+        </div>
+        
+        {/* Current Chapter Sections */}
+        {itemsWithActiveStates.length > 0 && (
+          <div className="border-t border-border pt-4">
+            <div className="text-xs font-medium text-muted-foreground mb-2 px-2">ON THIS PAGE</div>
+            <div className="space-y-1">
+              {itemsWithActiveStates.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={cn(
+                    'block px-2 py-1 text-sm rounded transition-colors',
+                    item.isActive
+                      ? 'text-foreground bg-accent font-medium'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                  )}
+                  style={{ paddingLeft: `${8 + (item.level - 1) * 12}px` }}
+                >
+                  {item.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

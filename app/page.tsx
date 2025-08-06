@@ -16,7 +16,7 @@ export default function HomePage() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Show "Let's begin" on scroll or click
+  // Show "Let's begin" after 5 seconds OR on scroll/click
   useEffect(() => {
     const handleInteraction = () => {
       if (currentStep === 'hero' && !showBeginText) {
@@ -24,10 +24,19 @@ export default function HomePage() {
       }
     }
 
+    // Auto show after 5 seconds
+    const timer = setTimeout(() => {
+      if (currentStep === 'hero') {
+        setShowBeginText(true)
+      }
+    }, 4000)
+
+    // Also show on scroll or click
     window.addEventListener('scroll', handleInteraction, { passive: true })
     window.addEventListener('click', handleInteraction)
     
     return () => {
+      clearTimeout(timer)
       window.removeEventListener('scroll', handleInteraction)
       window.removeEventListener('click', handleInteraction)
     }
@@ -66,9 +75,9 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Let's Begin Text */}
+      {/* Let's Begin Text - Center Bottom Right of Image */}
       {showBeginText && currentStep === 'hero' && (
-        <div className="fixed bottom-8 right-8 animate-fade-in">
+        <div className="fixed bottom-32 right-1/3 animate-fade-in">
           <span
             onClick={handleBeginClick}
             className="text-black text-lg underline cursor-pointer hover:no-underline"
@@ -80,7 +89,7 @@ export default function HomePage() {
 
       {/* Why I Built This Section */}
       {currentStep === 'why' && (
-        <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center animate-fade-in">
+        <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center animate-fade-in overflow-hidden">
           <div className="max-w-2xl p-8 text-center">
             <h1 className="text-4xl font-bold mb-6 text-black">Why I built this</h1>
             <p className="text-lg text-gray-800 leading-relaxed mb-8">
@@ -90,7 +99,7 @@ export default function HomePage() {
               visualizations and hands-on exploration.
             </p>
             
-            <div className="fixed bottom-8 right-8">
+            <div className="fixed bottom-32 right-1/3">
               <span
                 onClick={handleNextClick}
                 className="text-black text-lg underline cursor-pointer hover:no-underline"
@@ -104,7 +113,7 @@ export default function HomePage() {
 
       {/* Table of Contents */}
       {currentStep === 'toc' && (
-        <div className="fixed inset-0 bg-white flex items-center justify-center animate-fade-in">
+        <div className="fixed inset-0 bg-white flex items-center justify-center animate-fade-in overflow-y-auto">
           <div className="max-w-3xl p-8">
             <h1 className="text-4xl font-bold mb-8 text-center text-black">Table of Contents</h1>
             <div className="space-y-4">
