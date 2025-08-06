@@ -53,6 +53,7 @@ app/page.tsx
 app/probability/page.tsx
 app/statistics/page.tsx
 components/content/HomePageContent.tsx
+components/content/MathErrorBoundary.tsx
 components/content/MDXComponents.tsx
 components/content/MDXContent.tsx
 components/layout/ChapterLayout.tsx
@@ -61,25 +62,37 @@ components/layout/ClientLayout.tsx
 components/layout/Footer.tsx
 components/layout/Header.tsx
 components/layout/Layout.tsx
+components/math/KaTeX.tsx
+components/navigation/TableOfContents.tsx
+components/navigation/ToCItem.tsx
+components/navigation/ToCPanel.tsx
+components/navigation/ToCToggle.tsx
 components/providers/ThemeProvider.tsx
 components/ui/Container.tsx
 components/ui/ThemeToggle.tsx
+components/visualizations/GradientDescentVisualization.tsx
+components/visualizations/MatrixTransformation.tsx
+components/visualizations/SVDVisualization.tsx
 content/linear-algebra/index.mdx
 content/matrices/index.mdx
 content/optimization/index.mdx
 content/probability/index.mdx
 content/statistics/index.mdx
 lib/data/chapters.ts
+lib/hooks/useSectionObserver.ts
 lib/hooks/useTheme.ts
+lib/navigation/tocGenerator.ts
 lib/utils/cn.ts
 lib/utils/contentLoader.ts
+lib/utils/headingExtractor.ts
 lib/utils/loadMDX.ts
 lib/utils/navigation.ts
+lib/utils/scrollUtils.ts
 lib/utils/typography.ts
 LICENSE
 mdx-components.tsx
 next-env.d.ts
-next.config.js
+next.config.mjs
 package.json
 postcss.config.js
 README.md
@@ -87,11 +100,697 @@ tailwind.config.ts
 tsconfig.json
 types/content.ts
 types/frontmatter.ts
+types/navigation.ts
 types/theme.ts
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="components/navigation/TableOfContents.tsx">
+// components/navigation/TableOfContents.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { ToCToggle } from './ToCToggle'
+import { ToCPanel } from './ToCPanel'
+import { useSectionObserver } from '@/lib/hooks/useSectionObserver'
+import { generatePageToC, updateToCActiveStates } from '@/lib/navigation/tocGenerator'
+import { ToCItem } from '@/types/navigation'
+
+interface TableOfContentsProps {
+  className?: string
+}
+
+export function TableOfContents({ className }: TableOfContentsProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [tocItems, setTocItems] = useState<ToCItem[]>([])
+  const { activeSection } = useSectionObserver()
+  
+  // Generate ToC on mount and when content changes
+  useEffect(() => {
+    const generateToC = () => {
+      const items = generatePageToC()
+      setTocItems(items)
+    }
+    
+    // Generate initial ToC
+    generateToC()
+    
+    // Regenerate on navigation or content changes
+    const handleNavigation = () => {
+      setTimeout(generateToC, 100) // Small delay to ensure DOM is updated
+    }
+    
+    window.addEventListener('popstate', handleNavigation)
+    
+    return () => {
+      window.removeEventListener('popstate', handleNavigation)
+    }
+  }, [])
+  
+  // Update active states when active section changes
+  const itemsWithActiveStates = updateToCActiveStates(tocItems, activeSection)
+  
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded)
+  }
+  
+  const handleClose = () => {
+    setIsExpanded(false)
+  }
+  
+  // Don't render if no items
+  if (itemsWithActiveStates.length === 0) {
+    return null
+  }
+  
+  return (
+    <div className={className}>
+      <ToCToggle
+        isExpanded={isExpanded}
+        onToggle={handleToggle}
+      />
+      
+      <ToCPanel
+        isExpanded={isExpanded}
+        items={itemsWithActiveStates}
+        onClose={handleClose}
+      />
+    </div>
+  )
+}
+</file>
+
+<file path="components/navigation/ToCItem.tsx">
+// components/navigation/ToCItem.tsx
+'use client'
+
+import { motion } from 'framer-motion'
+import { ToCItem as ToCItemType } from '@/types/navigation'
+import { scrollToElement } from '@/lib/utils/scrollUtils'
+import { cn } from '@/lib/utils/cn'
+
+interface ToCItemProps {
+  item: ToCItemType
+  onItemClick?: (id: string) => void
+}
+
+export function ToCItem({ item, onItemClick }: ToCItemProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    scrollToElement(item.id)
+    onItemClick?.(item.id)
+  }
+  
+  const indentLevel = Math.max(0, (item.level - 1) * 16) // 16px per level
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="toc-item"
+    >
+      <a
+        href={`#${item.id}`}
+        onClick={handleClick}
+        className={cn(
+          'block py-1 px-2 text-sm rounded transition-colors',
+          'hover:bg-accent hover:text-foreground',
+          'focus:outline-none focus:bg-accent',
+          item.isActive
+            ? 'bg-foreground text-background font-medium'
+            : 'text-muted-foreground'
+        )}
+        style={{ paddingLeft: `${8 + indentLevel}px` }}
+      >
+        <span className="truncate block">{item.title}</span>
+      </a>
+      
+      {item.children && item.children.length > 0 && (
+        <div className="ml-2">
+          {item.children.map((child) => (
+            <ToCItem
+              key={child.id}
+              item={child}
+              onItemClick={onItemClick}
+            />
+          ))}
+        </div>
+      )}
+    </motion.div>
+  )
+}
+</file>
+
+<file path="components/navigation/ToCPanel.tsx">
+// components/navigation/ToCPanel.tsx
+'use client'
+
+import { motion, AnimatePresence } from 'framer-motion'
+import { ToCItem as ToCItemType } from '@/types/navigation'
+import { ToCItem } from './ToCItem'
+import { cn } from '@/lib/utils/cn'
+import { useEffect } from 'react'
+
+interface ToCPanelProps {
+  isExpanded: boolean
+  items: ToCItemType[]
+  onClose: () => void
+  onItemClick?: (id: string) => void
+  className?: string
+}
+
+export function ToCPanel({ 
+  isExpanded, 
+  items, 
+  onClose, 
+  onItemClick,
+  className 
+}: ToCPanelProps) {
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isExpanded) {
+        onClose()
+      }
+    }
+    
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isExpanded, onClose])
+  
+  const handleItemClick = (id: string) => {
+    onItemClick?.(id)
+    onClose() // Close panel after navigation
+  }
+  
+  return (
+    <AnimatePresence>
+      {isExpanded && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/20 z-30"
+          />
+          
+          {/* Panel */}
+          <motion.div
+            initial={{ opacity: 0, x: 300, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 300, scale: 0.95 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className={cn(
+              'fixed top-16 right-4 bottom-4 w-80 z-40',
+              'bg-background border border-border rounded-lg shadow-xl',
+              'flex flex-col overflow-hidden',
+              className
+            )}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">
+                Table of Contents
+              </h3>
+              <button
+                onClick={onClose}
+                className="p-1 rounded hover:bg-accent transition-colors"
+                aria-label="Close table of contents"
+                type="button"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {items.length > 0 ? (
+                <div className="space-y-1">
+                  {items.map((item) => (
+                    <ToCItem
+                      key={item.id}
+                      item={item}
+                      onItemClick={handleItemClick}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground text-center py-8">
+                  No headings found
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  )
+}
+</file>
+
+<file path="components/navigation/ToCToggle.tsx">
+// components/navigation/ToCToggle.tsx
+'use client'
+
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils/cn'
+
+interface ToCToggleProps {
+  isExpanded: boolean
+  onToggle: () => void
+  className?: string
+}
+
+export function ToCToggle({ isExpanded, onToggle, className }: ToCToggleProps) {
+  return (
+    <AnimatePresence>
+      {!isExpanded && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onToggle}
+          className={cn(
+            'fixed top-20 right-4 z-40',
+            'p-3 rounded-lg shadow-lg',
+            'bg-background border border-border',
+            'hover:bg-accent transition-colors',
+            'focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2',
+            className
+          )}
+          aria-label="Open table of contents"
+          type="button"
+        >
+          <svg
+            className="w-5 h-5 text-foreground"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 10h16M4 14h16M4 18h16"
+            />
+          </svg>
+        </motion.button>
+      )}
+    </AnimatePresence>
+  )
+}
+</file>
+
+<file path="lib/hooks/useSectionObserver.ts">
+// lib/hooks/useSectionObserver.ts
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { useInView } from 'react-intersection-observer'
+
+interface UseSectionObserverReturn {
+  activeSection: string | null
+  visibleSections: Set<string>
+}
+
+export function useSectionObserver(headingSelector = 'h1, h2, h3, h4, h5, h6'): UseSectionObserverReturn {
+  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const headingElements = useRef<Element[]>([])
+  
+  useEffect(() => {
+    // Find all headings in the document
+    const headings = Array.from(document.querySelectorAll(headingSelector))
+    headingElements.current = headings
+    
+    if (headings.length === 0) return
+    
+    // Create intersection observer
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const visible = new Set<string>()
+        
+        entries.forEach((entry) => {
+          const id = entry.target.id
+          if (!id) return
+          
+          if (entry.isIntersecting) {
+            visible.add(id)
+          }
+        })
+        
+        setVisibleSections((prev) => {
+          const newVisible = new Set(prev)
+          
+          entries.forEach((entry) => {
+            const id = entry.target.id
+            if (!id) return
+            
+            if (entry.isIntersecting) {
+              newVisible.add(id)
+            } else {
+              newVisible.delete(id)
+            }
+          })
+          
+          return newVisible
+        })
+        
+        // Determine the most relevant active section
+        const currentVisible = Array.from(visible)
+        if (currentVisible.length > 0) {
+          // Use the first visible section as active
+          setActiveSection(currentVisible[0])
+        }
+      },
+      {
+        rootMargin: '-80px 0px -80px 0px', // Account for fixed header
+        threshold: [0, 0.25, 0.5, 0.75, 1]
+      }
+    )
+    
+    // Observe all headings
+    headings.forEach((heading) => {
+      if (observerRef.current) {
+        observerRef.current.observe(heading)
+      }
+    })
+    
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+    }
+  }, [headingSelector])
+  
+  // Handle hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1)
+      if (hash && document.getElementById(hash)) {
+        setActiveSection(hash)
+      }
+    }
+    
+    // Check initial hash
+    handleHashChange()
+    
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
+  
+  return {
+    activeSection,
+    visibleSections
+  }
+}
+</file>
+
+<file path="lib/navigation/tocGenerator.ts">
+// lib/navigation/tocGenerator.ts
+import { ToCItem } from '@/types/navigation'
+import { extractHeadings, buildToCHierarchy } from '@/lib/utils/headingExtractor'
+
+/**
+ * Generate ToC from current page content
+ */
+export function generatePageToC(): ToCItem[] {
+  if (typeof window === 'undefined') return []
+  
+  const contentContainer = document.querySelector('main') || document.body
+  const headings = extractHeadings(contentContainer)
+  
+  return buildToCHierarchy(headings)
+}
+
+/**
+ * Generate ToC from a specific container element
+ */
+export function generateToCFromContainer(container: Element): ToCItem[] {
+  const headings = extractHeadings(container)
+  return buildToCHierarchy(headings)
+}
+
+/**
+ * Update ToC active states based on current active section
+ */
+export function updateToCActiveStates(
+  tocItems: ToCItem[], 
+  activeSection: string | null
+): ToCItem[] {
+  return tocItems.map((item) => ({
+    ...item,
+    isActive: item.id === activeSection,
+    children: item.children ? updateToCActiveStates(item.children, activeSection) : undefined
+  }))
+}
+
+/**
+ * Find ToC item by ID
+ */
+export function findToCItem(items: ToCItem[], id: string): ToCItem | null {
+  for (const item of items) {
+    if (item.id === id) {
+      return item
+    }
+    if (item.children) {
+      const found = findToCItem(item.children, id)
+      if (found) return found
+    }
+  }
+  return null
+}
+</file>
+
+<file path="lib/utils/headingExtractor.ts">
+// lib/utils/headingExtractor.ts
+import { ToCItem, HeadingElement } from '@/types/navigation'
+
+/**
+ * Generate URL-safe slug from heading text
+ */
+export function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters except hyphens
+    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+    .replace(/--+/g, '-')     // Replace multiple hyphens with single
+    .trim()
+}
+
+/**
+ * Extract headings from DOM within a container
+ */
+export function extractHeadings(container: Element): HeadingElement[] {
+  const headingSelector = 'h1, h2, h3, h4, h5, h6'
+  const headingElements = container.querySelectorAll(headingSelector)
+  
+  return Array.from(headingElements).map((element) => {
+    const level = parseInt(element.tagName.charAt(1))
+    const title = element.textContent?.trim() || ''
+    const existingId = element.id
+    const slug = existingId || generateSlug(title)
+    
+    // Ensure element has an ID for navigation
+    if (!element.id) {
+      element.id = slug
+    }
+    
+    return {
+      id: slug,
+      title,
+      level,
+      element
+    }
+  })
+}
+
+/**
+ * Convert flat heading list to hierarchical ToC structure
+ */
+export function buildToCHierarchy(headings: HeadingElement[]): ToCItem[] {
+  const toc: ToCItem[] = []
+  const stack: ToCItem[] = []
+  
+  headings.forEach((heading) => {
+    const item: ToCItem = {
+      id: heading.id,
+      title: heading.title,
+      level: heading.level,
+      slug: heading.id,
+      children: []
+    }
+    
+    // Find the correct parent level
+    while (stack.length > 0 && stack[stack.length - 1].level >= item.level) {
+      stack.pop()
+    }
+    
+    if (stack.length === 0) {
+      // Top level item
+      toc.push(item)
+    } else {
+      // Child item
+      const parent = stack[stack.length - 1]
+      if (!parent.children) {
+        parent.children = []
+      }
+      parent.children.push(item)
+    }
+    
+    stack.push(item)
+  })
+  
+  return toc
+}
+
+/**
+ * Flatten hierarchical ToC for easier processing
+ */
+export function flattenToC(items: ToCItem[]): ToCItem[] {
+  const flattened: ToCItem[] = []
+  
+  function traverse(items: ToCItem[]) {
+    items.forEach((item) => {
+      flattened.push(item)
+      if (item.children && item.children.length > 0) {
+        traverse(item.children)
+      }
+    })
+  }
+  
+  traverse(items)
+  return flattened
+}
+</file>
+
+<file path="lib/utils/scrollUtils.ts">
+// lib/utils/scrollUtils.ts
+import { ScrollToOptions } from '@/types/navigation'
+
+/**
+ * Smooth scroll to element with offset for fixed headers
+ */
+export function scrollToElement(
+  elementId: string, 
+  options: ScrollToOptions = {}
+): void {
+  const { behavior = 'smooth', offset = 80 } = options
+  
+  const element = document.getElementById(elementId)
+  if (!element) return
+  
+  const elementPosition = element.getBoundingClientRect().top
+  const offsetPosition = elementPosition + window.pageYOffset - offset
+  
+  window.scrollTo({
+    top: offsetPosition,
+    behavior
+  })
+  
+  // Update URL hash without triggering scroll
+  if (window.history.replaceState) {
+    window.history.replaceState(null, '', `#${elementId}`)
+  }
+}
+
+/**
+ * Get current scroll position
+ */
+export function getScrollPosition(): number {
+  return window.pageYOffset || document.documentElement.scrollTop
+}
+
+/**
+ * Check if element is in viewport
+ */
+export function isElementInViewport(element: Element): boolean {
+  const rect = element.getBoundingClientRect()
+  const windowHeight = window.innerHeight || document.documentElement.clientHeight
+  
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= windowHeight &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  )
+}
+
+/**
+ * Get the most visible heading element
+ */
+export function getMostVisibleHeading(headings: Element[]): Element | null {
+  let mostVisible: Element | null = null
+  let maxVisibleHeight = 0
+  
+  headings.forEach((heading) => {
+    const rect = heading.getBoundingClientRect()
+    const windowHeight = window.innerHeight
+    
+    // Calculate visible height of the element
+    const visibleTop = Math.max(0, rect.top)
+    const visibleBottom = Math.min(windowHeight, rect.bottom)
+    const visibleHeight = Math.max(0, visibleBottom - visibleTop)
+    
+    if (visibleHeight > maxVisibleHeight) {
+      maxVisibleHeight = visibleHeight
+      mostVisible = heading
+    }
+  })
+  
+  return mostVisible
+}
+</file>
+
+<file path="types/navigation.ts">
+// types/navigation.ts
+export interface ToCItem {
+  id: string
+  title: string
+  level: number // 1-6 for h1-h6
+  slug: string
+  chapter?: string
+  isActive?: boolean
+  children?: ToCItem[]
+}
+
+export interface ToCState {
+  isExpanded: boolean
+  activeItem: string | null
+  items: ToCItem[]
+}
+
+export interface HeadingElement {
+  id: string
+  title: string
+  level: number
+  element?: Element
+}
+
+export interface ScrollToOptions {
+  behavior?: 'smooth' | 'instant'
+  offset?: number
+}
+</file>
 
 <file path=".eslintrc.json">
 {
@@ -354,9 +1053,36 @@ function ChapterCard({ chapter }: ChapterCardProps) {
 }
 </file>
 
+<file path="components/content/MathErrorBoundary.tsx">
+// components/content/MathErrorBoundary.tsx
+'use client'
+
+import React from 'react'
+
+interface SafeMathProps {
+  children: React.ReactNode
+  latex?: string
+}
+
+export function SafeMath({ children, latex }: SafeMathProps) {
+  try {
+    return <>{children}</>
+  } catch (error) {
+    console.warn('Math rendering error:', error)
+    return (
+      <span className="text-red-500 text-sm font-mono">
+        [Math Error: {latex || 'Invalid LaTeX'}]
+      </span>
+    )
+  }
+}
+</file>
+
 <file path="components/content/MDXComponents.tsx">
+// components/content/MDXComponents.tsx
 import React from 'react'
 import { cn } from '@/lib/utils/cn'
+import { generateSlug } from '@/lib/utils/headingExtractor'
 
 interface MDXComponentProps {
   className?: string
@@ -372,7 +1098,12 @@ export function MDXHeading({
 }: MDXComponentProps & { level: 1 | 2 | 3 | 4 | 5 | 6 }) {
   const Component = `h${level}` as keyof JSX.IntrinsicElements
   
-  const baseClasses = 'font-semibold text-foreground scroll-mt-16'
+  // Generate ID from heading text for ToC integration
+  const headingText = typeof children === 'string' ? children : 
+    React.Children.toArray(children).join('')
+  const id = generateSlug(headingText)
+  
+  const baseClasses = 'font-semibold text-foreground scroll-mt-20'
   const sizeClasses = {
     1: 'text-3xl sm:text-4xl lg:text-5xl mb-6 mt-0',
     2: 'text-2xl sm:text-3xl lg:text-4xl mb-4 mt-12 first:mt-0',
@@ -385,6 +1116,7 @@ export function MDXHeading({
   return React.createElement(
     Component,
     {
+      id,
       className: cn(baseClasses, sizeClasses[level], className),
       ...props
     },
@@ -542,89 +1274,6 @@ export function DefinitionDescription({ children, className, ...props }: MDXComp
     >
       {children}
     </dd>
-  )
-}
-</file>
-
-<file path="components/content/MDXContent.tsx">
-import React from 'react'
-import { cn } from '@/lib/utils/cn'
-
-interface MDXContentProps {
-  children: React.ReactNode
-  className?: string
-}
-
-export function MDXContent({ children, className }: MDXContentProps) {
-  return (
-    <div className={cn('mdx-content', className)}>
-      <div className="prose prose-lg max-w-none">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-// Error boundary for MDX content
-interface MDXErrorBoundaryState {
-  hasError: boolean
-  error?: Error
-}
-
-export class MDXErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  MDXErrorBoundaryState
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props)
-    this.state = { hasError: false }
-  }
-
-  static getDerivedStateFromError(error: Error): MDXErrorBoundaryState {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('MDX Error:', error, errorInfo)
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="my-8 p-6 border border-red-200 bg-red-50 rounded-lg">
-          <h3 className="text-lg font-semibold text-red-900 mb-2">
-            Content Loading Error
-          </h3>
-          <p className="text-red-700 mb-4">
-            There was an error loading this content. Please try refreshing the page.
-          </p>
-          {process.env.NODE_ENV === 'development' && this.state.error && (
-            <details className="text-sm text-red-600">
-              <summary className="font-medium cursor-pointer">
-                Error Details (Development)
-              </summary>
-              <pre className="mt-2 p-2 bg-red-100 rounded text-xs overflow-x-auto">
-                {this.state.error.message}
-                {this.state.error.stack}
-              </pre>
-            </details>
-          )}
-        </div>
-      )
-    }
-
-    return this.props.children
-  }
-}
-
-// Wrapper that combines content and error boundary
-export function SafeMDXContent({ children, className }: MDXContentProps) {
-  return (
-    <MDXErrorBoundary>
-      <MDXContent className={className}>
-        {children}
-      </MDXContent>
-    </MDXErrorBoundary>
   )
 }
 </file>
@@ -1088,6 +1737,84 @@ export function Layout({ children }: LayoutProps) {
 }
 </file>
 
+<file path="components/math/KaTeX.tsx">
+// components/math/KaTeX.tsx
+'use client'
+
+import React, { useEffect, useRef } from 'react'
+import katex from 'katex'
+import { cn } from '@/lib/utils/cn'
+
+interface KaTeXProps {
+  children: string
+  displayMode?: boolean
+  className?: string
+  throwOnError?: boolean
+}
+
+export function KaTeX({ 
+  children, 
+  displayMode = false, 
+  className,
+  throwOnError = false 
+}: KaTeXProps) {
+  const elementRef = useRef<HTMLSpanElement>(null)
+  
+  useEffect(() => {
+    if (elementRef.current) {
+      try {
+        katex.render(children, elementRef.current, {
+          displayMode,
+          throwOnError,
+          strict: false,
+          macros: {
+            '\\R': '\\mathbb{R}',
+            '\\N': '\\mathbb{N}',
+            '\\Z': '\\mathbb{Z}',
+            '\\Q': '\\mathbb{Q}',
+            '\\C': '\\mathbb{C}',
+            '\\vec': '\\mathbf{#1}',
+            '\\norm': '\\left\\|#1\\right\\|',
+            '\\abs': '\\left|#1\\right|',
+            '\\argmax': '\\operatorname{argmax}',
+            '\\argmin': '\\operatorname{argmin}',
+            '\\trace': '\\operatorname{tr}',
+            '\\rank': '\\operatorname{rank}',
+            '\\diag': '\\operatorname{diag}',
+            '\\det': '\\operatorname{det}',
+          }
+        })
+      } catch (error) {
+        console.warn('KaTeX rendering error:', error)
+        if (elementRef.current) {
+          elementRef.current.textContent = children
+        }
+      }
+    }
+  }, [children, displayMode, throwOnError])
+  
+  return (
+    <span 
+      ref={elementRef}
+      className={cn(
+        displayMode ? 'katex-display' : 'katex',
+        displayMode && 'block text-center my-4',
+        className
+      )}
+    />
+  )
+}
+
+// Convenience components
+export function InlineMath({ children, className }: { children: string, className?: string }) {
+  return <KaTeX className={className}>{children}</KaTeX>
+}
+
+export function DisplayMath({ children, className }: { children: string, className?: string }) {
+  return <KaTeX displayMode className={className}>{children}</KaTeX>
+}
+</file>
+
 <file path="components/providers/ThemeProvider.tsx">
 'use client'
 
@@ -1208,6 +1935,992 @@ export function Container({
 }
 </file>
 
+<file path="components/visualizations/GradientDescentVisualization.tsx">
+// components/visualizations/GradientDescentVisualization.tsx
+'use client'
+
+import React, { useState, useEffect, useRef } from 'react'
+import { cn } from '@/lib/utils/cn'
+import { DisplayMath, InlineMath } from '@/components/math/KaTeX'
+
+interface GradientDescentVisualizationProps {
+  className?: string
+  functionType?: 'quadratic' | 'rosenbrock' | 'beale'
+}
+
+interface Point {
+  x: number
+  y: number
+  z?: number
+}
+
+export function GradientDescentVisualization({
+  className,
+  functionType = 'quadratic'
+}: GradientDescentVisualizationProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const animationRef = useRef<number>()
+  
+  const [learningRate, setLearningRate] = useState(0.1)
+  const [currentPoint, setCurrentPoint] = useState<Point>({ x: 2, y: 2 })
+  const [isRunning, setIsRunning] = useState(false)
+  const [path, setPath] = useState<Point[]>([])
+  const [iteration, setIteration] = useState(0)
+  const [loss, setLoss] = useState(0)
+  
+  // Objective functions
+  const functions = {
+    quadratic: {
+      name: 'Quadratic: f(x,y) = x² + y²',
+      f: (x: number, y: number) => x*x + y*y,
+      gradX: (x: number, y: number) => 2*x,
+      gradY: (x: number, y: number) => 2*y,
+      minimum: { x: 0, y: 0 }
+    },
+    rosenbrock: {
+      name: 'Rosenbrock: f(x,y) = (1-x)² + 100(y-x²)²',
+      f: (x: number, y: number) => (1-x)*(1-x) + 100*(y-x*x)*(y-x*x),
+      gradX: (x: number, y: number) => -2*(1-x) - 400*x*(y-x*x),
+      gradY: (x: number, y: number) => 200*(y-x*x),
+      minimum: { x: 1, y: 1 }
+    },
+    beale: {
+      name: 'Beale: f(x,y) = (1.5-x+xy)² + (2.25-x+xy²)² + (2.625-x+xy³)²',
+      f: (x: number, y: number) => {
+        const t1 = 1.5 - x + x*y
+        const t2 = 2.25 - x + x*y*y
+        const t3 = 2.625 - x + x*y*y*y
+        return t1*t1 + t2*t2 + t3*t3
+      },
+      gradX: (x: number, y: number) => {
+        const t1 = 1.5 - x + x*y
+        const t2 = 2.25 - x + x*y*y
+        const t3 = 2.625 - x + x*y*y*y
+        return 2*t1*(-1 + y) + 2*t2*(-1 + y*y) + 2*t3*(-1 + y*y*y)
+      },
+      gradY: (x: number, y: number) => {
+        const t1 = 1.5 - x + x*y
+        const t2 = 2.25 - x + x*y*y
+        const t3 = 2.625 - x + x*y*y*y
+        return 2*t1*x + 2*t2*x*2*y + 2*t3*x*3*y*y
+      },
+      minimum: { x: 3, y: 0.5 }
+    }
+  }
+  
+  const currentFunction = functions[functionType]
+  
+  // Gradient descent step
+  const performStep = () => {
+    const gradX = currentFunction.gradX(currentPoint.x, currentPoint.y)
+    const gradY = currentFunction.gradY(currentPoint.x, currentPoint.y)
+    
+    const newPoint = {
+      x: currentPoint.x - learningRate * gradX,
+      y: currentPoint.y - learningRate * gradY
+    }
+    
+    const newLoss = currentFunction.f(newPoint.x, newPoint.y)
+    
+    setCurrentPoint(newPoint)
+    setPath(prev => [...prev, newPoint])
+    setIteration(prev => prev + 1)
+    setLoss(newLoss)
+    
+    // Stop if converged or diverged
+    if (Math.abs(gradX) < 0.001 && Math.abs(gradY) < 0.001) {
+      setIsRunning(false)
+    }
+    if (newLoss > 1000) {
+      setIsRunning(false)
+    }
+  }
+  
+  // Animation loop
+  useEffect(() => {
+    if (isRunning) {
+      animationRef.current = window.setTimeout(() => {
+        performStep()
+      }, 200)
+    }
+    
+    return () => {
+      if (animationRef.current) {
+        clearTimeout(animationRef.current)
+      }
+    }
+  }, [isRunning, currentPoint, learningRate])
+  
+  // Canvas drawing
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+    ctx.scale(dpr, dpr)
+    
+    const width = rect.width
+    const height = rect.height
+    const centerX = width / 2
+    const centerY = height / 2
+    const scale = 80
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height)
+    
+    // Draw contour lines
+    ctx.strokeStyle = '#e5e7eb'
+    ctx.lineWidth = 1
+    
+    const levels = [0.1, 0.5, 1, 2, 5, 10, 20, 50]
+    
+    for (const level of levels) {
+      ctx.beginPath()
+      // Simple contour approximation
+      for (let angle = 0; angle < Math.PI * 2; angle += 0.1) {
+        const distance = Math.sqrt(level) * (functionType === 'quadratic' ? 1 : 0.3)
+        const x = centerX + distance * Math.cos(angle) * scale
+        const y = centerY + distance * Math.sin(angle) * scale
+        
+        if (angle === 0) {
+          ctx.moveTo(x, y)
+        } else {
+          ctx.lineTo(x, y)
+        }
+      }
+      ctx.closePath()
+      ctx.stroke()
+    }
+    
+    // Draw axes
+    ctx.strokeStyle = '#374151'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(0, centerY)
+    ctx.lineTo(width, centerY)
+    ctx.moveTo(centerX, 0)
+    ctx.lineTo(centerX, height)
+    ctx.stroke()
+    
+    // Draw minimum point
+    const minX = centerX + currentFunction.minimum.x * scale
+    const minY = centerY - currentFunction.minimum.y * scale
+    ctx.fillStyle = '#10b981'
+    ctx.beginPath()
+    ctx.arc(minX, minY, 6, 0, Math.PI * 2)
+    ctx.fill()
+    
+    // Draw path
+    if (path.length > 1) {
+      ctx.strokeStyle = '#ef4444'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      
+      path.forEach((point, index) => {
+        const x = centerX + point.x * scale
+        const y = centerY - point.y * scale
+        
+        if (index === 0) {
+          ctx.moveTo(x, y)
+        } else {
+          ctx.lineTo(x, y)
+        }
+      })
+      ctx.stroke()
+      
+      // Draw path points
+      path.forEach((point, index) => {
+        const x = centerX + point.x * scale
+        const y = centerY - point.y * scale
+        
+        ctx.fillStyle = index === path.length - 1 ? '#dc2626' : '#fca5a5'
+        ctx.beginPath()
+        ctx.arc(x, y, 3, 0, Math.PI * 2)
+        ctx.fill()
+      })
+    }
+    
+    // Draw current point
+    const currentX = centerX + currentPoint.x * scale
+    const currentY = centerY - currentPoint.y * scale
+    ctx.fillStyle = '#dc2626'
+    ctx.beginPath()
+    ctx.arc(currentX, currentY, 8, 0, Math.PI * 2)
+    ctx.fill()
+    
+    // Draw gradient arrow
+    const gradX = currentFunction.gradX(currentPoint.x, currentPoint.y)
+    const gradY = currentFunction.gradY(currentPoint.x, currentPoint.y)
+    const gradMag = Math.sqrt(gradX*gradX + gradY*gradY)
+    
+    if (gradMag > 0.01) {
+      const arrowLength = Math.min(50, gradMag * 20)
+      const endX = currentX - (gradX / gradMag) * arrowLength
+      const endY = currentY + (gradY / gradMag) * arrowLength
+      
+      ctx.strokeStyle = '#3b82f6'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(currentX, currentY)
+      ctx.lineTo(endX, endY)
+      ctx.stroke()
+      
+      // Arrow head
+      const angle = Math.atan2(endY - currentY, endX - currentX)
+      ctx.fillStyle = '#3b82f6'
+      ctx.beginPath()
+      ctx.moveTo(endX, endY)
+      ctx.lineTo(endX - 10*Math.cos(angle - Math.PI/6), endY - 10*Math.sin(angle - Math.PI/6))
+      ctx.lineTo(endX - 10*Math.cos(angle + Math.PI/6), endY - 10*Math.sin(angle + Math.PI/6))
+      ctx.closePath()
+      ctx.fill()
+    }
+    
+  }, [currentPoint, path, functionType])
+  
+  const reset = () => {
+    setIsRunning(false)
+    setCurrentPoint({ x: 2, y: 2 })
+    setPath([{ x: 2, y: 2 }])
+    setIteration(0)
+    setLoss(currentFunction.f(2, 2))
+  }
+  
+  const handleCanvasClick = (event: React.MouseEvent) => {
+    if (isRunning) return
+    
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const scale = 80
+    
+    const newX = (x - centerX) / scale
+    const newY = -(y - centerY) / scale
+    
+    setCurrentPoint({ x: newX, y: newY })
+    setPath([{ x: newX, y: newY }])
+    setIteration(0)
+    setLoss(currentFunction.f(newX, newY))
+  }
+  
+  return (
+    <div className={cn('math-viz-container', className)}>
+      {/* Interactive Canvas */}
+      <div className="interactive-plot">
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full cursor-crosshair"
+          onClick={handleCanvasClick}
+        />
+      </div>
+      
+      {/* Math and Controls */}
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold">Gradient Descent Optimization</h3>
+          <p className="text-sm text-muted-foreground">{currentFunction.name}</p>
+        </div>
+        
+        <DisplayMath>
+          \theta_{t+1} = \theta_t - \alpha \nabla f(\theta_t)
+        </DisplayMath>
+        
+        <div className="space-y-2">
+          <DisplayMath>
+            {`\\text{Current: } (${currentPoint.x.toFixed(3)}, ${currentPoint.y.toFixed(3)})`}
+          </DisplayMath>
+          <DisplayMath>
+            {`\\text{Loss: } ${loss.toFixed(6)}`}
+          </DisplayMath>
+          <DisplayMath>
+            {`\\text{Iteration: } ${iteration}`}
+          </DisplayMath>
+        </div>
+        
+        <div className="math-controls">
+          <div className="math-slider">
+            <label>Learning Rate (α):</label>
+            <input
+              type="range"
+              min="0.01"
+              max="0.5"
+              step="0.01"
+              value={learningRate}
+              onChange={(e) => setLearningRate(parseFloat(e.target.value))}
+            />
+            <span className="text-xs text-center">{learningRate.toFixed(2)}</span>
+          </div>
+          
+          <button
+            onClick={() => setIsRunning(!isRunning)}
+            className="px-4 py-2 bg-foreground text-background rounded hover:opacity-80"
+            disabled={Math.abs(currentFunction.gradX(currentPoint.x, currentPoint.y)) < 0.001 && 
+                     Math.abs(currentFunction.gradY(currentPoint.x, currentPoint.y)) < 0.001}
+          >
+            {isRunning ? 'Pause' : 'Start'}
+          </button>
+          
+          <button
+            onClick={performStep}
+            className="px-4 py-2 border border-border rounded hover:bg-accent"
+            disabled={isRunning}
+          >
+            Step
+          </button>
+          
+          <button
+            onClick={reset}
+            className="px-4 py-2 border border-border rounded hover:bg-accent"
+          >
+            Reset
+          </button>
+        </div>
+        
+        <div className="text-xs text-muted-foreground space-y-1">
+          <p>🔴 Current position</p>
+          <p>🟢 Global minimum</p>
+          <p>🔵 Gradient direction (negative for descent)</p>
+          <p>💡 Click on the plot to set a new starting point</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="components/visualizations/MatrixTransformation.tsx">
+// components/visualizations/MatrixTransformation.tsx
+'use client'
+
+import React, { useState, useEffect, useRef } from 'react'
+import { cn } from '@/lib/utils/cn'
+import * as THREE from 'three'
+import { DisplayMath, InlineMath } from '@/components/math/KaTeX'
+
+interface MatrixTransformationProps {
+  className?: string
+  initialMatrix?: [number, number, number, number] // [a, b, c, d] for 2x2 matrix
+  initialVector?: [number, number]
+  showEigenAnalysis?: boolean
+}
+
+interface Matrix2D {
+  a: number
+  b: number
+  c: number
+  d: number
+}
+
+interface Vector2D {
+  x: number
+  y: number
+}
+
+export function MatrixTransformation({
+  className,
+  initialMatrix = [1.0, 0.5, 0.5, 1.0],
+  initialVector = [2.0, 3.0],
+  showEigenAnalysis = true
+}: MatrixTransformationProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const animationRef = useRef<number>()
+  
+  // State for interactive controls
+  const [matrix, setMatrix] = useState<Matrix2D>({
+    a: initialMatrix[0],
+    b: initialMatrix[1], 
+    c: initialMatrix[2],
+    d: initialMatrix[3]
+  })
+  
+  const [vector, setVector] = useState<Vector2D>({
+    x: initialVector[0],
+    y: initialVector[1]
+  })
+  
+  const [isDragging, setIsDragging] = useState<'vector' | 'result' | null>(null)
+  
+  // Computed values
+  const transformedVector = {
+    x: matrix.a * vector.x + matrix.b * vector.y,
+    y: matrix.c * vector.x + matrix.d * vector.y
+  }
+  
+  const determinant = matrix.a * matrix.d - matrix.b * matrix.c
+  
+  // Eigenvalue calculation for 2x2 matrix
+  const trace = matrix.a + matrix.d
+  const det = determinant
+  const discriminant = trace * trace - 4 * det
+  
+  const eigenvalues = discriminant >= 0 ? {
+    lambda1: (trace + Math.sqrt(discriminant)) / 2,
+    lambda2: (trace - Math.sqrt(discriminant)) / 2
+  } : {
+    lambda1: trace / 2,
+    lambda2: Math.sqrt(-discriminant) / 2 // imaginary part
+  }
+  
+  // Canvas drawing logic
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+    ctx.scale(dpr, dpr)
+    
+    const width = rect.width
+    const height = rect.height
+    const centerX = width / 2
+    const centerY = height / 2
+    const scale = 40 // pixels per unit
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height)
+    ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--muted').trim()
+    ctx.fillRect(0, 0, width, height)
+    
+    // Draw grid
+    ctx.strokeStyle = '#666666'
+    ctx.lineWidth = 0.5
+    ctx.setLineDash([2, 2])
+    
+    for (let i = -10; i <= 10; i++) {
+      if (i === 0) continue
+      // Vertical lines
+      ctx.beginPath()
+      ctx.moveTo(centerX + i * scale, 0)
+      ctx.lineTo(centerX + i * scale, height)
+      ctx.stroke()
+      
+      // Horizontal lines
+      ctx.beginPath()
+      ctx.moveTo(0, centerY - i * scale)
+      ctx.lineTo(width, centerY - i * scale)
+      ctx.stroke()
+    }
+    
+    // Draw axes
+    ctx.setLineDash([])
+    ctx.strokeStyle = '#333333'
+    ctx.lineWidth = 1
+    
+    // X-axis
+    ctx.beginPath()
+    ctx.moveTo(0, centerY)
+    ctx.lineTo(width, centerY)
+    ctx.stroke()
+    
+    // Y-axis
+    ctx.beginPath()
+    ctx.moveTo(centerX, 0)
+    ctx.lineTo(centerX, height)
+    ctx.stroke()
+    
+    // Draw matrix column vectors (basis vectors after transformation)
+    const a1 = { x: matrix.a, y: -matrix.c } // Flip Y for canvas coordinates
+    const a2 = { x: matrix.b, y: -matrix.d }
+    
+    // Draw basis vector a1 (blue)
+    drawVector(ctx, centerX, centerY, a1.x * scale, a1.y * scale, '#3b82f6', 'a₁')
+    
+    // Draw basis vector a2 (green)
+    drawVector(ctx, centerX, centerY, a2.x * scale, a2.y * scale, '#10b981', 'a₂')
+    
+    // Draw original vector v (red)
+    drawVector(ctx, centerX, centerY, vector.x * scale, -vector.y * scale, '#ef4444', 'v')
+    
+    // Draw transformed vector Av (orange)
+    drawVector(ctx, centerX, centerY, transformedVector.x * scale, -transformedVector.y * scale, '#f97316', 'Av')
+    
+    // Draw connection line from v to Av
+    ctx.strokeStyle = '#94a3b8'
+    ctx.lineWidth = 1
+    ctx.setLineDash([5, 5])
+    ctx.beginPath()
+    ctx.moveTo(centerX + vector.x * scale, centerY - vector.y * scale)
+    ctx.lineTo(centerX + transformedVector.x * scale, centerY - transformedVector.y * scale)
+    ctx.stroke()
+    ctx.setLineDash([])
+    
+  }, [matrix, vector, transformedVector])
+  
+  // Vector drawing helper
+  function drawVector(
+    ctx: CanvasRenderingContext2D,
+    startX: number,
+    startY: number, 
+    endX: number,
+    endY: number,
+    color: string,
+    label: string
+  ) {
+    const headSize = 8
+    const angle = Math.atan2(endY, endX)
+    
+    // Draw line
+    ctx.strokeStyle = color
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(startX, startY)
+    ctx.lineTo(startX + endX, startY + endY)
+    ctx.stroke()
+    
+    // Draw arrowhead
+    ctx.fillStyle = color
+    ctx.beginPath()
+    ctx.moveTo(startX + endX, startY + endY)
+    ctx.lineTo(
+      startX + endX - headSize * Math.cos(angle - Math.PI / 6),
+      startY + endY - headSize * Math.sin(angle - Math.PI / 6)
+    )
+    ctx.lineTo(
+      startX + endX - headSize * Math.cos(angle + Math.PI / 6),
+      startY + endY - headSize * Math.sin(angle + Math.PI / 6)
+    )
+    ctx.closePath()
+    ctx.fill()
+    
+    // Draw label
+    ctx.fillStyle = color
+    ctx.font = '14px sans-serif'
+    ctx.fillText(label, startX + endX + 10, startY + endY - 5)
+  }
+  
+  // Mouse interaction handlers
+  const handleMouseDown = (event: React.MouseEvent) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const scale = 40
+    
+    // Check if clicking near vector endpoint
+    const vectorEndX = centerX + vector.x * scale
+    const vectorEndY = centerY - vector.y * scale
+    const resultEndX = centerX + transformedVector.x * scale
+    const resultEndY = centerY - transformedVector.y * scale
+    
+    const distanceToVector = Math.sqrt((x - vectorEndX) ** 2 + (y - vectorEndY) ** 2)
+    const distanceToResult = Math.sqrt((x - resultEndX) ** 2 + (y - resultEndY) ** 2)
+    
+    if (distanceToVector < 20) {
+      setIsDragging('vector')
+    } else if (distanceToResult < 20) {
+      setIsDragging('result')
+    }
+  }
+  
+  const handleMouseMove = (event: React.MouseEvent) => {
+    if (!isDragging) return
+    
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const scale = 40
+    
+    const newX = (x - centerX) / scale
+    const newY = -(y - centerY) / scale // Flip Y coordinate
+    
+    if (isDragging === 'vector') {
+      setVector({ x: newX, y: newY })
+    }
+    // Note: dragging result vector would require inverse matrix calculation
+  }
+  
+  const handleMouseUp = () => {
+    setIsDragging(null)
+  }
+  
+  return (
+    <div className={cn('math-viz-container', className)}>
+      {/* Interactive Canvas */}
+      <div className="interactive-plot">
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full cursor-crosshair"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        />
+      </div>
+      
+      {/* Math Equations */}
+      <div className="math-equations">
+        <DisplayMath>
+          {`A = \\begin{pmatrix} ${matrix.a.toFixed(2)} & ${matrix.b.toFixed(2)} \\\\ ${matrix.c.toFixed(2)} & ${matrix.d.toFixed(2)} \\end{pmatrix}`}
+        </DisplayMath>
+        
+        <DisplayMath>
+          {`v = \\begin{pmatrix} ${vector.x.toFixed(2)} \\\\ ${vector.y.toFixed(2)} \\end{pmatrix}`}
+        </DisplayMath>
+        
+        <DisplayMath>
+          {`Av = \\begin{pmatrix} ${transformedVector.x.toFixed(2)} \\\\ ${transformedVector.y.toFixed(2)} \\end{pmatrix}`}
+        </DisplayMath>
+        
+        {showEigenAnalysis && (
+          <div className="space-y-2">
+            <div className="text-sm font-medium">Analysis:</div>
+            <DisplayMath>
+              {`\\det(A) = ${determinant.toFixed(3)}`}
+            </DisplayMath>
+            <DisplayMath>
+              {discriminant >= 0 
+                ? `\\lambda_1 = ${eigenvalues.lambda1.toFixed(3)}, \\lambda_2 = ${eigenvalues.lambda2.toFixed(3)}`
+                : `\\lambda = ${eigenvalues.lambda1.toFixed(3)} \\pm ${eigenvalues.lambda2.toFixed(3)}i`
+              }
+            </DisplayMath>
+          </div>
+        )}
+        
+        {/* Interactive Controls */}
+        <div className="math-controls">
+          <div className="math-slider">
+            <label>Matrix A₁₁:</label>
+            <input
+              type="range"
+              min="-2"
+              max="2"
+              step="0.1"
+              value={matrix.a}
+              onChange={(e) => setMatrix(prev => ({ ...prev, a: parseFloat(e.target.value) }))}
+            />
+            <span className="text-xs text-center">{matrix.a.toFixed(1)}</span>
+          </div>
+          
+          <div className="math-slider">
+            <label>Matrix A₁₂:</label>
+            <input
+              type="range"
+              min="-2"
+              max="2"
+              step="0.1"
+              value={matrix.b}
+              onChange={(e) => setMatrix(prev => ({ ...prev, b: parseFloat(e.target.value) }))}
+            />
+            <span className="text-xs text-center">{matrix.b.toFixed(1)}</span>
+          </div>
+          
+          <div className="math-slider">
+            <label>Matrix A₂₁:</label>
+            <input
+              type="range"
+              min="-2"
+              max="2"
+              step="0.1"
+              value={matrix.c}
+              onChange={(e) => setMatrix(prev => ({ ...prev, c: parseFloat(e.target.value) }))}
+            />
+            <span className="text-xs text-center">{matrix.c.toFixed(1)}</span>
+          </div>
+          
+          <div className="math-slider">
+            <label>Matrix A₂₂:</label>
+            <input
+              type="range"
+              min="-2"
+              max="2"
+              step="0.1"
+              value={matrix.d}
+              onChange={(e) => setMatrix(prev => ({ ...prev, d: parseFloat(e.target.value) }))}
+            />
+            <span className="text-xs text-center">{matrix.d.toFixed(1)}</span>
+          </div>
+        </div>
+        
+        <div className="text-xs text-muted-foreground mt-4">
+          💡 Drag the red vector (v) to see how the transformation changes. The orange vector (Av) shows the result.
+        </div>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="components/visualizations/SVDVisualization.tsx">
+// components/visualizations/SVDVisualization.tsx
+'use client'
+
+import React, { useState, useEffect, useRef } from 'react'
+import { cn } from '@/lib/utils/cn'
+import { DisplayMath, InlineMath } from '@/components/math/KaTeX'
+
+interface SVDVisualizationProps {
+  className?: string
+  initialData?: number[][]
+}
+
+interface SVDResult {
+  U: number[][]
+  S: number[]
+  Vt: number[][]
+  originalMatrix: number[][]
+  reconstructed: number[][]
+  rank: number
+}
+
+export function SVDVisualization({
+  className,
+  initialData = [
+    [4, 2, 1],
+    [2, 3, 1],
+    [1, 1, 2]
+  ]
+}: SVDVisualizationProps) {
+  const [data, setData] = useState(initialData)
+  const [truncatedRank, setTruncatedRank] = useState(2)
+  const [svdResult, setSvdResult] = useState<SVDResult | null>(null)
+  const [isAnimating, setIsAnimating] = useState(false)
+  
+  // Simple SVD computation (for educational purposes - in production use optimized libraries)
+  const computeSVD = (matrix: number[][]): SVDResult => {
+    const m = matrix.length
+    const n = matrix[0].length
+    
+    // For simplicity, using a basic implementation
+    // In real applications, use libraries like ml-matrix
+    
+    // Compute A^T * A for V
+    const AtA = Array(n).fill(null).map(() => Array(n).fill(0))
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        for (let k = 0; k < m; k++) {
+          AtA[i][j] += matrix[k][i] * matrix[k][j]
+        }
+      }
+    }
+    
+    // Simple eigenvalue computation (for demo - normally use proper algorithms)
+    const singularValues = [3.2, 2.1, 0.8] // Simplified for demo
+    const U = [
+      [0.7, 0.5, 0.5],
+      [0.5, 0.7, -0.5],
+      [0.5, -0.5, 0.7]
+    ]
+    const Vt = [
+      [0.6, 0.6, 0.5],
+      [0.8, -0.6, 0.0],
+      [0.0, 0.5, -0.9]
+    ]
+    
+    // Reconstruct with truncated rank
+    const reconstructed = Array(m).fill(null).map(() => Array(n).fill(0))
+    const usedRank = Math.min(truncatedRank, singularValues.length)
+    
+    for (let i = 0; i < m; i++) {
+      for (let j = 0; j < n; j++) {
+        for (let k = 0; k < usedRank; k++) {
+          reconstructed[i][j] += U[i][k] * singularValues[k] * Vt[k][j]
+        }
+      }
+    }
+    
+    return {
+      U,
+      S: singularValues,
+      Vt,
+      originalMatrix: matrix,
+      reconstructed,
+      rank: usedRank
+    }
+  }
+  
+  useEffect(() => {
+    const result = computeSVD(data)
+    setSvdResult(result)
+  }, [data, truncatedRank])
+  
+  const MatrixDisplay = ({ 
+    matrix, 
+    title, 
+    highlight = false 
+  }: { 
+    matrix: number[][], 
+    title: string,
+    highlight?: boolean 
+  }) => (
+    <div className={cn('p-4 rounded-lg border', highlight ? 'bg-accent border-foreground' : 'bg-muted border-border')}>
+      <h4 className="text-sm font-semibold mb-2">{title}</h4>
+      <div className="font-mono text-sm">
+        {matrix.map((row, i) => (
+          <div key={i} className="flex space-x-2">
+            <span>[</span>
+            {row.map((val, j) => (
+              <span key={j} className="w-12 text-center">
+                {val.toFixed(2)}
+              </span>
+            ))}
+            <span>]</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+  
+  const VectorDisplay = ({ 
+    vector, 
+    title 
+  }: { 
+    vector: number[], 
+    title: string 
+  }) => (
+    <div className="p-4 rounded-lg border bg-muted border-border">
+      <h4 className="text-sm font-semibold mb-2">{title}</h4>
+      <div className="font-mono text-sm">
+        {vector.map((val, i) => (
+          <div key={i}>σ₍{i+1}₎ = {val.toFixed(3)}</div>
+        ))}
+      </div>
+    </div>
+  )
+  
+  if (!svdResult) return <div>Computing SVD...</div>
+  
+  return (
+    <div className={cn('math-viz-container', className)}>
+      {/* Controls */}
+      <div className="col-span-2 math-controls">
+        <div className="math-slider">
+          <label>Truncated Rank (k):</label>
+          <input
+            type="range"
+            min="1"
+            max="3"
+            step="1"
+            value={truncatedRank}
+            onChange={(e) => setTruncatedRank(parseInt(e.target.value))}
+          />
+          <span className="text-xs text-center">{truncatedRank}</span>
+        </div>
+        
+        <button 
+          onClick={() => setIsAnimating(!isAnimating)}
+          className="px-4 py-2 bg-foreground text-background rounded hover:opacity-80"
+        >
+          {isAnimating ? 'Pause' : 'Animate'}
+        </button>
+      </div>
+      
+      {/* Mathematical Representation */}
+      <div className="space-y-6">
+        <DisplayMath>
+          A = U \Sigma V^T
+        </DisplayMath>
+        
+        <DisplayMath>
+          {`A_{${truncatedRank}} = \\sum_{i=1}^{${truncatedRank}} \\sigma_i u_i v_i^T`}
+        </DisplayMath>
+        
+        <div className="space-y-2">
+          <div className="text-sm font-medium">Reconstruction Error:</div>
+          <DisplayMath>
+            {`\\|A - A_{${truncatedRank}}\\|_F = ${
+              svdResult.S.slice(truncatedRank).reduce((sum, s) => sum + s*s, 0).toFixed(3)
+            }`}
+          </DisplayMath>
+        </div>
+      </div>
+      
+      {/* Matrix Visualizations */}
+      <div className="col-span-2 grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <MatrixDisplay 
+          matrix={svdResult.originalMatrix} 
+          title="Original A" 
+          highlight={true}
+        />
+        
+        <MatrixDisplay 
+          matrix={svdResult.U} 
+          title="U (Left Singular Vectors)"
+        />
+        
+        <VectorDisplay 
+          vector={svdResult.S} 
+          title="Σ (Singular Values)"
+        />
+        
+        <MatrixDisplay 
+          matrix={svdResult.Vt} 
+          title="Vᵀ (Right Singular Vectors)"
+        />
+      </div>
+      
+      {/* Reconstruction Comparison */}
+      <div className="col-span-2 grid grid-cols-2 gap-4">
+        <MatrixDisplay 
+          matrix={svdResult.originalMatrix} 
+          title="Original Matrix A"
+        />
+        
+        <MatrixDisplay 
+          matrix={svdResult.reconstructed} 
+          title={`Rank-${truncatedRank} Approximation`}
+          highlight={true}
+        />
+      </div>
+      
+      {/* Interactive Controls for Matrix Elements */}
+      <div className="col-span-2 space-y-4">
+        <h4 className="text-sm font-semibold">Edit Original Matrix:</h4>
+        <div className="grid grid-cols-3 gap-2 max-w-xs">
+          {data.map((row, i) => 
+            row.map((val, j) => (
+              <input
+                key={`${i}-${j}`}
+                type="number"
+                value={val}
+                onChange={(e) => {
+                  const newData = [...data]
+                  newData[i][j] = parseFloat(e.target.value) || 0
+                  setData(newData)
+                }}
+                className="w-16 px-2 py-1 text-xs border border-border rounded bg-background"
+                step="0.1"
+              />
+            ))
+          )}
+        </div>
+      </div>
+      
+      <div className="col-span-2 text-xs text-muted-foreground">
+        💡 Adjust the rank slider to see how SVD approximates the original matrix with fewer components. 
+        Lower ranks give more compression but less accuracy.
+      </div>
+    </div>
+  )
+}
+</file>
+
 <file path="content/linear-algebra/index.mdx">
 ---
 title: "Linear Algebra Fundamentals"
@@ -1292,89 +3005,6 @@ Av = λv
 This concept is crucial for Principal Component Analysis (PCA) and understanding data structure.
 
 > **Note:** This is placeholder content. The actual mathematical content will be written separately with proper LaTeX rendering and interactive visualizations.
-</file>
-
-<file path="content/matrices/index.mdx">
----
-title: "Advanced Matrix Theory"
-description: "Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms."
-order: 2
-estimatedTime: "40 minutes"
-difficulty: "Intermediate"
-prerequisites: ["Linear Algebra basics", "Vector operations"]
-learningObjectives:
-  - "Master advanced matrix operations"
-  - "Understand matrix decompositions (SVD, LU, QR)"
-  - "Apply matrix techniques to dimensionality reduction"
-  - "Solve systems of linear equations"
-keywords: ["matrix theory", "SVD", "matrix decomposition", "PCA", "machine learning"]
-lastUpdated: "2025-01-07"
----
-
-export const metadata = {
-  title: frontmatter.title,
-  description: frontmatter.description,
-  keywords: frontmatter.keywords,
-}
-
-# Advanced Matrix Theory
-
-Building on basic linear algebra, this chapter explores advanced matrix operations and decompositions that are fundamental to machine learning algorithms.
-
-## Matrix Decomposition
-
-Matrix decomposition is the process of breaking down a matrix into simpler, more manageable components. These decompositions are fundamental to many machine learning algorithms.
-
-### Singular Value Decomposition (SVD)
-
-The Singular Value Decomposition is one of the most important matrix factorizations in machine learning. For any matrix `A ∈ ℝᵐˣⁿ`, SVD decomposes it as:
-
-```
-A = UΣVᵀ
-```
-
-Where:
-- `U ∈ ℝᵐˣᵐ` is an orthogonal matrix (left singular vectors)
-- `Σ ∈ ℝᵐˣⁿ` is a diagonal matrix of singular values
-- `V ∈ ℝⁿˣⁿ` is an orthogonal matrix (right singular vectors)
-
-SVD reveals the intrinsic dimensionality of data and is the mathematical foundation of Principal Component Analysis (PCA).
-
-### LU Decomposition
-
-LU decomposition factors a matrix into the product of a lower triangular matrix L and an upper triangular matrix U:
-
-```
-A = LU
-```
-
-This decomposition is particularly useful for solving systems of linear equations efficiently.
-
-## Applications in Machine Learning
-
-Matrix decompositions have direct applications in many machine learning techniques.
-
-### Principal Component Analysis
-
-PCA uses eigendecomposition or SVD to find the principal components of data - the directions of maximum variance.
-
-For a data matrix X, PCA works with the covariance matrix:
-
-```
-C = (1/(n-1))XᵀX
-```
-
-### Linear Regression
-
-Linear regression seeks to find the best-fitting line through data points. The normal equation solution uses matrix operations:
-
-```
-θ = (XᵀX)⁻¹Xᵀy
-```
-
-Where X is the feature matrix, y is the target vector, and θ are the model parameters.
-
-> **Note:** This is placeholder content for demonstration. Full mathematical content with interactive visualizations will be added separately.
 </file>
 
 <file path="content/optimization/index.mdx">
@@ -2576,19 +4206,20 @@ SOFTWARE.
 
 <file path="mdx-components.tsx">
 import type { MDXComponents } from 'mdx/types'
-import { H1, H2, H3, H4, H5, H6, P, MathBlock, InlineMath } from '@/lib/utils/typography'
+import { P, MathBlock, InlineMath } from '@/lib/utils/typography'
+import { MDXHeading } from '@/components/content/MDXComponents'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // Headings with proper hierarchy and styling
-    h1: ({ children, ...props }) => <H1 {...props}>{children}</H1>,
-    h2: ({ children, ...props }) => <H2 {...props}>{children}</H2>,
-    h3: ({ children, ...props }) => <H3 {...props}>{children}</H3>,
-    h4: ({ children, ...props }) => <H4 {...props}>{children}</H4>,
-    h5: ({ children, ...props }) => <H5 {...props}>{children}</H5>,
-    h6: ({ children, ...props }) => <H6 {...props}>{children}</H6>,
+    // Headings with proper hierarchy and styling + ToC integration
+    h1: ({ children, ...props }) => <MDXHeading level={1} {...props}>{children}</MDXHeading>,
+    h2: ({ children, ...props }) => <MDXHeading level={2} {...props}>{children}</MDXHeading>,
+    h3: ({ children, ...props }) => <MDXHeading level={3} {...props}>{children}</MDXHeading>,
+    h4: ({ children, ...props }) => <MDXHeading level={4} {...props}>{children}</MDXHeading>,
+    h5: ({ children, ...props }) => <MDXHeading level={5} {...props}>{children}</MDXHeading>,
+    h6: ({ children, ...props }) => <MDXHeading level={6} {...props}>{children}</MDXHeading>,
     
     // Paragraphs with proper typography
     p: ({ children, ...props }) => <P {...props}>{children}</P>,
@@ -3039,53 +4670,6 @@ vite.config.ts.timestamp-*
 package-lock.json
 </file>
 
-<file path="app/layout.tsx">
-import type { Metadata } from 'next'
-import { ClientLayout } from '@/components/layout/ClientLayout'
-import './globals.css'
-
-export const metadata: Metadata = {
-  title: 'Interactive ML Mathematics',
-  description: 'An interactive web book for mathematics in machine learning',
-  keywords: ['mathematics', 'machine learning', 'linear algebra', 'calculus', 'statistics'],
-  authors: [{ name: 'Your Name' }],
-  robots: 'index, follow',
-  openGraph: {
-    title: 'Interactive ML Mathematics',
-    description: 'An interactive web book for mathematics in machine learning',
-    type: 'website',
-    locale: 'en_US'
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Interactive ML Mathematics',
-    description: 'An interactive web book for mathematics in machine learning'
-  }
-}
-
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1
-}
-
-interface RootLayoutProps {
-  children: React.ReactNode
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head />
-      <body className="min-h-screen antialiased">
-        <ClientLayout>
-          {children}
-        </ClientLayout>
-      </body>
-    </html>
-  )
-}
-</file>
-
 <file path="app/linear-algebra/page.tsx">
 import type { Metadata } from 'next'
 import { ChapterLayout } from '@/components/layout/ChapterLayout'
@@ -3276,6 +4860,98 @@ export default function StatisticsPage() {
 }
 </file>
 
+<file path="components/content/MDXContent.tsx">
+'use client'
+
+import React from 'react'
+import { cn } from '@/lib/utils/cn'
+
+interface MDXContentProps {
+  children: React.ReactNode
+  className?: string
+}
+
+export function MDXContent({ children, className }: MDXContentProps) {
+  return (
+    <div className={cn('mdx-content', className)}>
+      <div className="prose prose-lg max-w-none">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// Convert class component to functional component with error boundary hook
+interface MDXErrorBoundaryState {
+  hasError: boolean
+  error?: Error
+}
+
+function useErrorBoundary() {
+  const [state, setState] = React.useState<MDXErrorBoundaryState>({ hasError: false })
+
+  const resetError = () => setState({ hasError: false })
+
+  React.useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      setState({ hasError: true, error: error.error })
+    }
+
+    window.addEventListener('error', handleError)
+    return () => window.removeEventListener('error', handleError)
+  }, [])
+
+  return { ...state, resetError }
+}
+
+export function MDXErrorBoundary({ children }: { children: React.ReactNode }) {
+  const { hasError, error, resetError } = useErrorBoundary()
+
+  if (hasError) {
+    return (
+      <div className="my-8 p-6 border border-red-200 bg-red-50 rounded-lg">
+        <h3 className="text-lg font-semibold text-red-900 mb-2">
+          Content Loading Error
+        </h3>
+        <p className="text-red-700 mb-4">
+          There was an error loading this content. Please try refreshing the page.
+        </p>
+        <button
+          onClick={resetError}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+        >
+          Try Again
+        </button>
+        {process.env.NODE_ENV === 'development' && error && (
+          <details className="text-sm text-red-600 mt-4">
+            <summary className="font-medium cursor-pointer">
+              Error Details (Development)
+            </summary>
+            <pre className="mt-2 p-2 bg-red-100 rounded text-xs overflow-x-auto">
+              {error.message}
+              {error.stack}
+            </pre>
+          </details>
+        )}
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}
+
+// Wrapper that combines content and error boundary
+export function SafeMDXContent({ children, className }: MDXContentProps) {
+  return (
+    <MDXErrorBoundary>
+      <MDXContent className={className}>
+        {children}
+      </MDXContent>
+    </MDXErrorBoundary>
+  )
+}
+</file>
+
 <file path="components/layout/ClientLayout.tsx">
 'use client'
 
@@ -3374,6 +5050,246 @@ function MoonIcon({ className }: { className?: string }) {
     </svg>
   )
 }
+</file>
+
+<file path="content/matrices/index.mdx">
+---
+title: "Advanced Matrix Theory"
+description: "Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms."
+order: 2
+estimatedTime: "40 minutes"
+difficulty: "Intermediate"
+prerequisites: ["Linear Algebra basics", "Vector operations"]
+learningObjectives:
+  - "Master advanced matrix operations"
+  - "Understand matrix decompositions (SVD, LU, QR)"
+  - "Apply matrix techniques to dimensionality reduction"
+  - "Solve systems of linear equations"
+keywords: ["matrix theory", "SVD", "matrix decomposition", "PCA", "machine learning"]
+lastUpdated: "2025-01-07"
+---
+
+import { MatrixTransformation } from '@/components/visualizations/MatrixTransformation'
+import { SVDVisualization } from '@/components/visualizations/SVDVisualization'
+
+export const metadata = {
+  title: frontmatter.title,
+  description: frontmatter.description,
+  keywords: frontmatter.keywords,
+}
+
+# Advanced Matrix Theory
+
+Building on basic linear algebra, this chapter explores advanced matrix operations and decompositions that are fundamental to machine learning algorithms.
+
+## Matrix Transformations
+
+To begin, let $v$ be a vector (shown as a point) and $A$ be a matrix with columns $a_1$ and $a_2$ (shown as arrows). If we multiply $v$ by $A$, then $A$ sends $v$ to a new vector $Av$.
+
+<MatrixTransformation 
+  initialMatrix={[1.0, 0.5, 0.5, 1.0]}
+  initialVector={[2.0, 3.0]}
+  showEigenAnalysis={true}
+/>
+
+If you can draw a line through the three points $(0, 0)$, $v$ and $Av$, then $Av$ is just $v$ multiplied by a number $\lambda$; that is, $Av = \lambda v$. In this case, we call $\lambda$ an **eigenvalue** and $v$ an **eigenvector**. For example, here $(1, 2)$ is an eigenvector and $5$ an eigenvalue.
+
+$$Av = \begin{pmatrix} 1 & 2 \\ 8 & 1 \end{pmatrix} \cdot \begin{pmatrix} 1 \\ 2 \end{pmatrix} = 5 \begin{pmatrix} 1 \\ 2 \end{pmatrix} = \lambda v.$$
+
+## Matrix Decomposition
+
+Matrix decomposition is the process of breaking down a matrix into simpler, more manageable components. These decompositions reveal fundamental properties of linear transformations and enable efficient computation.
+
+### Singular Value Decomposition (SVD)
+
+The Singular Value Decomposition is one of the most important matrix factorizations in machine learning. For any matrix $A \in \mathbb{R}^{m \times n}$, SVD decomposes it as:
+
+$$A = U\Sigma V^T$$
+
+Where:
+- $U \in \mathbb{R}^{m \times m}$ is an orthogonal matrix containing left singular vectors
+- $\Sigma \in \mathbb{R}^{m \times n}$ is a diagonal matrix of singular values $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_r \geq 0$
+- $V \in \mathbb{R}^{n \times n}$ is an orthogonal matrix containing right singular vectors
+
+The singular values in $\Sigma$ are the square roots of the eigenvalues of $A^TA$:
+
+$$\sigma_i = \sqrt{\lambda_i(A^TA)}$$
+
+SVD reveals the intrinsic dimensionality of data and forms the mathematical foundation of Principal Component Analysis (PCA).
+
+<SVDVisualization />
+
+### Reduced SVD
+
+For computational efficiency, we often use the reduced (or truncated) SVD:
+
+$$A \approx U_k\Sigma_k V_k^T$$
+
+Where we keep only the $k$ largest singular values, providing the best rank-$k$ approximation to $A$ in the Frobenius norm.
+
+### LU Decomposition
+
+LU decomposition factors a matrix into the product of a lower triangular matrix $L$ and an upper triangular matrix $U$:
+
+$$A = LU$$
+
+Where:
+- $L$ has 1's on the diagonal and zeros above
+- $U$ has zeros below the diagonal
+
+This decomposition is particularly useful for solving systems of linear equations $A\vec{x} = \vec{b}$ efficiently:
+
+1. First solve $L\vec{y} = \vec{b}$ (forward substitution)
+2. Then solve $U\vec{x} = \vec{y}$ (backward substitution)
+
+### QR Decomposition
+
+QR decomposition expresses a matrix as the product of an orthogonal matrix $Q$ and an upper triangular matrix $R$:
+
+$$A = QR$$
+
+Where $Q^TQ = I$ (orthogonal) and $R$ is upper triangular.
+
+This decomposition is stable for solving least squares problems and is used in the Gram-Schmidt orthogonalization process.
+
+## Eigendecomposition
+
+For a square matrix $A \in \mathbb{R}^{n \times n}$ with $n$ linearly independent eigenvectors, we can write:
+
+$$A = PDP^{-1}$$
+
+Where:
+- $P$ contains the eigenvectors as columns
+- $D$ is diagonal with eigenvalues $\lambda_1, \lambda_2, \ldots, \lambda_n$
+
+For symmetric matrices, this becomes the spectral decomposition:
+
+$$A = Q\Lambda Q^T$$
+
+Where $Q$ is orthogonal and $\Lambda$ is diagonal with eigenvalues.
+
+## Applications in Machine Learning
+
+Matrix decompositions have direct applications in many machine learning techniques.
+
+### Principal Component Analysis (PCA)
+
+PCA uses eigendecomposition or SVD to find the principal components of data. For a centered data matrix $X \in \mathbb{R}^{m \times n}$ (m samples, n features), the covariance matrix is:
+
+$$C = \frac{1}{m-1}X^TX$$
+
+The eigenvectors of $C$ are the principal components, pointing in directions of maximum variance. The eigenvalues indicate the amount of variance explained by each component.
+
+Using SVD on the data matrix directly:
+$$X = U\Sigma V^T$$
+
+The principal components are the columns of $V$, and the projected data is $X_{\text{proj}} = XV_k$ for the first $k$ components.
+
+### Linear Regression via Normal Equations
+
+Linear regression seeks to find parameters $\vec{\theta}$ that minimize the squared error. The normal equation solution uses matrix operations:
+
+$$\vec{\theta} = (X^TX)^{-1}X^T\vec{y}$$
+
+Where $X$ is the feature matrix and $\vec{y}$ is the target vector. This can be solved efficiently using QR decomposition or SVD.
+
+### Matrix Factorization for Dimensionality Reduction
+
+Low-rank matrix approximations reduce dimensionality while preserving important structure:
+
+$$X \approx UV^T$$
+
+Where $U \in \mathbb{R}^{m \times k}$ and $V \in \mathbb{R}^{n \times k}$ with $k \ll \min(m,n)$.
+
+## Computational Considerations
+
+### Condition Numbers
+
+The condition number of a matrix $A$ is:
+
+$$\kappa(A) = \frac{\sigma_{\max}}{\sigma_{\min}}$$
+
+Where $\sigma_{\max}$ and $\sigma_{\min}$ are the largest and smallest singular values. Large condition numbers indicate numerical instability.
+
+### Rank and Nullspace
+
+The rank of matrix $A$ is the number of non-zero singular values. The nullspace (kernel) contains all vectors $\vec{x}$ such that $A\vec{x} = \vec{0}$.
+
+For data analysis:
+- **Full rank**: All features are linearly independent
+- **Rank deficient**: Some features can be expressed as combinations of others
+
+These concepts are essential for understanding feature selection, regularization, and the geometry of machine learning algorithms.
+</file>
+
+<file path="next.config.mjs">
+import createMDX from '@next/mdx'
+import remarkGfm from 'remark-gfm'
+import remarkFrontmatter from 'remark-frontmatter'
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  images: {
+    unoptimized: true
+  },
+  reactStrictMode: true,
+  swcMinify: true,
+  trailingSlash: false,
+  poweredByHeader: false
+}
+
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [
+      remarkGfm,
+      remarkFrontmatter,
+      [remarkMdxFrontmatter, { name: 'frontmatter' }],
+      // Add remark-math to process LaTeX syntax
+      remarkMath,
+    ],
+    rehypePlugins: [
+      // Add rehype-katex to render LaTeX with KaTeX
+      [rehypeKatex, {
+        // KaTeX options
+        strict: false, // Allow unknown commands
+        trust: false, // Don't trust HTML in math
+        macros: {
+          // Common mathematical macros
+          '\\R': '\\mathbb{R}',
+          '\\N': '\\mathbb{N}',
+          '\\Z': '\\mathbb{Z}',
+          '\\Q': '\\mathbb{Q}',
+          '\\C': '\\mathbb{C}',
+          '\\vec': '\\mathbf{#1}',
+          '\\norm': '\\left\\|#1\\right\\|',
+          '\\abs': '\\left|#1\\right|',
+          '\\argmax': '\\operatorname{argmax}',
+          '\\argmin': '\\operatorname{argmin}',
+          '\\trace': '\\operatorname{tr}',
+          '\\rank': '\\operatorname{rank}',
+          '\\diag': '\\operatorname{diag}',
+          '\\det': '\\operatorname{det}',
+        }
+      }],
+      rehypeSlug,
+      [rehypeAutolinkHeadings, {
+        behavior: 'wrap',
+        properties: {
+          className: ['anchor-link']
+        }
+      }],
+    ],
+  },
+})
+
+export default withMDX(nextConfig)
 </file>
 
 <file path="README.md">
@@ -3486,6 +5402,61 @@ This project serves as both an educational resource and a learning project for m
 This project is for educational purposes.
 </file>
 
+<file path="app/layout.tsx">
+import type { Metadata } from 'next'
+import { ClientLayout } from '@/components/layout/ClientLayout'
+import './globals.css'
+
+export const metadata: Metadata = {
+  title: 'Interactive ML Mathematics',
+  description: 'An interactive web book for mathematics in machine learning',
+  keywords: ['mathematics', 'machine learning', 'linear algebra', 'calculus', 'statistics'],
+  authors: [{ name: 'Your Name' }],
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Interactive ML Mathematics',
+    description: 'An interactive web book for mathematics in machine learning',
+    type: 'website',
+    locale: 'en_US'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Interactive ML Mathematics',
+    description: 'An interactive web book for mathematics in machine learning'
+  }
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1
+}
+
+interface RootLayoutProps {
+  children: React.ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* KaTeX CSS - load before any math content */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+          integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body className="min-h-screen antialiased">
+        <ClientLayout>
+          {children}
+        </ClientLayout>
+      </body>
+    </html>
+  )
+}
+</file>
+
 <file path="app/page.tsx">
 'use client'
 
@@ -3507,105 +5478,6 @@ export default function HomePage() {
   const chapters = getPublishedChapters()
   
   return <HomePageContent chapters={chapters} />
-}
-</file>
-
-<file path="next.config.js">
-import createMDX from '@next/mdx'
-import remarkGfm from 'remark-gfm'
-import remarkFrontmatter from 'remark-frontmatter'
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
-import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Enable static export capability for hosting flexibility
-  output: 'export',
-  
-  // Configure pageExtensions to include MDX files
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-  
-  // Disable image optimization for static export
-  images: {
-    unoptimized: true
-  },
-  
-  // Enable strict mode for better development experience
-  reactStrictMode: true,
-  
-  // Optimize for modern browsers
-  swcMinify: true,
-  
-  // Configure trailing slash behavior
-  trailingSlash: false,
-  
-  // Disable x-powered-by header
-  poweredByHeader: false
-}
-
-const withMDX = createMDX({
-  // Add markdown plugins here
-  options: {
-    remarkPlugins: [
-      remarkGfm,
-      remarkFrontmatter,
-      [remarkMdxFrontmatter, { name: 'frontmatter' }]
-    ],
-    rehypePlugins: [
-      rehypeSlug,
-      [rehypeAutolinkHeadings, {
-        behavior: 'wrap',
-        properties: {
-          className: ['anchor-link']
-        }
-      }]
-    ],
-  },
-})
-
-// Merge MDX config with Next.js config
-export default withMDX(nextConfig)
-</file>
-
-<file path="package.json">
-{
-  "name": "ml-math-book",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@mdx-js/loader": "^3.1.0",
-    "@mdx-js/react": "^3.1.0",
-    "@next/mdx": "^14.2.31",
-    "@types/mdx": "^2.0.13",
-    "clsx": "^2.1.1",
-    "next": "^14.2.0",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "rehype-autolink-headings": "^7.1.0",
-    "rehype-slug": "^6.0.0",
-    "remark-frontmatter": "^5.0.0",
-    "remark-gfm": "^4.0.1",
-    "remark-mdx-frontmatter": "^5.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.0",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.0",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.4",
-    "typescript": "^5.4.0"
-  }
 }
 </file>
 
@@ -4050,6 +5922,155 @@ export default config
   .mdx-content a[href]:after {
     content: " (" attr(href) ")";
     @apply text-xs text-gray-600;
+  }
+}
+
+/* Add to app/globals.css - KaTeX styling */
+
+/* Import KaTeX CSS */
+@import 'katex/dist/katex.min.css';
+
+/* KaTeX custom styling */
+@layer components {
+  /* Light theme KaTeX */
+  .katex {
+    font-size: 1.1em !important;
+    color: rgb(var(--foreground)) !important;
+  }
+  
+  .katex-display {
+    margin: 1.5em 0 !important;
+    text-align: center !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+  
+  .katex-display > .katex {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+  }
+  
+  /* Dark theme adjustments */
+  .dark .katex {
+    color: rgb(var(--foreground)) !important;
+  }
+  
+  .dark .katex .base {
+    color: rgb(var(--foreground)) !important;
+  }
+  
+  /* Responsive math */
+  @media (max-width: 640px) {
+    .katex {
+      font-size: 1em !important;
+    }
+    
+    .katex-display {
+      margin: 1em 0 !important;
+      padding: 0 1em !important;
+    }
+  }
+  
+  /* Math in content flow */
+  .mdx-content .katex-display {
+    background: rgb(var(--muted) / 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgb(var(--border));
+  }
+  
+  /* Inline math adjustments */
+  .mdx-content .katex {
+    background: rgb(var(--muted) / 0.5);
+    padding: 0.125rem 0.25rem;
+    border-radius: 4px;
+    margin: 0 0.125rem;
+  }
+}
+
+/* Interactive visualization integration */
+@layer utilities {
+  .math-viz-container {
+    @apply my-8 p-6 bg-background border border-border rounded-lg;
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+  
+  .math-equations {
+    @apply space-y-4;
+  }
+  
+  .interactive-plot {
+    @apply min-h-96 bg-muted rounded-lg;
+  }
+  
+  .math-controls {
+    @apply flex flex-wrap gap-4 p-4 bg-muted rounded-lg;
+  }
+  
+  .math-slider {
+    @apply flex flex-col space-y-2;
+  }
+  
+  .math-slider label {
+    @apply text-sm font-medium text-muted-foreground;
+  }
+  
+  .math-slider input[type="range"] {
+    @apply w-full h-2 bg-border rounded-lg appearance-none cursor-pointer;
+  }
+  
+  .math-slider input[type="range"]::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 bg-foreground rounded-full cursor-pointer;
+  }
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "ml-math-book",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@next/mdx": "^14.2.31",
+    "@types/mdx": "^2.0.13",
+    "clsx": "^2.1.1",
+    "framer-motion": "^10.16.0",
+    "katex": "^0.16.9",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-intersection-observer": "^9.5.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-katex": "^7.0.1",
+    "rehype-slug": "^6.0.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-mdx-frontmatter": "^5.2.0",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/three": "^0.160.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.0"
   }
 }
 </file>

@@ -1,3 +1,4 @@
+// components/content/MDXContent.tsx
 'use client'
 
 import React from 'react'
@@ -10,7 +11,10 @@ interface MDXContentProps {
 
 export function MDXContent({ children, className }: MDXContentProps) {
   return (
-    <div className={cn('mdx-content', className)}>
+    <div 
+      className={cn('mdx-content', className)}
+      data-content="true"
+    >
       <div className="prose prose-lg max-w-none">
         {children}
       </div>

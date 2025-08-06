@@ -1,5 +1,7 @@
+// components/content/MDXComponents.tsx
 import React from 'react'
 import { cn } from '@/lib/utils/cn'
+import { generateSlug } from '@/lib/utils/headingExtractor'
 
 interface MDXComponentProps {
   className?: string
@@ -15,7 +17,12 @@ export function MDXHeading({
 }: MDXComponentProps & { level: 1 | 2 | 3 | 4 | 5 | 6 }) {
   const Component = `h${level}` as keyof JSX.IntrinsicElements
   
-  const baseClasses = 'font-semibold text-foreground scroll-mt-16'
+  // Generate ID from heading text for ToC integration
+  const headingText = typeof children === 'string' ? children : 
+    React.Children.toArray(children).join('')
+  const id = generateSlug(headingText)
+  
+  const baseClasses = 'font-semibold text-foreground scroll-mt-20'
   const sizeClasses = {
     1: 'text-3xl sm:text-4xl lg:text-5xl mb-6 mt-0',
     2: 'text-2xl sm:text-3xl lg:text-4xl mb-4 mt-12 first:mt-0',
@@ -28,6 +35,7 @@ export function MDXHeading({
   return React.createElement(
     Component,
     {
+      id,
       className: cn(baseClasses, sizeClasses[level], className),
       ...props
     },

@@ -1,17 +1,18 @@
 import type { MDXComponents } from 'mdx/types'
-import { H1, H2, H3, H4, H5, H6, P, MathBlock, InlineMath } from '@/lib/utils/typography'
+import { P, MathBlock, InlineMath } from '@/lib/utils/typography'
+import { MDXHeading } from '@/components/content/MDXComponents'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // Headings with proper hierarchy and styling
-    h1: ({ children, ...props }) => <H1 {...props}>{children}</H1>,
-    h2: ({ children, ...props }) => <H2 {...props}>{children}</H2>,
-    h3: ({ children, ...props }) => <H3 {...props}>{children}</H3>,
-    h4: ({ children, ...props }) => <H4 {...props}>{children}</H4>,
-    h5: ({ children, ...props }) => <H5 {...props}>{children}</H5>,
-    h6: ({ children, ...props }) => <H6 {...props}>{children}</H6>,
+    // Headings with proper hierarchy and styling + ToC integration
+    h1: ({ children, ...props }) => <MDXHeading level={1} {...props}>{children}</MDXHeading>,
+    h2: ({ children, ...props }) => <MDXHeading level={2} {...props}>{children}</MDXHeading>,
+    h3: ({ children, ...props }) => <MDXHeading level={3} {...props}>{children}</MDXHeading>,
+    h4: ({ children, ...props }) => <MDXHeading level={4} {...props}>{children}</MDXHeading>,
+    h5: ({ children, ...props }) => <MDXHeading level={5} {...props}>{children}</MDXHeading>,
+    h6: ({ children, ...props }) => <MDXHeading level={6} {...props}>{children}</MDXHeading>,
     
     // Paragraphs with proper typography
     p: ({ children, ...props }) => <P {...props}>{children}</P>,

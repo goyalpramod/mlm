@@ -1,6 +1,8 @@
+// components/layout/ChapterLayout.tsx
 import { Chapter } from '@/types/content'
 import { Container } from '@/components/ui/Container'
 import { ChapterNavigation } from './ChapterNavigation'
+import { TableOfContents } from '@/components/navigation/TableOfContents'
 import { H1, P, Small } from '@/lib/utils/typography'
 import { getDifficultyColor, formatReadingTime } from '@/lib/utils/navigation'
 import { cn } from '@/lib/utils/cn'
@@ -84,13 +86,16 @@ export function ChapterLayout({
         </Container>
       </section>
 
-      {/* Chapter Content */}
-      <main className="py-16">
+      {/* Chapter Content with ToC */}
+      <main className="py-16 relative">
         <Container size="normal">
           <div className="max-w-3xl">
             {children}
           </div>
         </Container>
+        
+        {/* Table of Contents - Fixed positioned */}
+        <TableOfContents className="fixed top-16 right-4 z-30" />
       </main>
 
       {/* Chapter Navigation */}
