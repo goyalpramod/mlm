@@ -662,3 +662,13 @@
 .duration-2000 {
   transition-duration: 2000ms;
 }
+
+/* Tinos font for main headings */
+.font-tinos {
+  font-family: 'Tinos', serif !important;
+}
+
+/* Apply Tinos to all h1 headings by default */
+h1 {
+  font-family: 'Tinos', serif !important;
+}

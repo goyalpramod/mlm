@@ -4,6 +4,7 @@ import { Chapter } from '@/types/content'
 import { Container } from '@/components/ui/Container'
 import { ChapterNavigation } from './ChapterNavigation'
 import { TableOfContents } from '@/components/navigation/TableOfContents'
+import { ProgressBar } from '@/components/navigation/ProgressBar'
 import { H1 } from '@/lib/utils/typography'
 
 interface ChapterLayoutProps {
@@ -21,15 +22,17 @@ export function ChapterLayout({
 }: ChapterLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-
-      {/* Notion-style ToC Sidebar - Left Middle */}
+      {/* Progress Bar */}
+      <ProgressBar />
+      
+      {/* ToC Sidebar */}
       <TableOfContents className="fixed top-1/2 left-4 transform -translate-y-1/2 z-40" />
 
       {/* Main Content */}
       <main className="py-16">
         <Container size="normal">
           <div className="max-w-3xl">
-            {/* Simple Chapter Title */}
+            {/* Chapter Title */}
             <H1 className="mb-8">{chapter.title}</H1>
             
             {/* Chapter Content */}
@@ -38,7 +41,7 @@ export function ChapterLayout({
         </Container>
       </main>
 
-      {/* Previous/Next Navigation at Bottom */}
+      {/* Chapter Navigation */}
       <ChapterNavigation
         previousChapter={previousChapter}
         nextChapter={nextChapter}

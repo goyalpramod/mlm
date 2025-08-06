@@ -1,11 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { useAdvancedSectionObserver } from '@/lib/hooks/useAdvancedSectionObserver'
-import { generatePageToC, updateToCActiveStates } from '@/lib/navigation/tocGenerator'
-import { ToCItem } from '@/types/navigation'
 import { chapters } from '@/lib/data/chapters'
 import { cn } from '@/lib/utils/cn'
 
@@ -15,17 +11,6 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ className }: TableOfContentsProps) {
   const [isVisible, setIsVisible] = useState(false)
-  const [tocItems, setTocItems] = useState<ToCItem[]>([])
-  const { activeSection } = useAdvancedSectionObserver()
-  const router = useRouter()
-  
-  // Generate ToC on mount
-  useEffect(() => {
-    const items = generatePageToC()
-    setTocItems(items)
-  }, [])
-  
-  const itemsWithActiveStates = updateToCActiveStates(tocItems, activeSection)
   
   return (
     <div className={className}>
@@ -40,7 +25,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
         </svg>
       </button>
       
-      {/* Notion-style ToC Panel with smooth transition */}
+      {/* ToC Panel */}
       <div 
         className={cn(
           "absolute top-1/2 left-0 transform -translate-y-1/2",
@@ -61,12 +46,6 @@ export function TableOfContents({ className }: TableOfContentsProps) {
           >
             Home
           </Link>
-          <Link 
-            href="/#why" 
-            className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
-          >
-            Why I built this
-          </Link>
         </div>
         
         <div className="border-t border-border pt-4 mb-4">
@@ -82,29 +61,13 @@ export function TableOfContents({ className }: TableOfContentsProps) {
           ))}
         </div>
         
-        {/* Current Chapter Sections */}
-        {itemsWithActiveStates.length > 0 && (
-          <div className="border-t border-border pt-4">
-            <div className="text-xs font-medium text-muted-foreground mb-2 px-2">ON THIS PAGE</div>
-            <div className="space-y-1">
-              {itemsWithActiveStates.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className={cn(
-                    'block px-2 py-1 text-sm rounded transition-colors',
-                    item.isActive
-                      ? 'text-foreground bg-accent font-medium'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                  )}
-                  style={{ paddingLeft: `${8 + (item.level - 1) * 12}px` }}
-                >
-                  {item.title}
-                </a>
-              ))}
-            </div>
+        {/* ON THIS PAGE - We'll add this back later with a simpler approach */}
+        <div className="border-t border-border pt-4">
+          <div className="text-xs font-medium text-muted-foreground mb-2 px-2">ON THIS PAGE</div>
+          <div className="text-xs text-muted-foreground px-2">
+            Headings will appear here
           </div>
-        )}
+        </div>
       </div>
     </div>
   )

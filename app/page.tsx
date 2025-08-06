@@ -91,9 +91,8 @@ export default function HomePage() {
       {currentStep === 'why' && (
         <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center animate-fade-in overflow-hidden">
           <div className="max-w-2xl p-8 text-center">
-            <h1 className="text-4xl font-bold mb-6 text-black">Why I built this</h1>
+            <h1 className="text-4xl font-bold mb-6 text-black font-tinos">Why I built this</h1>
             <p className="text-lg text-gray-800 leading-relaxed mb-8">
-              {/* You'll replace this with your content */}
               Mathematics is the language of machine learning, yet most resources treat it as dry theory. 
               I built this interactive book to make complex mathematical concepts intuitive through 
               visualizations and hands-on exploration.
@@ -115,7 +114,7 @@ export default function HomePage() {
       {currentStep === 'toc' && (
         <div className="fixed inset-0 bg-white flex items-center justify-center animate-fade-in overflow-y-auto">
           <div className="max-w-3xl p-8">
-            <h1 className="text-4xl font-bold mb-8 text-center text-black">Table of Contents</h1>
+            <h1 className="text-4xl font-bold mb-8 text-center text-black font-tinos">Table of Contents</h1>
             <div className="space-y-4">
               {chapters.map((chapter, index) => (
                 <button
