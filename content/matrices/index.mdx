@@ -14,47 +14,9 @@ keywords: ["matrix theory", "SVD", "matrix decomposition", "PCA", "machine learn
 lastUpdated: "2025-01-07"
 ---
 
-import { MatrixTransformation } from '@/components/visualizations/matrices/MatrixTransformation'
 
 export const metadata = {
   title: frontmatter.title,
   description: frontmatter.description,
   keywords: frontmatter.keywords,
 }
-
-# Advanced Matrix Theory
-
-Building on basic linear algebra, this chapter explores advanced matrix operations and decompositions that are fundamental to machine learning algorithms.
-
-## Matrix Transformations
-
-To begin, let $v$ be a vector (shown as a point) and $A$ be a matrix with columns $a_1$ and $a_2$ (shown as arrows). If we multiply $v$ by $A$, then $A$ sends $v$ to a new vector $Av$.
-
-<MatrixTransformation 
-  initialMatrix={[1.0, 0.5, 0.5, 1.0]}
-  initialVector={[2.0, 3.0]}
-  showEigenAnalysis={true}
-/>
-
-If you can draw a line through the three points $(0, 0)$, $v$ and $Av$, then $Av$ is just $v$ multiplied by a number $\lambda$; that is, $Av = \lambda v$. In this case, we call $\lambda$ an **eigenvalue** and $v$ an **eigenvector**. For example, here $(1, 2)$ is an eigenvector and $5$ an eigenvalue.
-
-$$Av = \begin{pmatrix} 1 & 2 \\ 8 & 1 \end{pmatrix} \cdot \begin{pmatrix} 1 \\ 2 \end{pmatrix} = 5 \begin{pmatrix} 1 \\ 2 \end{pmatrix} = \lambda v.$$
-
-## Matrix Decomposition
-
-Matrix decomposition is the process of breaking down a matrix into simpler, more manageable components. These decompositions reveal fundamental properties of linear transformations and enable efficient computation.
-
-### Singular Value Decomposition (SVD)
-
-The Singular Value Decomposition is one of the most important matrix factorizations in machine learning. For any matrix $A \in \mathbb{R}^{m \times n}$, SVD decomposes it as:
-
-$$A = U\Sigma V^T$$
-
-Where:
-- $U \in \mathbb{R}^{m \times m}$ is an orthogonal matrix containing left singular vectors
-- $\Sigma \in \mathbb{R}^{m \times n}$ is a diagonal matrix of singular values $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_r \geq 0$
-- $V \in \mathbb{R}^{n \times n}$ is an orthogonal matrix containing right singular vectors
-
-The singular values in $\Sigma$ are the square roots of the eigenvalues of $A^TA$:
-
-$$\sigma_i = \sqrt{\lambda_i(A^TA)}$$
