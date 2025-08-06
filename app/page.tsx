@@ -80,7 +80,7 @@ export default function HomePage() {
         <div className="fixed animate-fade-in" style={{ bottom: '118px', right: '33.333%' }}>
           <span
             onClick={handleBeginClick}
-            className="text-black text-lg underline cursor-pointer hover:no-underline"
+            className="text-black text-2xl underline cursor-pointer hover:no-underline"
           >
             Let's begin
           </span>
@@ -102,7 +102,7 @@ export default function HomePage() {
             <div className="fixed" style={{ bottom: '118px', right: '33.333%' }}>
               <span
                 onClick={handleNextClick}
-                className="text-black text-lg underline cursor-pointer hover:no-underline"
+                className="text-black text-2xl underline cursor-pointer hover:no-underline"
               >
                 Next page
               </span>
