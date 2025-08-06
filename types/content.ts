@@ -2,32 +2,8 @@ export interface Chapter {
   id: string
   title: string
   slug: string
-  description: string
-  icon: string
   order: number
-  readingTime: number // in minutes
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
-  prerequisites: string[]
-  learningObjectives: string[]
-  sections: Section[]
   published: boolean
-}
-
-export interface Section {
-  id: string
-  title: string
-  slug: string
-  order: number
-  subsections?: Subsection[]
-  estimatedTime?: number // in minutes
-}
-
-export interface Subsection {
-  id: string
-  title: string
-  slug: string
-  order: number
-  estimatedTime?: number // in minutes
 }
 
 export interface ChapterNavigation {
