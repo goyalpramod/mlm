@@ -663,3 +663,22 @@
 .nav-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgb(var(--foreground));
 }
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 2 second transition duration */
+.duration-2000 {
+  transition-duration: 2000ms;
+}

@@ -1,17 +1,11 @@
-// components/layout/ChapterLayout.tsx
 'use client'
 
 import { Chapter } from '@/types/content'
 import { Container } from '@/components/ui/Container'
 import { ChapterNavigation } from './ChapterNavigation'
 import { TableOfContents } from '@/components/navigation/TableOfContents'
-import { ScrollNavigation } from '@/components/navigation/ScrollNavigation'
-import { MiniNavigator } from '@/components/navigation/MiniNavigator'
-import { ChapterBreadcrumb } from '@/components/navigation/Breadcrumb'
-import { H1, P, Small } from '@/lib/utils/typography'
-import { getDifficultyColor, formatReadingTime } from '@/lib/utils/navigation'
-import { cn } from '@/lib/utils/cn'
-import { useState } from 'react'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { H1 } from '@/lib/utils/typography'
 
 interface ChapterLayoutProps {
   chapter: Chapter
@@ -26,112 +20,30 @@ export function ChapterLayout({
   previousChapter,
   nextChapter
 }: ChapterLayoutProps) {
-  const [tocExpanded, setTocExpanded] = useState(false)
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumb Navigation */}
-      <section className="py-4 border-b border-border bg-muted/10">
-        <Container size="normal">
-          <ChapterBreadcrumb 
-            chapterTitle={chapter.title}
-            chapterHref={`/${chapter.slug}`}
-          />
-        </Container>
-      </section>
+      {/* Floating Theme Toggle - Top Right */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
 
-      {/* Chapter Header */}
-      <section className="py-12 border-b border-border bg-muted/30">
+      {/* Notion-style ToC Sidebar - Right Middle */}
+      <TableOfContents className="fixed top-1/2 right-4 transform -translate-y-1/2 z-40" />
+
+      {/* Main Content */}
+      <main className="py-16">
         <Container size="normal">
           <div className="max-w-3xl">
-            {/* Chapter metadata */}
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-              <span className="text-2xl">{chapter.icon}</span>
-              <div className="flex flex-wrap items-center gap-3 text-sm">
-                <span className={cn(
-                  'px-2 py-1 rounded-full border text-xs font-medium',
-                  getDifficultyColor(chapter.difficulty)
-                )}>
-                  {chapter.difficulty}
-                </span>
-                <span className="text-muted-foreground">
-                  {formatReadingTime(chapter.readingTime)}
-                </span>
-                <span className="text-muted-foregreen">
-                  Chapter {chapter.order}
-                </span>
-              </div>
-            </div>
-
-            {/* Chapter title and description */}
-            <H1 className="mb-4">{chapter.title}</H1>
-            <P className="text-xl text-muted-foreground leading-relaxed">
-              {chapter.description}
-            </P>
-
-            {/* Prerequisites */}
-            {chapter.prerequisites.length > 0 && (
-              <div className="mt-6 p-4 bg-background rounded-lg border border-border">
-                <h3 className="font-semibold text-foreground mb-2">Prerequisites</h3>
-                <div className="flex flex-wrap gap-2">
-                  {chapter.prerequisites.map((prerequisite, index) => (
-                    <span
-                      key={index}
-                      className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded-full"
-                    >
-                      {prerequisite}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Learning objectives */}
-            {chapter.learningObjectives.length > 0 && (
-              <div className="mt-4 p-4 bg-background rounded-lg border border-border">
-                <h3 className="font-semibold text-foreground mb-2">What You'll Learn</h3>
-                <ul className="space-y-1">
-                  {chapter.learningObjectives.map((objective, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start">
-                      <span className="text-foreground mr-2">•</span>
-                      {objective}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </Container>
-      </section>
-
-      {/* Chapter Content with Enhanced Navigation */}
-      <main className="py-16 relative">
-        <Container size="normal">
-          <div className="max-w-3xl">
+            {/* Simple Chapter Title */}
+            <H1 className="mb-8">{chapter.title}</H1>
+            
+            {/* Chapter Content */}
             {children}
           </div>
         </Container>
-        
-        {/* Enhanced Navigation Components */}
-        <TableOfContents 
-          className="fixed top-16 right-4 z-30" 
-        />
-        
-        <ScrollNavigation
-          showProgress={true}
-          showKeyboardShortcuts={true}
-          estimatedReadingTime={chapter.readingTime}
-          onTocToggle={() => setTocExpanded(!tocExpanded)}
-        />
-        
-        <MiniNavigator
-          autoHide={true}
-          position="bottom-right"
-          showSectionInfo={true}
-        />
       </main>
 
-      {/* Chapter Navigation */}
+      {/* Previous/Next Navigation at Bottom */}
       <ChapterNavigation
         previousChapter={previousChapter}
         nextChapter={nextChapter}
