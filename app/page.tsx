@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { chapters } from '@/lib/data/chapters'
 
 export default function HomePage() {
   const [imageVisible, setImageVisible] = useState(false)
@@ -50,14 +51,6 @@ export default function HomePage() {
   const handleNextClick = () => {
     setCurrentStep('toc')
   }
-
-  const chapters = [
-    { id: 'linear-algebra', title: 'Linear Algebra', slug: 'linear-algebra' },
-    { id: 'matrices', title: 'Advanced Matrix Theory', slug: 'matrices' },
-    { id: 'probability', title: 'Probability Theory', slug: 'probability' },
-    { id: 'statistics', title: 'Statistics for ML', slug: 'statistics' },
-    { id: 'optimization', title: 'Optimization Theory', slug: 'optimization' }
-  ]
 
   return (
     <div className="h-screen bg-white relative overflow-hidden">

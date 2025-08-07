@@ -42,10 +42,6 @@ export const getChapterBySlug = (slug: string): Chapter | undefined => {
   return chapters.find(chapter => chapter.slug === slug)
 }
 
-export const getChapterById = (id: string): Chapter | undefined => {
-  return chapters.find(chapter => chapter.id === id)
-}
-
 export const getPublishedChapters = (): Chapter[] => {
   return chapters.filter(chapter => chapter.published).sort((a, b) => a.order - b.order)
 }
