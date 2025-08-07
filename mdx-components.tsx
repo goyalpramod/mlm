@@ -1,12 +1,11 @@
 import type { MDXComponents } from 'mdx/types'
-import { P, MathBlock, InlineMath } from '@/lib/utils/typography'
-import { MDXHeading } from '@/components/content/MDXComponents'
+import { MDXHeading, BlockQuote, CodeBlock } from '@/components/content/MDXComponents'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // Headings with proper hierarchy and styling + ToC integration
+    // Headings with proper hierarchy and navigation IDs
     h1: ({ children, ...props }) => <MDXHeading level={1} {...props}>{children}</MDXHeading>,
     h2: ({ children, ...props }) => <MDXHeading level={2} {...props}>{children}</MDXHeading>,
     h3: ({ children, ...props }) => <MDXHeading level={3} {...props}>{children}</MDXHeading>,
@@ -14,8 +13,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h5: ({ children, ...props }) => <MDXHeading level={5} {...props}>{children}</MDXHeading>,
     h6: ({ children, ...props }) => <MDXHeading level={6} {...props}>{children}</MDXHeading>,
     
-    // Paragraphs with proper typography
-    p: ({ children, ...props }) => <P {...props}>{children}</P>,
+    // Paragraphs
+    p: ({ children, ...props }) => (
+      <p className="text-foreground mb-4 leading-relaxed" {...props}>
+        {children}
+      </p>
+    ),
     
     // Links with Next.js optimization
     a: ({ href, children, ...props }) => {
@@ -31,6 +34,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           href={href} 
           target={href?.startsWith('http') ? '_blank' : undefined}
           rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+          className="text-foreground underline underline-offset-4 decoration-muted-foreground hover:decoration-foreground transition-colors"
           {...props}
         >
           {children}
@@ -45,12 +49,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         alt={alt || ''}
         width={800}
         height={400}
-        className="rounded-lg border border-border my-6"
+        className="rounded-lg border border-border my-6 mx-auto"
         {...props}
       />
     ),
     
-    // Lists with proper styling
+    // Lists
     ul: ({ children, ...props }) => (
       <ul className="list-disc pl-6 mb-4 space-y-1" {...props}>
         {children}
@@ -67,65 +71,24 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </li>
     ),
     
-    // Code blocks and inline code
+    // Code (inline and blocks handled by KaTeX and rehype)
     code: ({ children, className, ...props }) => {
       const isInline = !className
       if (isInline) {
-        return <InlineMath {...props}>{children}</InlineMath>
+        return (
+          <code 
+            className="font-mono bg-muted px-1 py-0.5 rounded text-foreground text-sm"
+            {...props}
+          >
+            {children}
+          </code>
+        )
       }
-      return (
-        <code 
-          className="block p-4 bg-muted rounded-lg border border-border overflow-x-auto font-mono text-sm"
-          {...props}
-        >
-          {children}
-        </code>
-      )
+      return <CodeBlock className={className} {...props}>{children}</CodeBlock>
     },
     
-    pre: ({ children, ...props }) => (
-      <MathBlock {...props}>
-        {children}
-      </MathBlock>
-    ),
-    
     // Blockquotes
-    blockquote: ({ children, ...props }) => (
-      <blockquote 
-        className="border-l-4 border-border pl-4 italic text-muted-foreground my-6"
-        {...props}
-      >
-        {children}
-      </blockquote>
-    ),
-    
-    // Tables
-    table: ({ children, ...props }) => (
-      <div className="overflow-x-auto my-6">
-        <table 
-          className="w-full border-collapse border border-border"
-          {...props}
-        >
-          {children}
-        </table>
-      </div>
-    ),
-    th: ({ children, ...props }) => (
-      <th 
-        className="border border-border px-4 py-2 bg-muted font-semibold text-left"
-        {...props}
-      >
-        {children}
-      </th>
-    ),
-    td: ({ children, ...props }) => (
-      <td 
-        className="border border-border px-4 py-2"
-        {...props}
-      >
-        {children}
-      </td>
-    ),
+    blockquote: ({ children, ...props }) => <BlockQuote {...props}>{children}</BlockQuote>,
     
     // Horizontal rule
     hr: (props) => (

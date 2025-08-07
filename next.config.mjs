@@ -1,11 +1,8 @@
 import createMDX from '@next/mdx'
 import remarkGfm from 'remark-gfm'
-import remarkFrontmatter from 'remark-frontmatter'
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,7 +12,6 @@ const nextConfig = {
     unoptimized: true
   },
   reactStrictMode: true,
-  swcMinify: true,
   trailingSlash: false,
   poweredByHeader: false
 }
@@ -23,20 +19,15 @@ const nextConfig = {
 const withMDX = createMDX({
   options: {
     remarkPlugins: [
-      remarkGfm,
-      remarkFrontmatter,
-      [remarkMdxFrontmatter, { name: 'frontmatter' }],
-      // Add remark-math to process LaTeX syntax
-      remarkMath,
+      remarkGfm,        // GitHub Flavored Markdown
+      remarkMath,       // LaTeX math syntax
     ],
     rehypePlugins: [
-      // Add rehype-katex to render LaTeX with KaTeX
-      [rehypeKatex, {
-        // KaTeX options
-        strict: false, // Allow unknown commands
-        trust: false, // Don't trust HTML in math
+      [rehypeKatex, {   // Render LaTeX with KaTeX
+        strict: false,
+        trust: false,
         macros: {
-          // Common mathematical macros
+          // Common math macros
           '\\R': '\\mathbb{R}',
           '\\N': '\\mathbb{N}',
           '\\Z': '\\mathbb{Z}',
@@ -45,21 +36,9 @@ const withMDX = createMDX({
           '\\vec': '\\mathbf{#1}',
           '\\norm': '\\left\\|#1\\right\\|',
           '\\abs': '\\left|#1\\right|',
-          '\\argmax': '\\operatorname{argmax}',
-          '\\argmin': '\\operatorname{argmin}',
-          '\\trace': '\\operatorname{tr}',
-          '\\rank': '\\operatorname{rank}',
-          '\\diag': '\\operatorname{diag}',
-          '\\det': '\\operatorname{det}',
         }
       }],
-      rehypeSlug,
-      [rehypeAutolinkHeadings, {
-        behavior: 'wrap',
-        properties: {
-          className: ['anchor-link']
-        }
-      }],
+      rehypeSlug,       // Add IDs to headings for navigation
     ],
   },
 })
