@@ -4,22 +4,22 @@ import { getChapterBySlug } from '@/lib/data/chapters'
 import { getChapterNavigation } from '@/lib/utils/navigation'
 import { notFound } from 'next/navigation'
 import { SafeMDXContent } from '@/components/content/MDXContent'
-import StatisticsContent from '@/content/statistics/index.mdx'
+import CalculusContent from '@/content/calculus/index.mdx'
 
 export const metadata: Metadata = {
-  title: 'Statistics for ML | Interactive ML Mathematics',
-  description: 'Statistical methods, hypothesis testing, and inference techniques used in machine learning.',
-  keywords: ['statistics', 'hypothesis testing', 'confidence intervals', 'regression analysis', 'machine learning'],
+  title: 'Calculus | Interactive ML Mathematics',
+  description: 'Learn differential and integral calculus concepts essential for understanding machine learning algorithms.',
+  keywords: ['calculus', 'derivatives', 'integrals', 'optimization', 'machine learning', 'mathematics'],
 }
 
-export default function StatisticsPage() {
-  const chapter = getChapterBySlug('statistics')
+export default function CalculusPage() {
+  const chapter = getChapterBySlug('calculus')
   
   if (!chapter) {
     notFound()
   }
   
-  const navigation = getChapterNavigation('statistics')
+  const navigation = getChapterNavigation('calculus')
   
   return (
     <ChapterLayout
@@ -28,7 +28,7 @@ export default function StatisticsPage() {
       nextChapter={navigation?.next}
     >
       <SafeMDXContent>
-        <StatisticsContent />
+        <CalculusContent />
       </SafeMDXContent>
     </ChapterLayout>
   )

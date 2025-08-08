@@ -4,22 +4,22 @@ import { getChapterBySlug } from '@/lib/data/chapters'
 import { getChapterNavigation } from '@/lib/utils/navigation'
 import { notFound } from 'next/navigation'
 import { SafeMDXContent } from '@/components/content/MDXContent'
-import ProbabilityContent from '@/content/probability/index.mdx'
+import MachineLearningContent from '@/content/machine-learning/index.mdx'
 
 export const metadata: Metadata = {
-  title: 'Probability Theory | Interactive ML Mathematics',
-  description: 'Learn probability fundamentals, random variables, and distributions essential for machine learning.',
-  keywords: ['probability theory', 'random variables', 'distributions', 'bayes theorem', 'machine learning'],
+  title: 'Machine Learning | Interactive ML Mathematics',
+  description: 'Apply mathematical concepts to understand machine learning algorithms and their implementations.',
+  keywords: ['machine learning', 'algorithms', 'neural networks', 'supervised learning', 'unsupervised learning'],
 }
 
-export default function ProbabilityPage() {
-  const chapter = getChapterBySlug('probability')
+export default function MachineLearningPage() {
+  const chapter = getChapterBySlug('machine-learning')
   
   if (!chapter) {
     notFound()
   }
   
-  const navigation = getChapterNavigation('probability')
+  const navigation = getChapterNavigation('machine-learning')
   
   return (
     <ChapterLayout
@@ -28,7 +28,7 @@ export default function ProbabilityPage() {
       nextChapter={navigation?.next}
     >
       <SafeMDXContent>
-        <ProbabilityContent />
+        <MachineLearningContent />
       </SafeMDXContent>
     </ChapterLayout>
   )

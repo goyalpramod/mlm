@@ -3,81 +3,9 @@ import { VectorBreakout } from '@/components/visualizations/linear-algebra/Vecto
 
 <VectorBreakout />
 
-Linear algebra forms the mathematical foundation of machine learning. At its core are vectors - mathematical objects that represent both magnitude and direction.
+Linear algebra
 
-## Vectors and Vector Spaces
+Matrices 
 
-A vector is an ordered collection of numbers. In machine learning, we typically work with column vectors. For example, a 3-dimensional vector can be written as:
-<VectorAddition />
+Geometry 
 
-```
-v = [v₁, v₂, v₃]ᵀ
-```
-
-$\eta = 42$
-
-Where `v₁`, `v₂`, and `v₃` are the components of the vector.
-
-### Vector Operations
-
-Several fundamental operations can be performed on vectors:
-
-**Vector Addition:** When we add two vectors of the same dimension, we add their corresponding components:
-
-```
-a + b = [a₁ + b₁, a₂ + b₂, a₃ + b₃]ᵀ
-```
-
-### Scalar Multiplication
-
-Multiplying a vector by a scalar scales all components:
-
-```
-c · v = [c·v₁, c·v₂, c·v₃]ᵀ
-```
-
-### Dot Product
-
-The dot product of two vectors produces a scalar:
-
-```
-a · b = a₁b₁ + a₂b₂ + a₃b₃
-```
-
-## Matrix Operations
-
-Matrices are rectangular arrays of numbers that can be thought of as collections of vectors. In machine learning, matrices represent datasets, transformations, and model parameters.
-
-### Matrix Fundamentals
-
-A matrix A with m rows and n columns is denoted as `A ∈ ℝᵐˣⁿ`. Each element is accessed using row and column indices: `A[i,j]` or `aᵢⱼ`.
-
-### Matrix Multiplication
-
-Matrix multiplication is fundamental to many machine learning algorithms. For matrices `A ∈ ℝᵐˣⁿ` and `B ∈ ℝⁿˣᵖ`, their product `C = AB` has dimensions `m × p`.
-
-## Eigenvalues and Eigenvectors
-
-Eigenvalues and eigenvectors reveal important properties of linear transformations and are essential for understanding dimensionality reduction techniques.
-
-For a square matrix A, an eigenvector v and its corresponding eigenvalue λ satisfy:
-
-```
-Av = λv
-```
-
-### Applications in Machine Learning
-
-This concept is crucial for Principal Component Analysis (PCA) and understanding data structure.
-
-### Computing Eigenvalues
-
-The characteristic equation is used to find eigenvalues:
-
-```
-det(A - λI) = 0
-```
-
-## Summary
-
-Linear algebra provides the foundation for understanding how machine learning algorithms manipulate and transform data through mathematical operations.

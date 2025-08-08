@@ -4,22 +4,22 @@ import { getChapterBySlug } from '@/lib/data/chapters'
 import { getChapterNavigation } from '@/lib/utils/navigation'
 import { notFound } from 'next/navigation'
 import { SafeMDXContent } from '@/components/content/MDXContent'
-import MatricesContent from '@/content/matrices/index.mdx'
+import ProbabilityStatisticsContent from '@/content/probability-statistics/index.mdx'
 
 export const metadata: Metadata = {
-  title: 'Advanced Matrix Theory | Interactive ML Mathematics',
-  description: 'Deep dive into matrix decompositions, transformations, and their applications in machine learning algorithms.',
-  keywords: ['matrix theory', 'SVD', 'matrix decomposition', 'PCA', 'machine learning', 'linear algebra'],
+  title: 'Probability & Statistics | Interactive ML Mathematics',
+  description: 'Learn probability theory, statistics, and distributions essential for machine learning.',
+  keywords: ['probability', 'statistics', 'distributions', 'bayes theorem', 'hypothesis testing', 'machine learning'],
 }
 
-export default function MatricesPage() {
-  const chapter = getChapterBySlug('matrices')
+export default function ProbabilityStatisticsPage() {
+  const chapter = getChapterBySlug('probability-statistics')
   
   if (!chapter) {
     notFound()
   }
   
-  const navigation = getChapterNavigation('matrices')
+  const navigation = getChapterNavigation('probability-statistics')
   
   return (
     <ChapterLayout
@@ -28,7 +28,7 @@ export default function MatricesPage() {
       nextChapter={navigation?.next}
     >
       <SafeMDXContent>
-        <MatricesContent />
+        <ProbabilityStatisticsContent />
       </SafeMDXContent>
     </ChapterLayout>
   )

@@ -9,30 +9,30 @@ export const chapters: Chapter[] = [
     published: true
   },
   {
-    id: 'matrices',
-    title: 'Advanced Matrix Theory',
-    slug: 'matrices',
+    id: 'calculus',
+    title: 'Calculus',
+    slug: 'calculus',
     order: 2,
     published: true
   },
   {
-    id: 'probability',
-    title: 'Probability Theory',
-    slug: 'probability',
+    id: 'probability-statistics',
+    title: 'Probability & Statistics',
+    slug: 'probability-statistics',
     order: 3,
     published: true
   },
   {
-    id: 'statistics',
-    title: 'Statistics for ML',
-    slug: 'statistics',
+    id: 'optimization',
+    title: 'Optimization',
+    slug: 'optimization',
     order: 4,
     published: true
   },
   {
-    id: 'optimization',
-    title: 'Optimization Theory',
-    slug: 'optimization',
+    id: 'machine-learning',
+    title: 'Machine Learning',
+    slug: 'machine-learning',
     order: 5,
     published: true
   }

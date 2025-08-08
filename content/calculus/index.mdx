@@ -1,0 +1,39 @@
+# Calculus
+
+Calculus is the mathematical study of continuous change. In machine learning, calculus helps us understand how small changes in model parameters affect the overall performance, enabling optimization algorithms to find the best solutions.
+
+## Derivatives
+
+A derivative measures how a function changes as its input changes. In machine learning, derivatives tell us how the loss function changes with respect to model parameters.
+
+### The Derivative Formula
+
+For a function f(x), the derivative is defined as:
+
+```
+f'(x) = lim(h→0) [f(x+h) - f(x)] / h
+```
+
+### Chain Rule
+
+The chain rule is crucial for backpropagation in neural networks:
+
+```
+d/dx [f(g(x))] = f'(g(x)) · g'(x)
+```
+
+## Partial Derivatives
+
+When dealing with functions of multiple variables, we use partial derivatives to see how the function changes with respect to one variable while keeping others constant.
+
+### Gradient
+
+The gradient is a vector of all partial derivatives:
+
+```
+∇f = [∂f/∂x₁, ∂f/∂x₂, ..., ∂f/∂xₙ]
+```
+
+## Applications in Machine Learning
+
+Calculus enables gradient descent, the fundamental optimization algorithm that trains machine learning models by following the negative gradient to minimize loss functions.

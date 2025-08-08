@@ -7,7 +7,7 @@ import { SafeMDXContent } from '@/components/content/MDXContent'
 import OptimizationContent from '@/content/optimization/index.mdx'
 
 export const metadata = {
-  title: 'Optimization Theory | Interactive ML Mathematics',
+  title: 'Optimization | Interactive ML Mathematics',
   description: 'Mathematical optimization techniques including gradient descent and algorithms used to train machine learning models.',
   keywords: ['optimization', 'gradient descent', 'convex optimization', 'machine learning', 'algorithms'],
 }
