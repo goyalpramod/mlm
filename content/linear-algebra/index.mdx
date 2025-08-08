@@ -3,21 +3,103 @@ import { VectorBreakout } from '@/components/visualizations/linear-algebra/Vecto
 
 <VectorBreakout />
 
+# Linear Algebra
+
+Linear algebra sounds like such a scary topic when you first hear about it. But it soon becomes quite simple when you see what it really is. 
+Just lines on an imaginary space. 
+
+[Linear](https://dictionary.cambridge.org/dictionary/english/linear) quite literally means lines, and algebra is just a complex word for naming and doing calculations 
+on imaginary quatities. 
+
+Now at times as you progress through the book, some scary archaic symbols, long equations, weird naming will be thrown at you. But I will be with you throughout the journey 
+breaking down concepts into simple visuals and there most basic form. This [first principles thinking](https://fs.blog/first-principles/) will help you throughout your adventure of learning ML. 
+
+Remember what we said, Linear algebra is just lines on imaginary space. Nothing too scary about that. 
+
 ## Vectors & Vector Spaces
 
 ### What are Vectors?
 
-These are vectors [explain them with sketches and lines and stuff]
+Depending on which field of study you come from a vector can mean different things to you. The confusion is made worse when we talk about vectors in code (1D array)
+and in math.
+
+We will keep it simple and build all our ideas on these 3 points:
+
+* A vector has a direction 
+* A vector has a magnitude 
+* A vector follows the parallelogram law of vector addition 
+
+[ADD_SIMPLE_VECTOR]
+
+We can understand the first two points by drawing a vector in the [coordinate system](https://en.wikipedia.org/wiki/Coordinate_system) (now now, I assume you do know 10th grade math). 
+
+We can see that relative to the X axis, our vector $A$ has a direction, and the length of the vector represents it's magnitude. We will talk about the 3rd point in a little while.
+
+We did not tackle one question yet, how do we write down a vector? This can be simplified by again drawing our coordinate system and making a vector on it. 
+
+[ADD_SIMPLE_VECTOR]
+
+This time let's add units to our coordinate system, We can say that $A$ is 3 units to the right of X axis and 4 units above the Y axis. 
+
+$$
+A = 3\hat{x} + 4\hat{y}
+$$
+
+The hat that our x & y are wearing represents unit vectors (Funny enough they are called x hat and y hat). We have defined a quantitative way to represnt vectors. 
+
+### Vector Operations
+
+
+
+#### Scalar Multiplication
+
+Another uncessarily scary word. Scalar just means a number that scales. So when we multiply our vector with a scalar, it scales it by that number.
+Go ahead, try writing a scalar number lambda ($\lambda$) and see how our vector changes. 
+
+[ADD scalar multiplication]
+
+#### Vector Addition
+
+Playing alone is quite boring, it's always more fun with friends. So let's introduce another vector B in our coordinate system
 
 <VectorAddition />
 
-### Vector Operations
+The parallelogram of vector addition is how two vectors are added, If we have $\vec{A}$ and $\vec{B}$ vectors we simply cannot add them to get a vector $C$ we must follow the above law. 
+(Drag the vectors around to see how the output changes)
+
+If you are a true first principles thinker, you may question why we are doing this. Well, that is how we define vectors. It's like asking why is a chicken a chicken, it's simply state of being.
+
 
 Show addition and multiplication of vectors with visualizations
 
 #### Dot Product
 
-#### Scalar Multiplication
+[WRONG DOT PRODUCT GIVES BACK SCALAR] [ALSO MENTION INNER OR SCALAR PRODUCT]
+
+I believe this is the most fundamental equation in all of ML, any and all models you build or use. Uses this fundamentally.
+
+A dot product of vectors is basically how vectors are multiplied, let's go back to our drawing board and see how the following is calculated 
+
+$$
+\vec{C} = \vec{A}.\vec{B}
+$$
+
+[Write the equations]
+
+The equations are quite boring I will say, it's no fun if you cannot imagine or see it. So let's do that. 
+
+We can split our vector A into 3 x hat and 4 y hat (Remember our awesome law of parallelogram addition, that lets us do this.)
+Similarily we can split vector B 
+
+[ADD IMAGE OF SPLITING ONE VECTOR TO X AND Y AXIS]
+
+now the simple rule of vector dot product is, similar units multiply with similar units. 
+
+[ADD VISUAL OF C Vector]
+
+So we get C vector, This has many implicantions that we will learn in the future. One simple way to think about it, is that if we have a main vector 
+
+#### Cross Product
 
 ### Norms and Distance
 

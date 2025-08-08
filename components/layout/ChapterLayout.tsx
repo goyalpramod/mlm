@@ -5,7 +5,6 @@ import { Container } from '@/components/ui/Container'
 import { ChapterNavigation } from './ChapterNavigation'
 import { TableOfContents } from '@/components/navigation/TableOfContents'
 import { ProgressBar } from '@/components/navigation/ProgressBar'
-import { H1 } from '@/lib/utils/typography'
 
 interface ChapterLayoutProps {
   chapter: Chapter
@@ -15,7 +14,6 @@ interface ChapterLayoutProps {
 }
 
 export function ChapterLayout({
-  chapter,
   children,
   previousChapter,
   nextChapter
@@ -32,8 +30,6 @@ export function ChapterLayout({
       <main className="py-16">
         <Container size="normal">
           <div className="max-w-3xl">
-            {/* Chapter Title */}
-            <H1 className="mb-8">{chapter.title}</H1>
             
             {/* Chapter Content */}
             {children}
