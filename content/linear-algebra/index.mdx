@@ -1,5 +1,6 @@
 import { VectorAddition } from '@/components/visualizations/linear-algebra/VectorAddition'
 import { VectorBreakout } from '@/components/visualizations/linear-algebra/VectorBreakout'
+import { Vector } from '@/components/visualizations/linear-algebra/Vector'
 
 <VectorBreakout />
 
@@ -29,7 +30,7 @@ We will keep it simple and build all our ideas on these 3 points:
 * A vector has a magnitude 
 * A vector follows the parallelogram law of vector addition 
 
-[ADD_SIMPLE_VECTOR]
+<Vector />
 
 We can understand the first two points by drawing a vector in the [coordinate system](https://en.wikipedia.org/wiki/Coordinate_system) (now now, I assume you do know 10th grade math). 
 
@@ -62,12 +63,16 @@ Go ahead, try writing a scalar number lambda ($\lambda$) and see how our vector 
 
 Playing alone is quite boring, it's always more fun with friends. So let's introduce another vector B in our coordinate system
 
-<VectorAddition />
+{/* <VectorAddition /> */}
 
 The parallelogram of vector addition is how two vectors are added, If we have $\vec{A}$ and $\vec{B}$ vectors we simply cannot add them to get a vector $C$ we must follow the above law. 
 (Drag the vectors around to see how the output changes)
 
-If you are a true first principles thinker, you may question why we are doing this. Well, that is how we define vectors. It's like asking why is a chicken a chicken, it's simply state of being.
+If you are a true first principles thinker, you may question why we are doing this. I like the idea talked by Grant in this [video](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=1&t=3s&ab_channel=3Blue1Brown)
+
+If we think of adding two vectors, as moving in those directions. We can see that it is quite simple 
+
+[Add a visualization here]
 
 
 Show addition and multiplication of vectors with visualizations
