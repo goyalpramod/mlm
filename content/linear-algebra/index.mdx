@@ -48,6 +48,47 @@ $$
 
 The hat that our x & y are wearing represents unit vectors (Funny enough they are called x hat and y hat). We have defined a quantitative way to represnt vectors. 
 
+#### Basis
+
+One way of imagining our vector $\vec{A}$ is by taking our x hat (or cap) and moving it 3 units to the right. Then taking it, and moving it 4 units in the direction of 
+y hat. 
+
+[ADD VECTOR SHOWING MOVEMENT]
+
+These 2 vectors (x cap and y cap) together can be used to form any vector in our 2d vector space. And hence they form our basis. 
+
+
+In other words we can use any number to scale the values of these basis vectors to form the vector we want. Go ahead change the value of a and b, and see for yourself. 
+
+[ADD VECTOR FORMATION]
+
+Remember that we are arbitaraily chose x and y (conventionally they are caled i cap and y cap respectively)
+because it's easier to visualize. But we can have a basis p cap and q cap like below. And form vectors using that. 
+
+[ADD P and Q vector]
+
+Transformation of basis is a wider and more important topic about which we will be talking about later.
+
+| In mathematics, a set B of elements of a vector space V is called a basis if every element of V can be written in a unique way as a finite linear combination of elements of B.
+*Definition from [wikipedia](https://en.wikipedia.org/wiki/Basis_(linear_algebra))*
+
+This is the formal definition of basis, basis vectors are linearly independent and define the span of the vector space. (It must seem like I am throwing jargon around, but they will make much more sense by the end of the chapter)
+
+
+#### Span 
+
+If you understand basis, Span is quite simple. It is all the points that can be reached in our space (coordinate system for now) using a set of vectors (notice we are not using the term basis vectors). 
+
+A thought will be that a span is simply the dimension then, not quite. What if our vectors overlap. then its a straight line. What if our vectors are zero 
+then the span is zero. 
+
+[Add 3 visuals, left most moving vectors along to form 2d, overlaping to form straight line, and zero vector]
+
+Then the span of our basis vectors i cap and j cap, is the set S that can be formed in our space with there linear combination. 
+
+ai cap + bj cap, a and b varying over all real numbers [Show mathematical equation and give math notation]
+
+
 ### Vector Operations
 
 
@@ -63,7 +104,7 @@ Go ahead, try writing a scalar number lambda ($\lambda$) and see how our vector 
 
 Playing alone is quite boring, it's always more fun with friends. So let's introduce another vector B in our coordinate system
 
-{/* <VectorAddition /> */}
+<VectorAddition />
 
 The parallelogram of vector addition is how two vectors are added, If we have $\vec{A}$ and $\vec{B}$ vectors we simply cannot add them to get a vector $C$ we must follow the above law. 
 (Drag the vectors around to see how the output changes)
@@ -79,38 +120,61 @@ Show addition and multiplication of vectors with visualizations
 
 #### Dot Product
 
-[WRONG DOT PRODUCT GIVES BACK SCALAR] [ALSO MENTION INNER OR SCALAR PRODUCT]
-
 I believe this is the most fundamental equation in all of ML, any and all models you build or use. Uses this fundamentally.
 
-A dot product of vectors is basically how vectors are multiplied, let's go back to our drawing board and see how the following is calculated 
+A dot product or inner/scalar product of vectors is a method to get the projection of one vector on another (This definition will make more sense as we move forward).
+
+For now, Let's see how it is calculated. And as we proceed further, we will build on this idea and make it simpler.
 
 $$
-\vec{C} = \vec{A}.\vec{B}
+\vec{A}.\vec{B} = 
 $$
 
 [Write the equations]
 
-The equations are quite boring I will say, it's no fun if you cannot imagine or see it. So let's do that. 
+What we did is multiple the corresponsding unit vectors (x hat (or cap) with y hat) and sum them up.
 
-We can split our vector A into 3 x hat and 4 y hat (Remember our awesome law of parallelogram addition, that lets us do this.)
-Similarily we can split vector B 
-
-[ADD IMAGE OF SPLITING ONE VECTOR TO X AND Y AXIS]
-
-now the simple rule of vector dot product is, similar units multiply with similar units. 
-
-[ADD VISUAL OF C Vector]
-
-So we get C vector, This has many implicantions that we will learn in the future. One simple way to think about it, is that if we have a main vector 
+The equations are quite boring I will say, it's no fun if you cannot imagine or see it. Which we will certainly be doing, but in a while.
 
 #### Cross Product
 
+
+
 ### Norms and Distance
+
+Another objective of this book is to show you how all the different chapters is this book is in the end connected, and all can be visualized in coordinate space. 
+To build on that idea let's connect our defition of coordinate space of lines & points with our defintion of vectors.
+
+Let's take back our old vector A, and write down the coordinate of it's head. One way of talking about vector A is by saying that it's a line from the origin 
+to point [3,4]. 
+
+[Draw a line along the point to form the vector]
+
+#### Euclidean distance 
+
+Euclidean (pronounced U-kli-dian) distance is simply the distance of the point from the origin. (from our earlier defintion)
+
+So let's calculate it. 
+
+[Add distance calculation]
+
+It's obvious that we are just calculating the hypotenus using the pythogorus theorem. 
+
+Another important point to keep in mind is, the Euclidean distance is also the magnitude of the vector (The length of the vector from it's tail to it's head)
+
+#### Manhattan distance 
+
+
+
+There are many other kinds of distances, about which we will be talking about in the statistics chapter chapter. 
 
 ### Angles and Orthogonality
 
+
+
 ### Vector Spaces
+
+
 
 ### Basis & Rank
 

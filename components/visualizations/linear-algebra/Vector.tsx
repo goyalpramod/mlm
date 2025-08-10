@@ -89,8 +89,8 @@ export function Vector({
     // 1. Angle arc (theta)
     const angleArc = svg.append('path')
       .attr('transform', `translate(${centerX}, ${centerY})`)
-      .attr('fill', 'rgba(255, 100, 100, 0.3)')
-      .attr('stroke', '#ff6464')
+      .attr('fill', 'rgba(0, 0, 0, 0.1)')
+      .attr('stroke', '#000000')
       .attr('stroke-width', 2)
       .style('opacity', 0)
 
