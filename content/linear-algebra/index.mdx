@@ -102,6 +102,8 @@ Go ahead, try writing a scalar number lambda ($\lambda$) and see how our vector 
 
 #### Vector Addition
 
+https://math.stackexchange.com/questions/1407042/proof-for-parallelogram-law-of-vector-addition
+
 Playing alone is quite boring, it's always more fun with friends. So let's introduce another vector B in our coordinate system
 
 <VectorAddition />
@@ -136,8 +138,7 @@ What we did is multiple the corresponsding unit vectors (x hat (or cap) with y h
 
 The equations are quite boring I will say, it's no fun if you cannot imagine or see it. Which we will certainly be doing, but in a while.
 
-#### Cross Product
-
+(we will skip cross product for now)
 
 
 ### Norms and Distance
@@ -206,7 +207,6 @@ Or, V is a set of linear combination of ai + bj where a,b are within all real nu
 
 {/* {add more stuff} */}
 
-### Rank
 
 ## Matrices
 
@@ -217,50 +217,88 @@ This can be simplified by starting small and building on what we know, and what 
 
 ## Systems of Linear Equations
 
-### System of Linear Equations
+Let's go back to our Vector A. The way we originally defined it was as 3x cap + 4y cap. And assumed that x and y were unit vectors. 
+What if we replace these unit vectors with a variable x and y. 
+
+Now A = 3x + 4y represents a line 
+
+(if it's easier for you to imagine. You can think of it like 4 = -3/4x)
+
+If we introduce back our vector B and follow the same idea. We end up with another linear euqation of line 
+
+[SHOW A AND B TOGETHER]
+
+These equations can be written as such 
+
+3x + 4y = 0 
+5x + y = 0 
+
+[x,y] [[3,4][5,1]] = [0,0]
+
+And we have now formed a system of linear equation using our lines. 
+
+This can be written as Ax = b, where A transforms x to get b
+
+[show visualization]
+
+We will talk more about transformation moving forward
 
 ### Solutions of a System of Linear Equations
 
+
+It's quite easy to see the solution to our two lines above, it's the point where they intesect. in our case that is the origin
+[SHOW lines]
+
+What will no solution look like? Well It's quite simple, that's the case when two lines are parallel.
+
+[SHOW lines]
+
+Similarily, Infiniti solutions is when the lines overlap. 
+
+[SHOW lines]
+
 General solution, unique solution, no solution, infinite solutions
 
-### Elementary Transformations
 
-Gaussian elimination, row echelon form, reduced row echelon form, Jacobi method, Gauss-Seidel method
+### Matrix
 
+One question I had was why matrices. Well so far our visualization had been simple 
 
-### Matrix Introduction
+we know ai + bj represents a line on 2d space, ai + bj + ck represents a plane on 3d space. 
+
+What about ai + bj + ck + dl? or as the dimensions expand. It gets harder to visualize (if not impossible) as well as do calculations on something you cannot imagine
+
+That's why matrices, We can break down our system of linear equations into simple matrices. On which we can do many operations to find solutions (This is a gross oversimplification but it gets the point across for now.)
+
+Another big reason is, GPUs do insanely fast matrix multiplication. Which is one of the big reason for the rise of ML. (along with vast amounts of data)
 
 Show visually how matrices are collections of vectors, and how they represent datasets
 
-### Matrix Operations
-
 Show addition and multiplication of matrices with visualizations, and how they are different.
 
-#### Matrix Addition
+### Matrix Addition
 
-#### Matrix Multiplication
+### Matrix Multiplication
 
 Show visually how matrix multiplication works, including dot products of rows and columns
 
-#### Scalar Multiplication
+### Scalar Multiplication
 
 ### Matrix Properties
 
 Distributive, associative, commutative, identity, inverse etc
 
-### Determinants & Trace
+### Determinants
 
-#### Determinants
+Before we move to the over to the overly complicated way of calculating determinants. Let's take a moment to understand what a determinant is. 
 
-#### Trace
+Let's start with a simple 2d matrix. We know that we can represnt it in coordinat space like below. 
 
-#### Upper and Lower Triangular Matrices
+[ADD IMAGE]
 
-### Inverse & Transpose
+The determinant is the area occupied by the parallelogram formed using these two vectors.
 
-### Pseudo-inverse
-
-## Linear Transformations & Geometry
+#### Laplace expansion
 
 ### Linear Transformations
 
@@ -281,13 +319,99 @@ A valid transformation will look something like this
 
 [ADD allowed and not allowed vector transformation]
 
-The common transformations done are rotations, 
+The common transformations done are rotations, sheer etc 
+
+A beautiful thing is, the determinant of a transformation is how much that transformation scales the original area of the basis vector by. 
+
+Let's see how it looks like 
+
+[Add visualization]
+
+But determinants can be negative? 
+
+### Rank & Null space 
+
+talk about kernel too 
+
+The rank is all the dimensions of column space. 
+
+Null space is all the vectors that get squised from a transformation
+
+#### Cross Product
+
+The cross product of two vectors is it's area And the orientation (or negative or positive) is defined by if I is to the left or to the right.
+
+Cross product gives a new vector 
+
+Watch this video whole 
+
+https://www.youtube.com/watch?v=eu6i7WJeinw&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=10&ab_channel=3Blue1Brown
+
+I wont be diving more into cross product as that from my personal experience required much in ML. If you wish to learn more about it, consider watching this video
+
+https://www.youtube.com/watch?v=BaM7OCEm3G0&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=11&ab_channel=3Blue1Brown
+
+### Trace
+
+### Elementary Transformations
+
+Gaussian elimination, row echelon form, reduced row echelon form, Jacobi method, Gauss-Seidel method
+
+#### Upper and Lower Triangular Matrices
+
+### Inverse
+
+Going back to how we talked about systems of equations. 
+
+We can take any vector v multiply it with a transformation matrix A to get transformed vector b 
+
+But what if we have A and b and we want to find out v. That is where the inverse comes it. 
+
+It basically undoes the transformation
+
+You can think of it like when A*A^(-1) gives us I the identity matrix. Which is a matrix a matrix of unit basis. 
+
+[show images of taking vector, applying transformation, then reversing that transformation]
+
+Can there ever be a transformation whose inverse does not exist? Sure, when the det(A) is zero!! 
+
+Remember what the determinant of a transformation implies, it talks about the area transformation, so if that is zero. It means our vectors have been squised to a lower dimension. 
+
+How doe we retrieve info about what we dont know 
+
+[Show what zero determinant looks like]
+
+But we know the solution exists, as we reached that point from somehwere right? Well it does, but we can not determinatically determine which line. It can be one of many 
+
+[Show visuals]
+
+### Transpose
+
+### Pseudo-inverse
+
+## Linear Transformations & Geometry
+
+
+This video for non square [matrices](https://www.youtube.com/watch?v=v8VSDg_WQlA&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=8&ab_channel=3Blue1Brown)
+
+### Deeper dive into dot product 
+
+https://www.youtube.com/watch?v=LyGKycYT2v0&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=9&ab_channel=3Blue1Brown
+
+https://math.stackexchange.com/questions/3784740/proof-of-dot-product-formula
+
+### Cramer's Rule
+
+https://www.youtube.com/watch?v=jBsC34PxzoM&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=12&ab_channel=3Blue1Brown
+
 
 ### Basis Change
 
 ### Projections
 
 ### Rotations
+
+#### ortho normal
 
 ### Affine Spaces
 
