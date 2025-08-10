@@ -164,19 +164,56 @@ Another important point to keep in mind is, the Euclidean distance is also the m
 
 #### Manhattan distance 
 
+This is a curious one. Imagine that you are in Manhattan right now. And you have to from point A to point B. Now you obviously cannot go through the buildings. 
+So you must follow the roads built to the point you wish to go to. 
 
+That is essentially what Manhattan distance is. It is the sum of the absolute differences of the coordinates. For two points (x₁, y₁) and (x₂, y₂), it's |x₁ - x₂| + |y₁ - y₂|.
 
 There are many other kinds of distances, about which we will be talking about in the statistics chapter chapter. 
 
 ### Angles and Orthogonality
 
+It's time we started moving to a bit more complex parts of vectors. Let's first understand how the angle between two vectors is calculated. 
 
+[WRITE Equation Theta = cos-1(a.b/ab)]
+
+The above equation seems far too complex than it actually is, Let us start with a simpler case then move to harder cases. 
+
+Lets take our Vector A and another Vector B along x axis. It looks something like this 
+
+[]
+
+If we wish to calculate the angle theta between these two vectors. We can 
+
+Go through this and create this https://math.stackexchange.com/questions/3784740/proof-of-dot-product-formula
+
+Now we have a better understanding of dot product. This leads to us an amazing conclusion, to check for Orthogonality or if two vectors are at right angle to each other. We can just take the dot product. 
+As Cos(90) = 0
 
 ### Vector Spaces
 
+Time to talk the way the mathematicians talk, So far we have been speaking our own jargon and using terms to make concepts easier to grasp.
+But you won't encounter papers or books that use the same method. Another objective of this book is to make these "Abstract symbols" more familiar and simpler
+And to begin with that, we need to start talking about sets and vector space. 
 
+https://math.stackexchange.com/questions/4064225/coordinate-systems-and-vector-spaces
 
-### Basis & Rank
+so far we had been using the coordinate system because it's easier to visualize. But if we want to talk about all vectors present in the 2d space. We will write somehting like 
+
+$ V = a\cap{i} + b\cap{j} (a,b) \all{R^2}$ [Fix the equation]
+
+Or, V is a set of linear combination of ai + bj where a,b are within all real numbers in 2d space 
+
+{/* {add more stuff} */}
+
+### Rank
+
+## Matrices
+
+We have hopefully connected linear algebra and Geometry in your head. It's time to move a bit further and connect matrices too. 
+When you start working with ML, most operations one does is on matrices. And those matrices are so huge that it's hard to even visualize or connect them to anything one already knows of. 
+
+This can be simplified by starting small and building on what we know, and what we do not know. 
 
 ## Systems of Linear Equations
 
@@ -190,7 +227,6 @@ General solution, unique solution, no solution, infinite solutions
 
 Gaussian elimination, row echelon form, reduced row echelon form, Jacobi method, Gauss-Seidel method
 
-## Matrices
 
 ### Matrix Introduction
 
@@ -227,6 +263,25 @@ Distributive, associative, commutative, identity, inverse etc
 ## Linear Transformations & Geometry
 
 ### Linear Transformations
+
+We have covered a lot of ground by now, and I hope you did not forget our original definition of Linear. LINES!!! 
+
+We can extend that defintion here too, So any transformation we do, we must preserve the LINES!!! i.e, after transformation of the vector space, it should still be straight lines. 
+So no curves. 
+
+[ADD allowed and not allowed vector transformation]
+
+Another rule is that the origin must remain the same.  
+
+[ADD allowed and not allowed vector transformation]
+
+This has a very important concequence, the transformed vector remains the same linear combination of the two transformed i cap and j cap 
+
+A valid transformation will look something like this 
+
+[ADD allowed and not allowed vector transformation]
+
+The common transformations done are rotations, 
 
 ### Basis Change
 
