@@ -21,6 +21,9 @@ https://www.countbayesie.com/blog/2015/8/30/picture-guide-to-probability-spaces
 
 What do we mean by Random? Any experiment which we cannot determinatically define can be called stochastic or random. For 
 
+Random variable is neither random nor a variable. It is a function that maps an event to another number. for example 
+
+[Include equation from above link]
 
 
 We are going to take a few theories & notations from [set theory] which are extremely useful. You will see them often in ML papers, and being proficient with them really helps.
@@ -114,9 +117,32 @@ rain can change this value. So the best way to plot it using continous values
 
 https://medium.com/data-science/probability-concepts-explained-probability-distributions-introduction-part-3-4a5db81858dc
 
+"""
+When the range of X
+ is finite or countably infinite, the random variable is called discrete and its distribution can be described by the probability mass function (PMF):
+
+fX(x)=P(X=x),
+"""
+
+## Probability Density Function/Cumulative Distribution Function 
+
+"""
+X
+  is called a continuous random variable. Any random variable can be described by the cumulative distribution function (CDF)
+
+FX(x)=P(X≤x),
+which is a shorthand for FX(x)=P(α:X(α)≤x)
+. If X
+ is absolutely continuous, the CDF can be described by the integral
+
+FX(x)=∫x−∞fX(x′)dx′,
+where the integrand fX
+ is known as the probability density function (PDF)
+"""
+
 ### Common Discrete Distributions
 
-Bernoulli Distribution, Binomial Distribution, Poisson Distribution, Normal Distribution
+Bernoulli Distribution, Binomial Distribution, Poisson Distribution, Normal Distribution, Beta distribution
 
 ### Common Continuous Distributions
 
@@ -212,11 +238,27 @@ Difference in XXt and XXt
 
 ### Law of Large Numbers
 
+"""
+law of large numbers states that in the limit n→∞
+, the sample average converges in probability to the expected value, i.e.,
+
+P(limn→∞Sn=μ)=1.
+"""
+
 ### Central Limit Theorem
+
+"""
+the central limit theorem states that Dn
+ converges in distribution to N(0,σ2)
+, that is, its CDF converges pointwise to that of the normal distribution. This is often denoted as Dn→DN(0,σ2)
+.
+"""
 
 ## Statistical Inference
 
 ### Maximum Likelihood Estimation
+
+[Give example of Naive bayes, which assumes all categories are IID]
 
 """
 Maximum likelihood estimation is a method that determines values for the parameters of a model. 
@@ -232,6 +274,8 @@ https://medium.com/data-science/probability-concepts-explained-bayesian-inferenc
 ### Confidence Intervals
 
 ### Hypothesis Testing
+
+https://cbmm.mit.edu/sites/default/files/documents/probability_handout.pdf -> nice quick crash course
 
 ### Bayesian Statistics
 
@@ -272,3 +316,5 @@ This chapter takes inspiration from the following sources
 
 * https://youtube.com/playlist?list=PLMrJAkhIeNNR3sNYvfgiKgcStwuPSts9V&si=HpMeJxh8MrTaO4wm by Steve Brunton 
 * https://medium.com/@jonnybrooks04 
+* https://vistalab-technion.github.io/cs236605/supplements/probability_and_statistics/
+* Count Bayesian

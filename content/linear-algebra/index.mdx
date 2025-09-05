@@ -6,6 +6,15 @@ import { Vector } from '@/components/visualizations/linear-algebra/Vector'
 
 # Linear Algebra
 
+NOTE TO SELF -> ADD CODE WHEREVER POSSIBLE TO BRIDGE THE GAP BETWEEN Theory and PACTICAL
+
+This book is meant to bridge the gab between difficult book, papers & intuitive videos, code implementations
+
+NOTE: Throughout this book, I will minimize formal definitions and talk mostly about the mathematical notation, Intuition and practical purposes. 
+The main goal of this book is that after you read it, you should be able to pick up most ML papers and implement them from scratch. 
+I will mention the formal definition, But as this is not a rigurous math book. I will skip the proof at different place. (Though I may link it to another source).
+Also as I am but a lowly grad student, I may make mistakes. You can reach out to me through any of my [socials] I will be happy to rectify the mistake
+
 Linear algebra sounds like such a scary topic when you first hear about it. But it soon becomes quite simple when you see what it really is. 
 Just lines on an imaginary space. 
 
@@ -180,6 +189,9 @@ It's obvious that we are just calculating the hypotenus using the pythogorus the
 
 Another important point to keep in mind is, the Euclidean distance is also the magnitude of the vector (The length of the vector from it's tail to it's head)
 
+
+[CORRECT] This is sometimes called the l1 distance as well. From that notion you can assume something called l2 distance as well. these are all forms of vector p norm. They are often used in redulization of ML algorithms. 
+(About which we will talk later)
 #### Manhattan distance 
 
 This is a curious one. Imagine that you are in Manhattan right now. And you have to from point A to point B. Now you obviously cannot go through the buildings. 
@@ -572,6 +584,12 @@ Really great video explaining what whenever we see A^-1MA does https://www.youtu
 #### ortho normal
 
 ### Affine Spaces
+
+We have dealt with subspaces, but they have one major caveat. That the it must contain the origin. That is not the case with affine spaces. 
+
+These are shifted away from the origin 
+
+[Image inspiration](https://vistalab-technion.github.io/cs236605/supplements/linear_algebra/)
 
 ### Images & Kernels
 
