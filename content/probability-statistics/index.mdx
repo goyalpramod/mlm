@@ -55,6 +55,8 @@ A compliment
 
 Last one P(A U B) = ...
 
+https://www.countbayesie.com/blog/2015/2/20/random-variables-and-expectation -> Use this to explain random variable 
+
 
 
 ### Marginal Probability 
@@ -95,6 +97,19 @@ Chain or Product rule (Talk about it later)
 
 ## Discrete and Continuous Distributions
 
+https://www.countbayesie.com/blog/2015/3/17/interrogating-probability-distributions
+
+Discrete probability is not as discrete as it sounds, it is quite straight forward. 
+
+If you can count it, it's discrete. Like what are the possible values of coin in a coin flip. Only 2
+
+What about continour distribution, it is as the name implies. If I asked you how much did it rain yesterday (assume that it did!) and you gave me a number like 
+4 inches, are you sure it was 4 inches? or was it 4.001 inches or 3.9999991 inches. We can never be truly sure as this is not an exact amount, even a single drop of 
+rain can change this value. So the best way to plot it using continous values 
+
+>Quick aside, Do you know what it means when you read there is a 70% chance of rain tomorrow? It does not litreally mean what it says. It means [ADD definition]
+
+
 ## PRobability Mass Function
 
 https://medium.com/data-science/probability-concepts-explained-probability-distributions-introduction-part-3-4a5db81858dc
@@ -115,7 +130,85 @@ Uniform Distribution, Exponential Distribution
 
 ## Statistical Properties
 
-### Expectation, Variance, and Covariance
+### Expectation & Variance
+
+https://www.countbayesie.com/blog/2015/3/19/expectation-and-variance-from-high-school-to-grad-school
+https://www.countbayesie.com/blog/2015/2/20/random-variables-and-expectation
+
+
+Expectation is something that you will encounter often anytime you are dealing with distributions, Even though the word (expectation) & the notation (E[]) is quite 
+simple to visually grasp. I find it hard to intuitively understand what it is and remember it. Let's try to change that today. 
+
+We all have an idea of what an average is, For example if two people went out to eat and the total bill was $50, we can say on average it costed each person $25 
+Even though the actual split could have been $20,$30 or $40,$10. Average is just a well formed guess (what we can expect to happen).
+
+We can write the average (represented by mean for now, we can talk about median and mode later) as 
+
+Mean = x1 + x2 + x3.... xn/n 
+
+All samples/ total number of samples
+
+This can get cummbersome to write again and again so we will introduce a short hand for summatation 
+
+mu = 1/nEx 
+
+> A nice idea I was introduced to was thinking of E as a for loop. We can write the above equation simply in code as 
+```python
+x = [1,2,3...n]
+sum = 0
+for i in x:
+   sum+=i
+mean = sum/len(x)
+```
+So if it was a double summation, its a double for loop. Somehow this is easier for me to visualize and picture
+
+Let's introduce the idea of probability, what if the probability of each event occuring is not the same. 
+
+mu = Exp
+
+This is simply the expectation, Okay we got the expectation. But what is it.... really?
+
+"""
+You're touching on a common point of confusion between expected value and sample mean! Let me clarify the difference.
+
+**Expected value** is a theoretical concept about a probability distribution. When we calculate E(X) = Σ(x × P(x)), we're already using the complete probability distribution where all probabilities sum to 1. We don't divide by anything additional because the probabilities themselves already represent the "weighting" of each outcome.
+
+**Sample mean**, on the other hand, is what we calculate from actual data. When we have n samples and calculate their average, we divide by n because we're treating each observation as equally likely (probability 1/n for each).
+
+Here's the key insight: Expected value and sample mean are related but different concepts:
+
+- **Expected value**: The theoretical average of a random variable based on its probability distribution
+- **Sample mean**: The average of observed data points, which estimates the expected value
+
+For example:
+- If you roll a fair die, the expected value is (1×1/6 + 2×1/6 + 3×1/6 + 4×1/6 + 5×1/6 + 6×1/6) = 3.5
+- If you actually roll a die 100 times and get specific results, you'd sum those results and divide by 100 to get the sample mean
+
+The sample mean approximates the expected value as the number of samples increases (Law of Large Numbers), but they're calculated differently because they're answering slightly different questions.
+
+Does this help clarify why we don't divide by n when calculating expected value?
+"""
+
+>For me it is easier to visualize as a graph where the paths to different values have different weights. So on average, the path with the most weight 
+will be traversed maximum number of times
+[ADD VISUALIZATION]
+
+We can write down variance as the famous equation 
+
+[WRITE EQUATION]
+
+It is quite dauting to look at if I say so myself,
+
+
+[DERIVE RELATION BETWEEN VARIANCE AND EXPECTATION]
+
+https://www.countbayesie.com/blog/2015/2/21/variance-co-variance-and-correlation -> variance from here
+
+https://www.countbayesie.com/blog/2015/4/23/why-so-square-jensens-inequality-and-moments-of-a-random-variable -> But why square it and not cube it, talks about moments, Skewness and kurtosis
+
+### Covaraince & Correlation
+
+Difference in XXt and XXt
 
 ### Law of Large Numbers
 
@@ -152,7 +245,9 @@ add distances like humming, Jacard etc
 
 ### Joint Entropy and Conditional Entropy
 
-## Measuring Information
+## Measuring Information 
+
+Measure theory? 
 
 ### Mutual Information
 
@@ -162,6 +257,14 @@ add distances like humming, Jacard etc
 
 ### KL Divergence and Jensen-Shannon Divergence
 
+
+Before we end this chapter, I would like to raise a question to you. 
+What is the probability that if you took part in a race you will win it
+a) 50% (either you win or lose)
+b) Calculate it using bayes' theorem 
+c) Something else entirely 
+
+This was an interesting idea introduced to me by a friend. This belogs to the realm of possibility vs probability. 
 
 ### Aknowledgment 
 
