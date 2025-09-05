@@ -9,23 +9,99 @@ Probability = Favourable events/All events
 This is what my 11th grad professor told me, and I have never needed to change my believes since. It sounds like an oversimplification, but as we move forward.
 You will see how all of probability, is just based on this simple idea. 
 
+What about statistics, Well this is fairly simple. In this we have events with us and we try to model how they look in general
+
+[Example idea, Make one gausian curve, for probability take one section and show probability, for stats, take the section and approximate the curve]
+
 ## Probability Fundamentals
 
 ### Probability Space and Random Variables
 
-### Sum Rule, Product Rule, and Bayes' Theorem
+https://www.countbayesie.com/blog/2015/8/30/picture-guide-to-probability-spaces
+
+What do we mean by Random? Any experiment which we cannot determinatically define can be called stochastic or random. For 
+
+
+
+We are going to take a few theories & notations from [set theory] which are extremely useful. You will see them often in ML papers, and being proficient with them really helps.
+
+A sample space omega is defined as the set of all possible outcomes of a random experiment
+
+w is a part of the set omega, and is one outcome of the experimentation
+
+Eg A -> all head in 3 flip 
+
+eg B -> 2nd coin is tail 
+
+AUB Union -> 
+
+[ADD VENN DIAGRAM IMAGE]
+
+A^B (A and B) intersection 
+
+A compliment
+
+"""
+**P** map from subsets of Ω to ℝ... [0,1] ∈ ℝ
+
+① P(Ω) = 1
+
+② If A ∈ Ω then P(A) ≥ 0
+
+③ If A and B are disjoint
+   P(A ∩ B) = ∅
+   P(A ∪ B) = P(A) + P(B)
+"""
+
+Last one P(A U B) = ...
+
+
+
+### Marginal Probability 
+
+The probability of a random variable occuring 
+
+P(X=3), Eg 
 
 ### Independence and Conditional Probability
+
+Independent events are events which are not related to each other, Like if I ask what is the probability it will rain if I flip a coin and it lands on heads. 
+
+The probability will remain the same as rain does not depend on my coin flips. (If it did, I won't be writing about it)
+
+That brings us to Mutually exclusive events
+
+These are events that can never occur together 
+
+
+"""
+The conditional probability is the probability that some event(s) occur given that we know other events have already occurred. 
+If A and B are two events then the conditional probability of A occurring given that B has occurred is written as P(A|B). 
+Example: the probability that a card is a four given that we have drawn a red card is P(4|red) = 2/26 = 1/13. 
+(There are 52 cards in the pack, 26 are red and 26 are black. Now because we’ve already picked a red card, we know that there are only 26 cards to choose from, hence why the first denominator is 26).
+"""
+
+### Bayes' Theorem
+
+P(A|B) = (P(A)*P(B|A))/P(B)
+
+
 
 ### Likelihood, A Posteriori, and Prior
 
 ## Joint probability
 
+Chain or Product rule (Talk about it later)
+
 ## Discrete and Continuous Distributions
+
+## PRobability Mass Function
+
+https://medium.com/data-science/probability-concepts-explained-probability-distributions-introduction-part-3-4a5db81858dc
 
 ### Common Discrete Distributions
 
-Bernoulli Distribution, Binomial Distribution, Poisson Distribution
+Bernoulli Distribution, Binomial Distribution, Poisson Distribution, Normal Distribution
 
 ### Common Continuous Distributions
 
@@ -48,6 +124,17 @@ Uniform Distribution, Exponential Distribution
 ## Statistical Inference
 
 ### Maximum Likelihood Estimation
+
+"""
+Maximum likelihood estimation is a method that determines values for the parameters of a model. 
+The parameter values are found such that they maximise the likelihood that the process described by the model produced the data that were actually observed.
+"""
+
+https://medium.com/data-science/probability-concepts-explained-maximum-likelihood-estimation-c7b4342fdbb1 -> This was a great blog on the topic
+
+### Maximum A Posteriori Estimate
+
+https://medium.com/data-science/probability-concepts-explained-bayesian-inference-for-parameter-estimation-90e8930e5348
 
 ### Confidence Intervals
 
@@ -74,3 +161,11 @@ add distances like humming, Jacard etc
 ## Divergence Measures
 
 ### KL Divergence and Jensen-Shannon Divergence
+
+
+### Aknowledgment 
+
+This chapter takes inspiration from the following sources 
+
+* https://youtube.com/playlist?list=PLMrJAkhIeNNR3sNYvfgiKgcStwuPSts9V&si=HpMeJxh8MrTaO4wm by Steve Brunton 
+* https://medium.com/@jonnybrooks04 

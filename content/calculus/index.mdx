@@ -6,15 +6,42 @@ It becomes much simpler and easier to grasp the idea.
 
 Keeping true to our old objective, if we cannot visualize it. We have not truly understood it.
 
+As surprising as it may sound, I believe we do not really need to know a lot of Calculus to work with ML. So I will be sticking to the absolute required stuff and skipping over the more tradtional math topics. 
+So you can explore them on your own. (Remember, this is an "ML math" book first)
+
 
 Derivative
+
+The idea of a derivative is very central to ML, it is often defined as the "Instantaneous rate of change". But that does not sound very simple nor does it seem easy to visualize. 
+Sticking to our mantra, Let's first understand rate of change.
+
+Lets say we have a simple line y = mx, If I asked you how much did the value of y changed as I moved from x=1 to x=3. 
+It is quite easy to calculate as such. 
+
+It's easy to see that how m = to our rate of change. M is known as the slope of the function. 
+
+Now imagine if I have a more complex function 
+
+Instead of asking how y changes as I move about x, what if I ask you. Depedning on where I currently am on the function, how do I know which direction to move to decrease my value. 
+
+if we think of ourselves standing on top of the mountain blindfolded, a simple method can be to take a small step in all directions and move towards the one that decreases the value the most. 
+
+That is the idea behind derivative, to calculate a very small change. It is mathematically defined as 
+
+[WRITE_EQUATION]
+
+This is extremely useful, because using it we can derive multiple functions. Here are the fundametnals (Click on them to see the derivation!!)
+
+[WRITE_EQUATIONS_WITH_DERIVATION]
+
+The reason we need this is because in ML we will be plotting multiple Cost functions, and they are in multiple dimensions. We need to derive the function to find the slope so we know in which direction to move to minimize the cost. 
+
 
 ## Differentiation of Univariate Functions
 
 ## Critical points, maxima, and minima 
 
 
-### Taylor Series
 
 ### Differentiation Rules
 
@@ -32,13 +59,34 @@ Hessian in fisher matrix mention
 
 ### Backpropagation
 
+(Inspired from cs231n and this blog )
+
 reverse mode auto-differentiation
 forward mode auto-differentiation
 
 ### Higher order differntial 
+
+### Taylor Series
+
+In it's heart taylor series is just an approximation algrotihm 
+
+Lets take the function cos(theta) it is simple for us to derive it because we know where it comes from. But if we did not know it, how will we go about calculating it at any given point? 
+A close approximation can do well in this case
+
+[ADD ANIMATION TAKE INPIRATION FROM HERE https://www.youtube.com/watch?v=3d6DsjIBzJ4&list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr&index=11&ab_channel=3Blue1Brown]
 
 ### Multivariate Taylor Series
 
 ## Integration
 
 ## Vector calculus (divergence, curl if needed)
+
+
+Aknowledgment
+
+* This chapter takes inspiration from the following sources 
+
+* https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr By 3Blue1Brown
+* Alice in wonderland 
+* Mathematics for machine learning
+* Pattern Recognition

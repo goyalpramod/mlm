@@ -19,6 +19,23 @@ Remember what we said, Linear algebra is just lines on imaginary space. Nothing 
 
 ## Vectors & Vector Spaces
 
+Strickly speaking, many of mathematical concepts are inherently defined using axioms. And any idea that follows the axioms of a given idea, the concepts of this idea can be applied to the other one. 
+
+For example. Vectors can be simply defined as 
+
+* L(x + y) = L(x) + L(y)
+* lambdaL(x) = L(lambdax)
+
+Anything which follows this principle is a... in a sense a vector. From this definition even functions are vectors. 
+
+[Give example]
+
+Even differential equations are vectors 
+
+[Give example]
+
+But this broad sense of vectors can be confusing as a starting point, so let's limit our scope for now and we will expand on this idea as we move forward. 
+
 ### What are Vectors?
 
 Depending on which field of study you come from a vector can mean different things to you. The confusion is made worse when we talk about vectors in code (1D array)
@@ -276,6 +293,8 @@ Show visually how matrices are collections of vectors, and how they represent da
 
 Show addition and multiplication of matrices with visualizations, and how they are different.
 
+We can formally define a 2d Matrix A as A ∈ Rm×n, Where m are the rows and n are columns. The symbol `∈` is pronounced as [ADD] and it means that all values of A is a real number
+
 ### Matrix Addition
 
 ### Matrix Multiplication
@@ -287,6 +306,37 @@ Show visually how matrix multiplication works, including dot products of rows an
 ### Matrix Properties
 
 Distributive, associative, commutative, identity, inverse etc
+
+Many books contain these parts. But I inherently hated them, first because the name themselves are not very intuitive and second because they would randomly show up in tests. 
+But if we take our time to understand what matrices truly are and what they represent. These properties seem like obvious facts 
+
+For completeness (there is a better word for this) sake, this is how it is traditionally defined 
+
+ssociativity:
+∀A ∈ R
+m×n
+, B ∈ R
+n×p
+, C ∈ R
+p×q
+: (AB)C = A(BC) (2.18)
+distributivity
+Distributivity:
+∀A, B ∈ R
+m×n
+, C, D ∈ R
+n×p
+: (A + B)C = AC + BC (2.19a)
+A(C + D) = AC + AD (2.19b)
+Multiplication with the identity matrix:
+∀A ∈ R
+m×n
+: ImA = AIn = A (2.20)
+Note that Im ̸= In for m ̸= n.
+
+Let me help you with the arcaic symbols first.
+
+
 
 ### Determinants
 
@@ -357,6 +407,21 @@ https://www.youtube.com/watch?v=BaM7OCEm3G0&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE
 
 Gaussian elimination, row echelon form, reduced row echelon form, Jacobi method, Gauss-Seidel method
 
+""
+A matrix is in row-echelon form if
+All rows that contain only zeros are at the bottom of the matrix; correspondingly, all rows that contain at least one nonzero element are on
+top of rows that contain only zeros.
+Looking at nonzero rows only, the first nonzero number from the left
+pivot (also called the pivot or the leading coefficient) is always strictly to the
+leading coefficient right of the pivot of the row above it.
+""
+
+""
+Remark (Pivots and Staircase Structure). The leading coefficient of a row
+pivot (first nonzero number from the left) is called the pivot and is always
+strictly to the right of the pivot of the row above it. Therefore, any equation system in row-echelon form always has a “staircase” structure.
+""
+
 #### Upper and Lower Triangular Matrices
 
 ### Inverse
@@ -385,7 +450,84 @@ But we know the solution exists, as we reached that point from somehwere right? 
 
 [Show visuals]
 
+"""
+. If this
+regular inverse does exist, A is called regular/invertible/nonsingular, otherwise
+invertible
+nonsingular
+singular/noninvertible. When the matrix inverse exists, it is unique
+"""
+
 ### Transpose
+
+The below text shows things like 
+
+(AB)T = BT.AT
+
+"""
+
+. For A ∈ Rm×n
+the matrix B ∈ Rn×m with
+bij = aji is called the transpose of A. We write B = A
+⊤
+. transpose
+The main diagonal
+(sometimes called
+“principal diagonal”,
+“primary diagonal”,
+“leading diagonal”,
+or “major diagonal”)
+of a matrix A is the
+collection of entries
+Aij where i = j.
+In general, A
+⊤
+can be obtained by writing the columns of A as the rows
+of A
+⊤
+. The following are important properties of inverses and transposes:
+The scalar case of
+(2.28) is
+1
+2+4 = 1
+6
+̸= 1
+2 + 1
+4
+.
+AA−1 = I = A
+−1A (2.26)
+(AB)
+−1 = B
+−1A
+−1
+(2.27)
+(A + B)
+−1
+̸= A
+−1 + B
+−1
+(2.28)
+(A
+⊤
+)
+⊤ = A (2.29)
+(AB)
+⊤ = B
+⊤A
+⊤
+(2.30)
+(A + B)
+⊤ = A
+⊤ + B
+⊤
+(2.31)
+Definition 2.5 (Symmetric Matrix). A matrix A
+"""
+
+### Symmetric Matrix 
+
+When A = A.T 
 
 ### Pseudo-inverse
 
@@ -454,6 +596,21 @@ which becomes
 
 (A - lambdaI)V = 0
 
+If we take V to be non-zero, the only way a transformation to be zero is if the determinant is zero 
+
+If our original transformation was different, we would have gotten a different value of lambda 
+
+Notice how the values of (A-lambdaI) are non zero. The determinant is zero that means that it squises space in one direction. 
+
+Opening it up, we get Av = lambdaV. Notice how V remains in it's own span even after the transformation.
+
+So to get the eigenvectors of a transformation we first find the eigenvalues by making the determinant zero, then we solve for trasnformation time [x,y] == 0
+
+Now if we apply transformation A to this vector, we get the same vector scaled by our eigenvalue Lambda. 
+
+
+One question I kept having was, I kept seeing eigenvalues in many ML papers but never understood why it was important
+
 ### Diagonalization
 
 ### Matrix Decompositions
@@ -463,3 +620,11 @@ which becomes
 #### Applications to Machine Learning
 
 How SVD enables dimensionality reduction and Principal Component Analysis (PCA)
+
+### Final notes 
+
+https://www.youtube.com/watch?v=TgKwz5Ikpc8&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=16&ab_channel=3Blue1Brown
+
+Formal definition of Linearity, After a transformation the space should remain parallel and evenly spaced 
+
+Lesson -> derivative is linear
