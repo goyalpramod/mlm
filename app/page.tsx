@@ -89,6 +89,12 @@ export default function HomePage() {
               Mathematics is the language of machine learning, yet most resources treat it as dry theory. 
               I built this interactive book to make complex mathematical concepts intuitive through 
               visualizations and hands-on exploration.
+              <br /><br />
+              Throughout this book, I will minimize formal definitions and talk mostly about the mathematical notation, intuition and practical purposes. 
+              The main goal of this book is that after you read it, you should be able to pick up most ML papers and implement them from scratch. 
+              I will still mention the formal definition, but as this is not a rigorous math book. I will skip the proof at different place. (Though I may link it to another source).
+              Feel free to reach out to me through any of my <a href="https://goyalpramod.github.io/contact/" className="text-blue-600 hover:text-blue-800">socials</a>. For any feedback, suggestions or corrections!!!
+
             </p>
             
             <div className="fixed" style={{ bottom: '118px', right: '33.333%' }}>

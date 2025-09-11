@@ -318,7 +318,7 @@ export function VectorBreakout({ className }: VectorBreakoutProps) {
       
       <div className="text-center mt-4">
         <div className="text-sm text-gray-600">
-          🎯 Watch the arrow inside the ball - it shows speed and direction!
+          Watch the arrow inside the ball - it shows speed and direction!
         </div>
       </div>
     </div>
